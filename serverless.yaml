@@ -1,0 +1,24 @@
+service:
+  name: keeping-serverless-nestjs-api
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: prod
+  memorySize: 2048
+  timeout: 15
+  lambdaHashingVersion: "20201221"
+
+functions:
+  main:
+    handler: dist/lambda.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'

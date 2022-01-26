@@ -1,0 +1,8 @@
+db:
+  host: 'REDACTED_RDS_HOST'
+  username: 'REDACTED_DB_USERNAME'
+  password: 'REDACTED_DB_PASSWORD'
+  synchronize: false
+
+jwt:
+  secret: 'REDACTED_JWT_SECRET'
