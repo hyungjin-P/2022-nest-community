@@ -8,6 +8,7 @@ import { FeedController } from './feed/feed.controller';
 import { FeedModule } from './feed/feed.module';
 import { CodeCategoryModule } from './codes/code-category/code-category.module';
 import { CodesModule } from './codes/codes.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,8 +17,9 @@ import { CodesModule } from './codes/codes.module';
     FeedModule,
     CodeCategoryModule,
     CodesModule,
+    AuthModule,
   ],
-  controllers: [AppController, FeedController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

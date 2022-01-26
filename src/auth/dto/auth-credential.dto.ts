@@ -1,6 +1,6 @@
 import { IsString, MaxLength, MinLength } from 'class-validator';
 
-export class UserCredentialsDto {
+export class AuthCredentialsDto {
   @IsString()
   email: string;
 
