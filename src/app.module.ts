@@ -3,12 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './configs/typeorm.config';
-import { FeedController } from './feed/feed.controller';
 import { FeedModule } from './feed/feed.module';
 import { CodeCategoryModule } from './codes/code-category/code-category.module';
 import { CodesModule } from './codes/codes.module';
 import { AuthModule } from './auth/auth.module';
+import { typeORMConfig } from './configs/typeorm.config';
 
 @Module({
   imports: [
@@ -17,7 +16,7 @@ import { AuthModule } from './auth/auth.module';
     FeedModule,
     CodeCategoryModule,
     CodesModule,
-    AuthModule,
+    // AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

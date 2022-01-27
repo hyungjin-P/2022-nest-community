@@ -8,15 +8,17 @@ import * as config from 'config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../user/user.repository';
 
-const jwtConfig = config.get('jwt');
+// const jwtConfig = config.get('jwt');
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || jwtConfig.secret,
+      // secret: process.env.JWT_SECRET || jwtConfig.secret,
+      secret: 'REDACTED_JWT_SECRET',
       signOptions: {
-        expiresIn: jwtConfig.expiresIn,
+        // expiresIn: jwtConfig.expiresIn,
+        expiresIn: 3600,
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),

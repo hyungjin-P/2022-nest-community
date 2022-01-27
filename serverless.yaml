@@ -1,9 +1,8 @@
 service:
-  name: keeping-serverless-nestjs-api
+  name: keeping-serverless-user-api
 
 plugins:
   - serverless-offline
-
 provider:
   name: aws
   runtime: nodejs14.x
@@ -11,6 +10,22 @@ provider:
   memorySize: 2048
   timeout: 15
   lambdaHashingVersion: "20201221"
+  region: ap-northeast-2
+  vpc:
+    securityGroupIds:
+      - sg-REDACTED_1
+    subnetIds:
+      - subnet-REDACTED_1
+      - subnet-REDACTED_2
+      - subnet-REDACTED_3
+      - subnet-REDACTED_4
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "ec2:CreateNetworkInterface"
+          - "ec2:DescribeNetworkInterfaces"
+          - "ec2:DeleteNetworkInterface"
+        Resource: "*"
 
 functions:
   main:
