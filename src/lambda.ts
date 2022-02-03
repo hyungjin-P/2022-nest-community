@@ -2,11 +2,20 @@ import { NestFactory } from '@nestjs/core';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
+
+  const options = new DocumentBuilder()
+    .setTitle('Keeping User API')
+    .setDescription('키핑 사용자 API')
+    .setVersion('1.0.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api-docs', app, document);
 
   await app.init();
 

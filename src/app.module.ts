@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
+import { typeORMConfig } from './configs/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FeedModule } from './feed/feed.module';
 import { CodeCategoryModule } from './codes/code-category/code-category.module';
 import { CodesModule } from './codes/codes.module';
-import { AuthModule } from './auth/auth.module';
-import { typeORMConfig } from './configs/typeorm.config';
+import { UserModule } from './user/user.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
