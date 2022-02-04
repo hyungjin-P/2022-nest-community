@@ -13,7 +13,7 @@ async function bootstrap() {
   // Server Config. Development or Production
   // const serverConfig = config.get('server');
   // const port = serverConfig.port;
-  const port = 3000;
+  const port = 3001;
 
   // Swagger Option
   const options = new DocumentBuilder()

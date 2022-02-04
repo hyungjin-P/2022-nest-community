@@ -12,6 +12,14 @@ provider:
   timeout: 10
   lambdaHashingVersion: "20201221"
   region: ap-northeast-2
+  apiGateway:
+    shouldStartNameWithService: true
+  vpc:
+    securityGroupIds:
+      - sg-REDACTED_2
+    subnetIds:
+      - subnet-REDACTED_5
+      - subnet-REDACTED_6
 
 functions:
   main:
@@ -23,3 +31,7 @@ functions:
       - http:
           method: ANY
           path: '{proxy+}'
+
+custom:
+  optimize:
+    external: ['swagger-ui-dist']
