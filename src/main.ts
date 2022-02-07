@@ -1,8 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-// import * as config from 'config';
+import * as config from 'config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import AWS from 'aws-sdk';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,6 +25,13 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
+
+  // AWS credentials setup
+  AWS.config.update({
+    accessKeyId: 'REDACTED_AWS_SES_ACCESS_KEY_ID',
+    secretAccessKey: 'REDACTED_AWS_SES_SECRET_ACCESS_KEY',
+    region: 'ap-northeast-2',
+  });
 
   // Server Port Logger
   Logger.log(`Application running on port ${port}`);

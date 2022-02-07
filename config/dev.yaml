@@ -6,3 +6,5 @@ db:
 
 jwt:
   secret: 'REDACTED_JWT_SECRET'
+
+nowStaging: 'dev'

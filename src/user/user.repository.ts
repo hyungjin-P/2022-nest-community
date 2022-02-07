@@ -3,6 +3,7 @@ import { User } from './user.entity';
 import { AuthCredentialsDto } from '../auth/dto/auth-credential.dto';
 import * as bcrypt from 'bcryptjs';
 import { InternalServerErrorException } from '@nestjs/common';
+import { getRepository } from 'typeorm';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -17,8 +18,17 @@ export class UserRepository extends Repository<User> {
     try {
       await this.save(user);
     } catch (e) {
-      console.log('e');
       throw new InternalServerErrorException();
     }
+  }
+
+  async findProvidedIdAndDeleteAtIsNull(providedId: string): Promise<boolean> {
+    const users: User[] = await getRepository(User)
+      .createQueryBuilder('user')
+      .where('user.provided_id = :providedId and deleted_at is null', {
+        providedId,
+      })
+      .getMany();
+    return users.length > 0;
   }
 }

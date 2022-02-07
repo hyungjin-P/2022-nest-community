@@ -42,3 +42,8 @@ jspm_packages
 
 # Serverless directories
 .serverless
+
+# environment veriable
+env.templete
+env.dev
+env.prod

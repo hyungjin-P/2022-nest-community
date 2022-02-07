@@ -2,11 +2,17 @@ import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CommonUtil } from '../utiles/common.util';
+import { EmailService } from '../services/email/email.service';
 
 @ApiTags('사용자 정보')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private util: CommonUtil,
+    private emailService: EmailService,
+  ) {}
 
   @Get('/getAll')
   @ApiOperation({
@@ -47,7 +53,7 @@ export class UserController {
     await this.userService.modify(user);
   }
 
-  @Post('/modify')
+  @Delete('/delete')
   @ApiOperation({
     summary: '사용자 정보 삭제',
     description: '사용자 정보 삭제',
@@ -56,8 +62,44 @@ export class UserController {
     description: '사용자 정보를 삭제한다.',
     type: User,
   })
-  @Delete('/delete')
   async delete(@Query('id') id: string): Promise<void> {
     await this.userService.delete(id);
+  }
+
+  @Get('/findProvidedIdAndDeleteAtIsNull')
+  @ApiOperation({
+    summary: '이메일 중복 확인',
+    description: '이메일 중복 확인',
+  })
+  @ApiCreatedResponse({
+    description: '회원가입시 등록된 이메일이 존재하는지 확인한다.',
+    type: User,
+  })
+  async findProvidedIdAndDeleteAtIsNull(
+    @Query('providedId') providedId: string,
+  ): Promise<boolean> {
+    return await this.userService.findProvidedIdAndDeleteAtIsNull(providedId);
+  }
+
+  @Post('/signInEmail')
+  @ApiOperation({
+    summary: '이메일 회원가입',
+    description: '이메일 회원가입',
+  })
+  @ApiCreatedResponse({
+    description: '이메일로 회원가입 한다',
+    type: User,
+  })
+  async signIn(@Body() user: User): Promise<void> {
+    await this.userService.create(user);
+  }
+
+  @Get('/send/emailTest')
+  async sendEmailTest(): Promise<any> {
+    return await this.emailService.sendVerificationCodeMail(
+      'ko',
+      '***@***.***',
+      '123456',
+    );
   }
 }
