@@ -22,13 +22,27 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  async findProvidedIdAndDeleteAtIsNull(providedId: string): Promise<boolean> {
+  async hasProvidedIdAndDeleteAtIsNull(providedId: string): Promise<boolean> {
     const users: User[] = await getRepository(User)
+      .createQueryBuilder('user')
+      .where(
+        'user.provided_id = :providedId and deleted_at is null and email_verified = 1',
+        {
+          providedId,
+        },
+      )
+      .getMany();
+    return users.length > 0;
+  }
+
+  async findAllByProvidedIdAndDeleteAtIsNUll(
+    providedId: string,
+  ): Promise<User[]> {
+    return await getRepository(User)
       .createQueryBuilder('user')
       .where('user.provided_id = :providedId and deleted_at is null', {
         providedId,
       })
       .getMany();
-    return users.length > 0;
   }
 }

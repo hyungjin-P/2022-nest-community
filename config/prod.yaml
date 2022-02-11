@@ -1,4 +1,0 @@
-db: 
-  synchronize: false
-
-nowStaging: 'prod'

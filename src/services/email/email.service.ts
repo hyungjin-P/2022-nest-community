@@ -2,31 +2,39 @@ import { Injectable } from '@nestjs/common';
 import AWS from 'aws-sdk';
 import fs from 'fs';
 import ejs from 'ejs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService {
+  constructor(private readonly configService: ConfigService) {}
   public async sendVerificationCodeMail(
-    lang: string,
-    to: string,
-    code: string,
+    language: string,
+    emailAddress: string,
+    code: number,
   ): Promise<any> {
-    AWS.config.update({ region: 'ap-northeast-2' });
+    AWS.config.update({
+      accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
+      region: this.configService.get('process.env.AWS_SES_REGION'),
+    });
     const SES = new AWS.SES({ apiVersion: '2010-12-01' });
 
-    const viewPath = `src/services/ejs/${lang}_verification_code.ejs`;
+    console.log('__dirname : ', __dirname);
+
+    const viewPath = `dist/services/email/ejs/${language}_verification_code.ejs`;
     const view = fs.readFileSync(viewPath, 'utf-8');
-    const html = ejs.render(view, { to: to, code: code + '' });
+    const html = ejs.render(view, { to: emailAddress, code: code + '' });
 
     let subjectData = '';
-    if (lang == 'ko') {
-      subjectData = `[${process.env['APP_NAME']}] 인증번호`;
+    if (language === 'ko') {
+      subjectData = `[키핑] 인증번호`;
     } else {
-      subjectData = `[${process.env['APP_NAME']}] Verification Code`;
+      subjectData = `[KEEPING] Verification Code`;
     }
 
     const params = {
       Destination: {
-        ToAddresses: [to],
+        ToAddresses: [emailAddress],
       },
       Message: {
         Body: {

@@ -7,9 +7,15 @@ import { CodeCategoryModule } from './codes/code-category/code-category.module';
 import { CodesModule } from './codes/codes.module';
 import { UserModule } from './user/user.module';
 import { FeedModule } from './feed/feed.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // envFilePath: `${process.cwd()}/config/.env.${process.env.NODE_ENV}`,
+      envFilePath: `${process.cwd()}/config/.env.production`,
+    }),
     TypeOrmModule.forRoot(typeORMConfig),
     UserModule,
     FeedModule,

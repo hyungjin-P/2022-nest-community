@@ -58,8 +58,16 @@ export class UserService {
    * 이메일 중복 확인
    * @param providedId
    * */
-  async findProvidedIdAndDeleteAtIsNull(providedId: string): Promise<boolean> {
-    return await this.userRepository.findProvidedIdAndDeleteAtIsNull(
+  async hasProvidedIdAndDeleteAtIsNull(providedId: string): Promise<boolean> {
+    return await this.userRepository.hasProvidedIdAndDeleteAtIsNull(providedId);
+  }
+
+  /**
+   * 이메일로 회원 목록 조회
+   * @param providedId
+   */
+  async findAllByProvidedId(providedId: string): Promise<User[]> {
+    return await this.userRepository.findAllByProvidedIdAndDeleteAtIsNUll(
       providedId,
     );
   }
@@ -68,18 +76,16 @@ export class UserService {
    * 이메일 회원가입
    * @param user
    * */
-  async signIn(user: User): Promise<void> {
-    const isSigned = await this.userRepository.findProvidedIdAndDeleteAtIsNull(
+  async registration(user: User): Promise<void> {
+    const isSigned = await this.userRepository.hasProvidedIdAndDeleteAtIsNull(
       user.providedId,
     );
 
     if (isSigned) {
-      throw new Error('이미 회원가입한 회원입니다.');
+      throw new Error('이미 등록된 이메일 입니다.');
     }
 
-    // 유저 랜덤 색상
-    user.color = this.commonUtil.randomColor();
-
-
+    console.log('registration user : ', user);
   }
+
 }

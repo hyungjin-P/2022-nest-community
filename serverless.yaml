@@ -1,8 +1,11 @@
 service:
   name: keeping-serverless-user-api
 
+useDotenv: true
+
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin
 
 provider:
   name: aws

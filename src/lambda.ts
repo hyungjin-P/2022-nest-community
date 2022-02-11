@@ -22,6 +22,8 @@ async function bootstrap(): Promise<Handler> {
 
   setupSwagger(app);
 
+  app.enableCors();
+
   await app.init();
 
   const expressApp = app.getHttpAdapter().getInstance();
