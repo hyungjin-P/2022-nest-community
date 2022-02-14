@@ -35,6 +35,10 @@ export class PublicFeedController {
     type: CodeCategory,
   })
   async findFeedDetails(@Param('id') feedId: string): Promise<Feed> {
-    return this.feedService.findByFeedId(feedId);
+    let feed: Feed = await this.feedService.findByFeedId(feedId);
+
+    // feed.likeUsers = 좋아요 한 사람들 조회해서 넣고
+
+    return feed;
   }
 }

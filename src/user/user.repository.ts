@@ -43,6 +43,7 @@ export class UserRepository extends Repository<User> {
       .where('user.provided_id = :providedId and deleted_at is null', {
         providedId,
       })
+
       .getMany();
   }
 }
