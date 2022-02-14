@@ -11,6 +11,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class User {
+
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -36,7 +38,7 @@ export class User {
   sex: string;
 
   @Column()
-  birthDate: string;
+  WbirthDate: string;
 
   @Column()
   email: string;

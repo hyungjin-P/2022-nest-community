@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
@@ -48,7 +48,8 @@ export class UserController {
     description: '사용자를 id(key)로 1건 조회한다',
     type: User,
   })
-  async findById(@Query('id') id: string): Promise<User> {
+  async findById(
+    @Query('id') id: string): Promise<User> {
     return await this.userService.findById(id);
   }
 
