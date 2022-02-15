@@ -4,18 +4,16 @@ import {
   Delete,
   Get,
   HttpException,
-  Logger,
   Post,
   Query,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
-import { ResponseData } from '../response.data';
+import { UserRegistrationDto } from './dto/user.registration.dto';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -48,8 +46,7 @@ export class UserController {
     description: '사용자를 id(key)로 1건 조회한다',
     type: User,
   })
-  async findById(
-    @Query('id') id: string): Promise<User> {
+  async findById(@Query('id') id: string): Promise<User> {
     return await this.userService.findById(id);
   }
 
@@ -90,11 +87,8 @@ export class UserController {
   })
   async hasProvidedIdAndDeleteAtIsNull(
     @Query('providedId') providedId: string,
-  ): Promise<ResponseData> {
-    const result = await this.userService.hasProvidedIdAndDeleteAtIsNull(
-      providedId,
-    );
-    return new ResponseData('success', '200', result);
+  ): Promise<boolean> {
+    return await this.userService.hasProvidedIdAndDeleteAtIsNull(providedId);
   }
 
   @Get('/sendVerifiedCodeMail')
@@ -123,11 +117,6 @@ export class UserController {
       .add(3, 'minutes')
       .format('YYYY-MM-DD HH:mm:ss');
 
-    console.log('----------------------');
-    console.log('codeExpressIn: ', codeExpressIn);
-    console.log('codeExpressIn to date', new Date(codeExpressIn));
-    console.log('----------------------');
-
     // 신규 유저 임시 생성
     const user: User = new User();
     user.provider = 'keeping.link';
@@ -137,6 +126,7 @@ export class UserController {
     user.emailVerificationCodeExpiresin = new Date(codeExpressIn);
     user.color = this.commonUtil.randomColor();
 
+    // 유저 생성
     const createdUser = await this.userService.create(user);
     console.log('createdUser : ', createdUser);
     console.log('user : ', user);
@@ -162,30 +152,27 @@ export class UserController {
   ): Promise<void> {
     const users: User[] = await this.userService.findAllByProvidedId(
       providedId,
+      verifiedCode,
     );
-
-    console.log('providedId : ', providedId);
-    console.log('verifiedCode : ', verifiedCode);
-    console.log('users : ', users);
 
     if (users.length === 0) {
       throw new HttpException(
         { code: 'failure', message: '이메일 인증이 필요합니다.' },
-        200,
+        500,
       );
     }
 
     if (users[0].emailVerified) {
       throw new HttpException(
         { code: 'failure', message: '이미 가입된 이메일이 존재합니다.' },
-        200,
+        500,
       );
     }
 
-    if (users[0].emailVerificationCode !== verifiedCode) {
+    if (users[0].emailVerificationCode !== Number(verifiedCode)) {
       throw new HttpException(
         { code: 'failure', message: '인증코드가 일치하지 않습니다.' },
-        200,
+        500,
       );
     }
 
@@ -196,7 +183,10 @@ export class UserController {
     const diff = moment(expiressIn).diff(now, 'seconds');
 
     if (diff < 0) {
-      throw new HttpException('만료된 인증번호 입니다.', 200);
+      throw new HttpException(
+        { code: 'failure', message: '만료된 인증번호 입니다.' },
+        500,
+      );
     }
   }
 
@@ -209,9 +199,23 @@ export class UserController {
     description: '이메일로 회원가입 한다.',
     type: User,
   })
-  async signIn(@Body() user: User): Promise<void> {
-    console.log('-------------------------');
-    console.log('/registration user : ', user);
-    console.log('-------------------------');
+  async registration(
+    @Body() userRegistrationDto: UserRegistrationDto,
+  ): Promise<User> {
+    console.log('userRegistrationDto : ', userRegistrationDto);
+
+    const users: User[] = await this.userService.findAllByProvidedId(
+      userRegistrationDto.email,
+      userRegistrationDto.verificationCode,
+    );
+
+    if (users.length === 0) {
+      throw new HttpException(
+        { code: 'failure', message: '인증된 사용자가 없습니다.' },
+        500,
+      );
+    }
+
+    return await this.userService.registration(userRegistrationDto);
   }
 }

@@ -5,20 +5,20 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import * as config from 'config';
 import { UserRepository } from '../user/user.repository';
 import { User } from '../user/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    private readonly userRepository: UserRepository,
+    private readonly configService: ConfigService,
   ) {
     super({
-      // secretOrKey: process.env.JWT_SECRET || config.get('jwt.secret'),
-      secretOrKey: 'REDACTED_JWT_SECRET',
+      secretOrKey: configService.get('JWT_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
-
   async validate(payload) {
     console.log('jwt payload : ', payload);
     const { email } = payload;

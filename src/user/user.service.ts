@@ -3,6 +3,7 @@ import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonUtil } from '../utiles/common.util';
+import { UserRegistrationDto } from './dto/user.registration.dto';
 
 @Injectable()
 export class UserService {
@@ -65,27 +66,31 @@ export class UserService {
   /**
    * 이메일로 회원 목록 조회
    * @param providedId
+   * @param emailVerificationCode
    */
-  async findAllByProvidedId(providedId: string): Promise<User[]> {
+  async findAllByProvidedId(
+    providedId: string,
+    emailVerificationCode: number,
+  ): Promise<User[]> {
     return await this.userRepository.findAllByProvidedIdAndDeleteAtIsNUll(
       providedId,
+      emailVerificationCode,
     );
   }
 
   /**
    * 이메일 회원가입
-   * @param user
+   * @param userRegistrationDto
    * */
-  async registration(user: User): Promise<void> {
+  async registration(userRegistrationDto: UserRegistrationDto): Promise<User> {
     const isSigned = await this.userRepository.hasProvidedIdAndDeleteAtIsNull(
-      user.providedId,
+      userRegistrationDto.email,
     );
 
     if (isSigned) {
       throw new Error('이미 등록된 이메일 입니다.');
     }
 
-    console.log('registration user : ', user);
+    return await this.userRepository.registrationUser(userRegistrationDto);
   }
-
 }

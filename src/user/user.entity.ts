@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
+@Entity('user')
 export class User {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -37,13 +37,13 @@ export class User {
   sex: string;
 
   @Column()
-  WbirthDate: string;
+  birthDate: string;
 
   @Column()
   email: string;
 
   @Column()
-  emailVerified: number;
+  emailVerified: boolean;
 
   @Column()
   emailVerificationCode: number;

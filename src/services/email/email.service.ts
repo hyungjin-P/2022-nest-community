@@ -15,19 +15,19 @@ export class EmailService {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
-      region: this.configService.get('process.env.AWS_SES_REGION'),
+      region: this.configService.get('AWS_SES_REGION'),
     });
     const SES = new AWS.SES({ apiVersion: '2010-12-01' });
 
-    console.log('__dirname : ', __dirname);
+    const stagePath = this.configService.get('AWS_SES_FILEPATH');
 
-    const viewPath = `dist/services/email/ejs/${language}_verification_code.ejs`;
+    const viewPath = `${stagePath}/services/email/ejs/${language}_verification_code.ejs`;
     const view = fs.readFileSync(viewPath, 'utf-8');
     const html = ejs.render(view, { to: emailAddress, code: code + '' });
 
     let subjectData = '';
     if (language === 'ko') {
-      subjectData = `[키핑] 인증번호`;
+      subjectData = `[KEEPING] 인증번호`;
     } else {
       subjectData = `[KEEPING] Verification Code`;
     }
