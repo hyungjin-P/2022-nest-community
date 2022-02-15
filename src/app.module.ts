@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { FeedModule } from './feed/feed.module';
 import { ConfigModule } from '@nestjs/config';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ConfigModule } from '@nestjs/config';
     // CodeCatexgoryModule,
     // CodesModule,
     // AuthModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

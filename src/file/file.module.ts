@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRepository } from '../user.repository';
 import { FileRepository } from './file.repository';
-import { FileTagModule } from './file-tag/file-tag.module';
+import { FileTagRepository } from './file-tag.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FileRepository]), FileTagModule],
+  imports: [TypeOrmModule.forFeature([FileRepository, FileTagRepository])],
   providers: [FileService],
   controllers: [FileController],
 })

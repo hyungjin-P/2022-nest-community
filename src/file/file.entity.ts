@@ -11,7 +11,7 @@ export class File {
   @Column()
   userId: string;
 
-  @Column()
+  @Column({ comment: 'S3 location url' })
   url: string;
 
   @Column()
@@ -30,29 +30,17 @@ export class File {
   acl: string;
 
   @Column()
-  contentType: string;
-
-  @Column()
-  contentDisposition: string;
-
-  @Column()
-  storageClass: string;
-
-  @Column()
-  serverSideEncryption: string;
-
-  @Column()
-  metadata: string;
-
-  @Column()
   location: string;
 
   @Column()
   etag: string;
 
-  @Column()
-  versionId: string;
+  // @Column({ nullable: true })
+  // versionId: string;
 
-  @CreateDateColumn()
-  createAt: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP()',
+  })
+  createdAt: Date;
 }
