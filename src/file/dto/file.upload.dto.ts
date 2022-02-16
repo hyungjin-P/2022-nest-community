@@ -1,7 +1,7 @@
 import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class fileUploadDto {
+export class FileUploadDto {
   @ApiProperty({ default: '40490ba6-7ad0-485b-914b-d8c3b882c799' })
   @IsString()
   userId: string;
@@ -14,9 +14,13 @@ export class fileUploadDto {
   @IsString()
   path: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: ['feed', 'user-picture', 'user-background'] })
   @IsString()
-  tags: string;
+  tag: string;
+
+  @ApiProperty({ description: 'tag table id' })
+  @IsString()
+  tagInId: string;
 
   @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
   @IsString()

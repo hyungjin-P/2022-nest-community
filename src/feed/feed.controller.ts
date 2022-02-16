@@ -56,24 +56,6 @@ export class FeedController {
     return await this.feedService.deleteFeed(id);
   }
 
-  @Post('/:feedId/picture')
-  @ApiOperation({
-    summary: '피드 사진 추가',
-    description: '피드 사진 추가',
-  })
-  async createFeedPicture(@Param('id') id: string): Promise<void> {
-    // 피드 사진 추가 로직
-  }
-
-  @Delete('/:feedId/picture/:url')
-  @ApiOperation({
-    summary: '피드 사진 삭제',
-    description: '피드 사진 삭제',
-  })
-  async deleteFeedPicture(@Param('id') id: string, @Query('url') url: string) {
-    // 피드 사진 삭제
-  }
-
   @Post('/:feedId/tag')
   @ApiOperation({
     summary: '피드 태그 추가',

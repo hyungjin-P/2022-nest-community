@@ -9,8 +9,9 @@ import {
 } from '@nestjs/common';
 import { FileService } from './file.service';
 import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { fileUploadDto } from './dto/file.upload.dto';
+import { FileUploadDto } from './dto/file.upload.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileDeleteDto } from './dto/file.delete.dto';
 
 @ApiTags('파일')
 @Controller('file')
@@ -26,17 +27,17 @@ export class FileController {
   @UseInterceptors(FilesInterceptor('files'))
   async uploadObject(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body() filesInfo: fileUploadDto,
+    @Body() filesInfo: FileUploadDto,
   ) {
     return this.fileService.uploadFile(files, filesInfo);
   }
 
-  @Delete('/:url')
+  @Delete('/')
   @ApiOperation({
     summary: '파일 삭제',
     description: '파일 삭제',
   })
-  async deleteObject(@Param('url') url: string) {
-    return this.fileService.deleteFile(url);
+  async deleteObject(@Body() fileInfo: FileDeleteDto) {
+    return this.fileService.deleteFile(fileInfo);
   }
 }

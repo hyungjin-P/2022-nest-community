@@ -4,9 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { FileRepository } from './file.repository';
 import { File } from './file.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { fileUploadDto } from './dto/file.upload.dto';
+import { FileUploadDto } from './dto/file.upload.dto';
 import { FileTagRepository } from './file-tag.repository';
 import { FileTag } from './file-tag.entity';
+import { FeedPictureService } from '../feed/feed-picture/feed-picture.service';
+import { FileDeleteDto } from './dto/file.delete.dto';
 
 @Injectable()
 export class FileService {
@@ -14,9 +16,10 @@ export class FileService {
     private readonly configService: ConfigService,
     private readonly fileRepository: FileRepository,
     private readonly fileTagRepository: FileTagRepository,
+    private readonly feedPictureService: FeedPictureService,
   ) {}
 
-  async uploadFile(files, filesInfo: fileUploadDto) {
+  async uploadFile(files, filesInfo: FileUploadDto): Promise<File[]> {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
@@ -69,7 +72,7 @@ export class FileService {
         uploadFileTag.userId = filesInfo.userId;
         uploadFileTag.bucket = stored.Bucket;
         uploadFileTag.key = stored.Key;
-        uploadFileTag.name = filesInfo.tags;
+        uploadFileTag.name = filesInfo.tag;
 
         uploadFilesTag.push(uploadFileTag);
 
@@ -96,13 +99,25 @@ export class FileService {
       const result = await this.fileRepository.save(uploadFiles);
       await this.fileTagRepository.save(uploadFilesTag);
 
-      return { data: result };
+      // 테이블 분류에 따른 데이터 저장 로직
+      if (filesInfo.tag === 'feed') {
+        this.feedPictureService.createFeedPicture(
+          filesInfo.tagInId,
+          uploadFiles,
+        );
+      } else if (filesInfo.tag === 'user-picture') {
+        // this.fileService.uploadUserPicture(uploadedFile);
+      } else if (filesInfo.tag === 'user-background') {
+        // this.fileService.uploadUserBackGround(uploadedFile);
+      }
+
+      return result;
     } catch (e) {
       throw new BadRequestException(e.message);
     }
   }
 
-  async deleteFile(url: string) {
+  async deleteFile(fileInfo: FileDeleteDto) {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
@@ -110,7 +125,7 @@ export class FileService {
     });
     const s3 = new AWS.S3();
 
-    const file = await this.fileRepository.findOne({ url: url });
+    const file = await this.fileRepository.findOne({ url: fileInfo.url });
     await s3
       .deleteObject({
         Bucket: file.bucket,
@@ -122,6 +137,18 @@ export class FileService {
       bucket: file.bucket,
       key: file.key,
     });
+
+    if (fileInfo.tag === 'feed') {
+      await this.feedPictureService.deleteFeedPicture(
+        fileInfo.tagInId,
+        file.url,
+      );
+    } else if (fileInfo.tag === 'user-picture') {
+      // this.fileService.uploadUserPicture(uploadedFile);
+    } else if (fileInfo.tag === 'user-background') {
+      // this.fileService.uploadUserBackGround(uploadedFile);
+    }
+
     await this.fileTagRepository.delete(tag.id);
     await this.fileRepository.delete({ url: file.url });
   }
