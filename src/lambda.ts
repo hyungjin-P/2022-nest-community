@@ -4,6 +4,9 @@ import { Callback, Context, Handler } from 'aws-lambda';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as fireAdmin from 'firebase-admin';
+import serviceAccount from './serviceAccountKey.json';
 
 let server: Handler;
 
@@ -20,9 +23,20 @@ function setupSwagger(app: INestApplication) {
 async function bootstrap(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
 
+  const configService: ConfigService = app.get(ConfigService);
+
   setupSwagger(app);
 
   app.enableCors();
+
+  // firebase admin
+  fireAdmin.initializeApp({
+    credential: fireAdmin.credential.cert({
+      clientEmail: serviceAccount.client_email,
+      privateKey: serviceAccount.private_key,
+      projectId: serviceAccount.project_id,
+    }),
+  });
 
   await app.init();
 

@@ -10,7 +10,7 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   // database: String(process.env.DATABASE_SCHEMA),
   // username: String(process.env.DATABASE_USERNAME),
   // password: String(process.env.DATABASE_PASSWORD),
-  // host: String(process.env.DATABASE_HOST),
+  // host: String(process.env.DATAB   ASE_HOST),
   port: 3306,
   database: 'REDACTED_DB_NAME',
   username: 'REDACTED_DB_USERNAME',

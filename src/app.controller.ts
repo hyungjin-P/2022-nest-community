@@ -21,8 +21,6 @@ export class AppController {
         <body>
           <h1>키핑 사용자 API Index</h1>
           <p>현재 STAGE : ${this.configService.get('NOW_STAGE')} </p>
-          <p>현재 STAGE : ${process.cwd()} </p>
-          <p>현재 STAGE : ${process.env.NODE_ENV} </p>
         </body>
       </html>
     `;

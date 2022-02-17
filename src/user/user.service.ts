@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonUtil } from '../utiles/common.util';
 import { UserRegistrationDto } from './dto/user.registration.dto';
+import { UserEmailSignInDto } from '../auth/dto/user-email-sign-in.dto';
+import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
@@ -88,9 +91,14 @@ export class UserService {
     );
 
     if (isSigned) {
-      throw new Error('이미 등록된 이메일 입니다.');
+      throw new HttpException(
+        { code: 'failure', message: '이미 등록된 메일 입니다.' },
+        500,
+      );
     }
 
     return await this.userRepository.registrationUser(userRegistrationDto);
   }
+
+
 }

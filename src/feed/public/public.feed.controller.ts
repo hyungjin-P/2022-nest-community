@@ -1,14 +1,16 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { FeedService } from '../feed.service';
 import { Feed } from '../feed.entity';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CodeItem } from '../../codes/code-item/code-item.entity';
 import { CodeCategory } from '../../codes/code-category/code-category.entity';
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags('피드(공개)')
 @Controller()
 export class PublicFeedController {
   constructor(private feedService: FeedService) {}
+
   @Get('/public/feed')
   @ApiOperation({
     summary: '피드 페이지 조회',
@@ -22,6 +24,25 @@ export class PublicFeedController {
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
   ): Promise<Feed[]> {
+    return await this.feedService.findByPage(page, pageSize);
+  }
+
+  @Get('/public/authFeed')
+  @UseGuards(AuthGuard())
+  @ApiOperation({
+    summary: '피드 테스트',
+    description: '피드 테스트',
+  })
+  @ApiCreatedResponse({
+    description: '피드 권한 테스트',
+    type: CodeItem,
+  })
+  @ApiBearerAuth('accessToken')
+  async authFeed(
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ): Promise<Feed[]> {
+    console.log('----- 피드 권한 테스트 -----');
     return await this.feedService.findByPage(page, pageSize);
   }
 

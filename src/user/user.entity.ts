@@ -4,7 +4,6 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
@@ -101,4 +100,10 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  accessToken: string;
+
+  refreshToken: string;
+
+  customToken: string;
 }

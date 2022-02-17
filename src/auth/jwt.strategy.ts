@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import * as config from 'config';
 import { UserRepository } from '../user/user.repository';
 import { User } from '../user/user.entity';
 import { ConfigService } from '@nestjs/config';
@@ -15,14 +14,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService,
   ) {
     super({
-      secretOrKey: configService.get('JWT_SECRET'),
+      secretOrKey: 'REDACTED_JWT_SECRET',
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
   async validate(payload) {
-    console.log('jwt payload : ', payload);
-    const { email } = payload;
-    const user: User = await this.userRepository.findOne({ email });
+    const { providedId } = payload;
+    const user: User = await this.userRepository.findOne({
+      where: { providedId },
+    });
 
     if (!user) {
       throw new UnauthorizedException();

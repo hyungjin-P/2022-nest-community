@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import * as config from 'config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../user/user.repository';
+import { FirebaseService } from '../services/firebase/firebase.service';
 
 // const jwtConfig = config.get('jwt');
 
@@ -14,17 +15,15 @@ import { UserRepository } from '../user/user.repository';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      // secret: process.env.JWT_SECRET || jwtConfig.secret,
       secret: 'REDACTED_JWT_SECRET',
       signOptions: {
-        // expiresIn: jwtConfig.expiresIn,
-        expiresIn: 3600,
+        expiresIn: 600,
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, FirebaseService],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
