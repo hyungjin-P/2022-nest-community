@@ -14,6 +14,7 @@ import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
 import { UserRegistrationDto } from './dto/user.registration.dto';
+import { Paginated, PaginateQuery } from 'nestjs-paginate';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -128,8 +129,6 @@ export class UserController {
 
     // 유저 생성
     const createdUser = await this.userService.create(user);
-    console.log('createdUser : ', createdUser);
-    console.log('user : ', user);
 
     return await this.emailService.sendVerificationCodeMail(
       language,
@@ -202,8 +201,6 @@ export class UserController {
   async registration(
     @Body() userRegistrationDto: UserRegistrationDto,
   ): Promise<User> {
-    console.log('userRegistrationDto : ', userRegistrationDto);
-
     const users: User[] = await this.userService.findAllByProvidedId(
       userRegistrationDto.email,
       userRegistrationDto.verificationCode,
@@ -218,4 +215,11 @@ export class UserController {
 
     return await this.userService.registration(userRegistrationDto);
   }
+
+  // @Get('/findUserPage')
+  // async findUserPage(
+  //   @Paginated() query: PaginateQuery,
+  // ): Promise<Paginated<User>> {
+  //   return await this.userService.getUserPage(query);
+  // }
 }

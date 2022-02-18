@@ -2,13 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FeedRepository } from './feed.repository';
 import { Feed } from './feed.entity';
-import { ExtractJwt } from 'passport-jwt';
-import fromAuthHeaderWithScheme = ExtractJwt.fromAuthHeaderWithScheme;
-import { getRepository } from 'typeorm';
-import { User } from '../user/user.entity';
 import { FeedModifyDto } from './dto/feed.modify.dto';
 import { FeedTagRepository } from './feed-tag/feed-tag.repository';
-import { FeedTag } from './feed-tag/feed-tag.entity';
 import { FeedPictureRepository } from './feed-picture/feed-picture.repository';
 
 @Injectable()

@@ -3,10 +3,13 @@ import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 @Entity()
 export class Follow {
   @PrimaryColumn()
-  from: string;
+  id: string;
 
-  @PrimaryColumn()
-  to: string;
+  @Column()
+  fromUser: string;
+
+  @Column()
+  toUser: string;
 
   @CreateDateColumn()
   createAt: Date;

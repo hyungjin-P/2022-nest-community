@@ -7,6 +7,8 @@ import { UserRegistrationDto } from './dto/user.registration.dto';
 import { UserEmailSignInDto } from '../auth/dto/user-email-sign-in.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { FilterOperator, Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate'
+import { query } from "express";
 
 @Injectable()
 export class UserService {
@@ -100,5 +102,15 @@ export class UserService {
     return await this.userRepository.registrationUser(userRegistrationDto);
   }
 
+  async getUserPage(query: PaginateQuery): Promise<Paginated<User>> {
+    return paginate(query, this.userRepository, {
+      sortableColumns: ['id'],
+      searchableColumns: [],
+      defaultSortBy: [['createdAt', 'DESC']],
+      filterableColumns: {
+        age: [FilterOperator.GTE, FilterOperator.LTE],
+      },
+    });
+  }
 
 }

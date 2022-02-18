@@ -6,9 +6,11 @@ import { UserRepository } from './user.repository';
 import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import { FollowModule } from './follow/follow.module';
+import { UserPictureModule } from './user-picture/user-picture.module';
+import { UserBackgroundModule } from './user-background/user-background.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRepository]), FollowModule],
+  imports: [TypeOrmModule.forFeature([UserRepository]), FollowModule, UserPictureModule, UserBackgroundModule],
   controllers: [UserController],
   providers: [UserService, CommonUtil, EmailService],
 })
