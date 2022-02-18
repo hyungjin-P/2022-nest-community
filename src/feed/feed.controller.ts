@@ -8,6 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  ApiBody,
   ApiCreatedResponse,
   ApiOperation,
   ApiProperty,
@@ -16,11 +17,19 @@ import {
 import { Feed } from './feed.entity';
 import { FeedService } from './feed.service';
 import { FeedModifyDto } from './dto/feed.modify.dto';
+import { FeedTag } from './feed-tag/feed-tag.entity';
+import { FeedTagService } from './feed-tag/feed-tag.service';
+import { FeedLikeService } from './feed-like/feed-like.service';
+import { FeedLike } from './feed-like/feed-like.entity';
 
 @ApiTags('피드')
 @Controller('feed')
 export class FeedController {
-  constructor(private feedService: FeedService) {}
+  constructor(
+    private feedService: FeedService,
+    private feedTagService: FeedTagService,
+    private feedLikeService: FeedLikeService,
+  ) {}
 
   @Post('/')
   @ApiOperation({
@@ -61,8 +70,11 @@ export class FeedController {
     summary: '피드 태그 추가',
     description: '피드 태그 추가',
   })
-  async createFeedTag(@Param('id') id: string): Promise<void> {
-    // 피드 사진 추가 로직
+  async createFeedTag(
+    @Param('feedId') feedId: string,
+    @Query('name') name: string,
+  ): Promise<FeedTag> {
+    return await this.feedTagService.createFeedTag(feedId, name);
   }
 
   @Delete('/:feedId/tag/:tagId')
@@ -70,8 +82,11 @@ export class FeedController {
     summary: '피드 태그 삭제',
     description: '피드 태그 삭제',
   })
-  async deleteFeedTag(@Param('id') id: string, @Query('tagId') tagId: string) {
-    // 피드 사진 삭제
+  async deleteFeedTag(
+    @Param('feedId') feedId: string,
+    @Param('tagId') tagId: string,
+  ) {
+    return await this.feedTagService.deleteFeedTag(feedId, tagId);
   }
 
   @Post('/:feedId/like')
@@ -79,8 +94,11 @@ export class FeedController {
     summary: '피드 좋아요 추가',
     description: '피드 좋아요 추가',
   })
-  async createFeedLike(@Param('id') id: string): Promise<void> {
-    // 피드 사진 추가 로직
+  async createFeedLike(
+    @Param('feedId') feedId: string,
+    @Query('userId') userId: string,
+  ): Promise<void> {
+    return await this.feedLikeService.createFeedLike(feedId, userId);
   }
 
   @Get('/:feedId/like')
@@ -88,8 +106,8 @@ export class FeedController {
     summary: '피드 좋아요 조회',
     description: '피드 좋아요 목록 조회',
   })
-  async getFeedLike(@Param('id') id: string): Promise<void> {
-    // 피드 사진 추가 로직
+  async getFeedLike(@Param('feedId') feedId: string): Promise<any[]> {
+    return await this.feedLikeService.findByFeedId(feedId);
   }
 
   @Delete('/:feedId/like')
@@ -97,7 +115,10 @@ export class FeedController {
     summary: '피드 좋아요 삭제',
     description: '피드 좋아요 취소',
   })
-  async deleteFeedLike(@Param('id') id: string, @Query('tagId') tagId: string) {
-    // 피드 사진 삭제
+  async deleteFeedLike(
+    @Param('feedId') feedId: string,
+    @Query('userId') userId: string,
+  ) {
+    return await this.feedLikeService.deleteFeedLike(feedId, userId);
   }
 }

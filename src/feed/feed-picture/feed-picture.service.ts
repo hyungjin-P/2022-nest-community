@@ -11,8 +11,6 @@ export class FeedPictureService {
     private feedPictureRepository: FeedPictureRepository,
   ) {}
   createFeedPicture(feedId: string, uploadedFile: File[]) {
-    console.log(feedId);
-    console.log(uploadedFile);
     const feedPictures = [];
 
     for (const file of uploadedFile) {

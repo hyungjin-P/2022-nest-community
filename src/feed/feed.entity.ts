@@ -1,5 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../user/user.entity';
+import { FeedPicture } from './feed-picture/feed-picture.entity';
+import { FeedTag } from './feed-tag/feed-tag.entity';
 
 @Entity()
 export class Feed {
@@ -7,8 +10,9 @@ export class Feed {
   id: string;
 
   @ApiProperty({ default: '40490ba6-7ad0-485b-914b-d8c3b882c799' })
-  @Column()
   userId: string;
+
+  writer: User;
 
   @Column()
   state: string;
@@ -18,6 +22,16 @@ export class Feed {
 
   @Column()
   picture: string;
+
+  pictures: FeedPicture[];
+
+  tags?: FeedTag[];
+
+  tagsStr: string;
+
+  like?: boolean;
+
+  likeUsers?: User[];
 
   @Column()
   deletedAt: Date;
@@ -32,5 +46,6 @@ export class Feed {
   @ApiProperty({ default: false })
   rewrite: boolean;
 
-  likeUsers: any[];
+  likeCount?: number;
+  commentCount?: number;
 }

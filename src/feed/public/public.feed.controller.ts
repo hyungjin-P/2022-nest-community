@@ -1,10 +1,15 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { FeedService } from '../feed.service';
 import { Feed } from '../feed.entity';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CodeItem } from '../../codes/code-item/code-item.entity';
 import { CodeCategory } from '../../codes/code-category/code-category.entity';
-import { AuthGuard } from "@nestjs/passport";
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('피드(공개)')
 @Controller()
@@ -28,7 +33,7 @@ export class PublicFeedController {
   }
 
   @Get('/public/authFeed')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard()) //
   @ApiOperation({
     summary: '피드 테스트',
     description: '피드 테스트',
@@ -37,12 +42,13 @@ export class PublicFeedController {
     description: '피드 권한 테스트',
     type: CodeItem,
   })
-  @ApiBearerAuth('accessToken')
+  @ApiBearerAuth('accessToken') //
   async authFeed(
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
   ): Promise<Feed[]> {
     console.log('----- 피드 권한 테스트 -----');
+
     return await this.feedService.findByPage(page, pageSize);
   }
 
@@ -56,7 +62,7 @@ export class PublicFeedController {
     type: CodeCategory,
   })
   async findFeedDetails(@Param('id') feedId: string): Promise<Feed> {
-    let feed: Feed = await this.feedService.findByFeedId(feedId);
+    const feed: Feed = await this.feedService.findByFeedId(feedId);
 
     // feed.likeUsers = 좋아요 한 사람들 조회해서 넣고
 

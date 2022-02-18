@@ -7,16 +7,34 @@ import fromAuthHeaderWithScheme = ExtractJwt.fromAuthHeaderWithScheme;
 import { getRepository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { FeedModifyDto } from './dto/feed.modify.dto';
+import { FeedTagRepository } from './feed-tag/feed-tag.repository';
+import { FeedTag } from './feed-tag/feed-tag.entity';
+import { FeedPictureRepository } from './feed-picture/feed-picture.repository';
 
 @Injectable()
 export class FeedService {
   constructor(
     @InjectRepository(FeedRepository)
     private feedRepository: FeedRepository,
+    private feedTagRepository: FeedTagRepository,
+    private feedPictureRepository: FeedPictureRepository,
   ) {}
 
   async findByPage(page: number, pageSize: number): Promise<Feed[]> {
-    return this.feedRepository.find({ skip: page, take: pageSize });
+    // const dataset = [];
+    const feedRows: Feed[] = await this.feedRepository.find({
+      skip: page,
+      take: pageSize,
+    });
+    // for (let i = 0; i < feedRows.length; i++) {
+    //   const feed: Feed = feedRows[i];
+    //
+    //   const feedPictureRows = await this.feedPictureRepository.find({
+    //     feedId: feed.id,
+    //   });
+    // }
+
+    return feedRows;
   }
 
   async findByFeedId(id: string): Promise<Feed> {

@@ -65,7 +65,6 @@ export class FileService {
         //업로드
         const stored = await s3.upload(param).promise();
 
-        console.log(file);
         // RDS 저장 - fileTag
         const uploadFileTag = new FileTag();
         uploadFileTag.id = uuidv4();
