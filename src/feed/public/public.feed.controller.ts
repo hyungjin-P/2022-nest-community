@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { FeedService } from '../feed.service';
 import { Feed } from '../feed.entity';
 import {
@@ -10,6 +18,7 @@ import {
 import { CodeItem } from '../../codes/code-item/code-item.entity';
 import { CodeCategory } from '../../codes/code-category/code-category.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @ApiTags('피드(공개)')
 @Controller()
@@ -25,11 +34,18 @@ export class PublicFeedController {
     description: '피드 페이지를 조회한다.',
     type: CodeItem,
   })
-  async findByFeedPages(
-    @Query('page') page: number,
-    @Query('pageSize') pageSize: number,
-  ): Promise<Feed[]> {
-    return await this.feedService.findByPage(page, pageSize);
+  // async findByFeedPages(
+  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  //   @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  // ): Promise<Pagination<any>> {
+  //   return await this.feedService.findByPage({
+  //     page,
+  //     limit,
+  //     route: '/public/feed',
+  //   });
+  // }
+  async findByFeedPages(): Promise<Feed[]> {
+    return await this.feedService.findByPageTest();
   }
 
   @Get('/public/authFeed')
@@ -44,12 +60,16 @@ export class PublicFeedController {
   })
   @ApiBearerAuth('accessToken') //
   async authFeed(
-    @Query('page') page: number,
-    @Query('pageSize') pageSize: number,
-  ): Promise<Feed[]> {
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<Pagination<Feed>> {
     console.log('----- 피드 권한 테스트 -----');
 
-    return await this.feedService.findByPage(page, pageSize);
+    return await this.feedService.findByPage({
+      page,
+      limit,
+      route: '/public/authFeed',
+    });
   }
 
   @Get('/public/feed/:id')

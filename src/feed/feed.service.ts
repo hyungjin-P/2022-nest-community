@@ -5,6 +5,7 @@ import { Feed } from './feed.entity';
 import { FeedModifyDto } from './dto/feed.modify.dto';
 import { FeedTagRepository } from './feed-tag/feed-tag.repository';
 import { FeedPictureRepository } from './feed-picture/feed-picture.repository';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class FeedService {
@@ -15,12 +16,9 @@ export class FeedService {
     private feedPictureRepository: FeedPictureRepository,
   ) {}
 
-  async findByPage(page: number, pageSize: number): Promise<Feed[]> {
+  async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
     // const dataset = [];
-    const feedRows: Feed[] = await this.feedRepository.find({
-      skip: page,
-      take: pageSize,
-    });
+    const feedRows = await this.feedRepository.findByPage(options);
     // for (let i = 0; i < feedRows.length; i++) {
     //   const feed: Feed = feedRows[i];
     //
@@ -30,6 +28,10 @@ export class FeedService {
     // }
 
     return feedRows;
+  }
+
+  async findByPageTest(): Promise<Feed[]> {
+    return this.feedRepository.findByPageTest();
   }
 
   async findByFeedId(id: string): Promise<Feed> {
