@@ -4,11 +4,11 @@ import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonUtil } from '../utiles/common.util';
 import { UserRegistrationDto } from './dto/user.registration.dto';
-import { UserEmailSignInDto } from '../auth/dto/user-email-sign-in.dto';
-import * as bcrypt from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
-import { FilterOperator, Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate'
-import { query } from "express";
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UserService {
@@ -102,15 +102,11 @@ export class UserService {
     return await this.userRepository.registrationUser(userRegistrationDto);
   }
 
-  async getUserPage(query: PaginateQuery): Promise<Paginated<User>> {
-    return paginate(query, this.userRepository, {
-      sortableColumns: ['id'],
-      searchableColumns: [],
-      defaultSortBy: [['createdAt', 'DESC']],
-      filterableColumns: {
-        age: [FilterOperator.GTE, FilterOperator.LTE],
-      },
-    });
-  }
+  async getUserPage(options: IPaginationOptions): Promise<Pagination<User>> {
+    const queryBuilder = await this.userRepository
+      .createQueryBuilder('user')
+      .orderBy('user.created_at', 'DESC');
 
+    return paginate<User>(queryBuilder, options);
+  }
 }

@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpException,
+  ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -14,7 +16,7 @@ import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
 import { UserRegistrationDto } from './dto/user.registration.dto';
-import { Paginated, PaginateQuery } from 'nestjs-paginate';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -216,10 +218,23 @@ export class UserController {
     return await this.userService.registration(userRegistrationDto);
   }
 
-  // @Get('/findUserPage')
-  // async findUserPage(
-  //   @Paginated() query: PaginateQuery,
-  // ): Promise<Paginated<User>> {
-  //   return await this.userService.getUserPage(query);
-  // }
+  @Get('/findUserPage')
+  @ApiOperation({
+    summary: '유저 목록 페이지 조회',
+    description: '유저 목록 페이지 조회',
+  })
+  @ApiCreatedResponse({
+    description: '유저 목록을 페이지로 조회한다.',
+    type: User,
+  })
+  async findUserPage(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<Pagination<User>> {
+    return this.userService.getUserPage({
+      page,
+      limit,
+      route: '/user/findUserPage',
+    });
+  }
 }
