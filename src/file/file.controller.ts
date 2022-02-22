@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Delete,
-  Param,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -39,5 +39,17 @@ export class FileController {
   })
   async deleteObject(@Body() fileInfo: FileDeleteDto) {
     return this.fileService.deleteFile(fileInfo);
+  }
+
+  @Delete('/deleteUserBackground')
+  @ApiOperation({
+    summary: '파일 삭제',
+    description: '파일 삭제',
+  })
+  async deleteFileForPost(@Query('fileUrl') fileUrl: string): Promise<void> {
+    const fileInfo: FileDeleteDto = new FileDeleteDto();
+    fileInfo.tag = 'user-background';
+    fileInfo.url = fileUrl;
+    await this.fileService.deleteFile(fileInfo);
   }
 }

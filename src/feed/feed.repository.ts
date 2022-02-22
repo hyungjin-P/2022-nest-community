@@ -16,7 +16,6 @@ export class FeedRepository extends Repository<Feed> {
       .addSelect('writer.nickname, writer.email')
       .addSelect('writer_picture.url')
       .addSelect('pictures.url')
-      .addSelect('tags.name')
       .leftJoin('user', 'writer', 'writer.id = feed.user_id')
       .leftJoin(
         'user_picture',

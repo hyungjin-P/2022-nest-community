@@ -19,7 +19,6 @@ export class AuthController {
   })
   async signIn(@Body() userEmailSignInDto: UserEmailSignInDto): Promise<User> {
     const user: User = await this.authService.signIn(userEmailSignInDto);
-    console.log('accessToken : ', user.accessToken);
     return user;
   }
 }

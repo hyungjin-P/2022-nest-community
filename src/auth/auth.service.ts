@@ -7,6 +7,8 @@ import { UserEmailSignInDto } from './dto/user-email-sign-in.dto';
 import { User } from '../user/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseService } from '../services/firebase/firebase.service';
+import { UserPictureRepository } from '../user/user-picture/user-picture.repository';
+import { UserBackgroundRepository } from '../user/user-background/user-background.repository';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,10 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private firebaseService: FirebaseService,
+    @InjectRepository(UserPictureRepository)
+    private userPictureRepository: UserPictureRepository,
+    @InjectRepository(UserBackgroundRepository)
+    private userBackgroundRepository: UserBackgroundRepository,
   ) {}
 
   /**
@@ -31,8 +37,6 @@ export class AuthService {
         emailVerified: true,
       },
     });
-
-    console.log('find user : ', user);
 
     if (!user) {
       throw new HttpException(
@@ -60,6 +64,19 @@ export class AuthService {
       user.id,
       {},
     );
+
+    // 사진
+    user.picture = await this.userPictureRepository
+      .createQueryBuilder('userPicture')
+      .where('userPicture.user_id = :userId', { userId: user.id })
+      .orderBy('userPicture.created_at', 'DESC')
+      .getMany();
+
+    user.background = await this.userBackgroundRepository
+      .createQueryBuilder('background')
+      .where('background.user_id = :userId', { userId: user.id })
+      .orderBy('background.created_at', 'DESC')
+      .getMany();
 
     return user;
   }

@@ -2,20 +2,24 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonUtil } from '../utiles/common.util';
 import { UserRegistrationDto } from './dto/user.registration.dto';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { UserPictureRepository } from './user-picture/user-picture.repository';
+import { UserBackgroundRepository } from './user-background/user-background.repository';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
-    private commonUtil: CommonUtil,
+    @InjectRepository(UserPictureRepository)
+    private userPictureRepository: UserPictureRepository,
+    @InjectRepository(UserBackgroundRepository)
+    private userBackgroundRepository: UserBackgroundRepository,
   ) {}
 
   /**
@@ -30,7 +34,23 @@ export class UserService {
    * @param id (key)
    */
   async findById(id: string): Promise<User> {
-    return await this.userRepository.findOne(id);
+    const user: User = await this.userRepository.findOne(id);
+
+    if (!user) {
+      throw new HttpException(
+        { code: 'failure', message: '사용자가 없습니다.' },
+        500,
+      );
+    }
+
+    if (user.deletedAt) {
+      throw new HttpException(
+        { code: 'failure', message: '탈퇴한 회원 입니다.' },
+        500,
+      );
+    }
+
+    return user;
   }
 
   /**
@@ -102,6 +122,11 @@ export class UserService {
     return await this.userRepository.registrationUser(userRegistrationDto);
   }
 
+  /**
+   * 유저 페이지 조회
+   * @param options: IPaginationOptions => require to limit and page
+   * Ex) let options = { limit: 5, page: 1 }
+   */
   async getUserPage(options: IPaginationOptions): Promise<Pagination<User>> {
     const queryBuilder = await this.userRepository
       .createQueryBuilder('user')

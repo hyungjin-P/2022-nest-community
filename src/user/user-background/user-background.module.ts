@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UserBackgroundController } from './user-background.controller';
 import { UserBackgroundService } from './user-background.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserBackgroundRepository } from './user-background.repository';
 
 @Module({
-  controllers: [UserBackgroundController],
-  providers: [UserBackgroundService]
+  imports: [TypeOrmModule.forFeature([UserBackgroundRepository])],
+  controllers: [],
+  providers: [UserBackgroundService],
 })
 export class UserBackgroundModule {}

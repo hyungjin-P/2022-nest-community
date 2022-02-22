@@ -9,6 +9,7 @@ import { FileTagRepository } from './file-tag.repository';
 import { FileTag } from './file-tag.entity';
 import { FeedPictureService } from '../feed/feed-picture/feed-picture.service';
 import { FileDeleteDto } from './dto/file.delete.dto';
+import { UserBackgroundService } from "../user/user-background/user-background.service";
 
 @Injectable()
 export class FileService {
@@ -17,15 +18,18 @@ export class FileService {
     private readonly fileRepository: FileRepository,
     private readonly fileTagRepository: FileTagRepository,
     private readonly feedPictureService: FeedPictureService,
+    private readonly userBackgroundService: UserBackgroundService,
   ) {}
 
   async uploadFile(files, filesInfo: FileUploadDto): Promise<File[]> {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
-      region: this.configService.get('process.env.AWS_SES_REGION'),
+      region: this.configService.get('AWS_SES_REGION'),
     });
     const s3 = new AWS.S3();
+
+    console.log('fileInfo : ', filesInfo);
 
     // 도메인 검사
     const domainNames = ['public.keeping.link', 'storage.keeping.link'];
@@ -71,7 +75,7 @@ export class FileService {
         uploadFileTag.userId = filesInfo.userId;
         uploadFileTag.bucket = stored.Bucket;
         uploadFileTag.key = stored.Key;
-        uploadFileTag.name = filesInfo.tag;
+        uploadFileTag.name = filesInfo.tags;
 
         uploadFilesTag.push(uploadFileTag);
 
@@ -99,15 +103,19 @@ export class FileService {
       await this.fileTagRepository.save(uploadFilesTag);
 
       // 테이블 분류에 따른 데이터 저장 로직
-      if (filesInfo.tag === 'feed') {
+      if (filesInfo.tags === 'feed') {
         this.feedPictureService.createFeedPicture(
           filesInfo.tagInId,
           uploadFiles,
         );
-      } else if (filesInfo.tag === 'user-picture') {
+      } else if (filesInfo.tags === 'user-picture') {
         // this.fileService.uploadUserPicture(uploadedFile);
-      } else if (filesInfo.tag === 'user-background') {
-        // this.fileService.uploadUserBackGround(uploadedFile);
+      } else if (filesInfo.tags === 'user-background') {
+        console.log('user-background :');
+        await this.userBackgroundService.createUserBackground(
+          filesInfo.userId,
+          uploadFiles,
+        );
       }
 
       return result;
@@ -116,7 +124,7 @@ export class FileService {
     }
   }
 
-  async deleteFile(fileInfo: FileDeleteDto) {
+  async deleteFile(fileInfo: FileDeleteDto): Promise<void> {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
@@ -145,7 +153,7 @@ export class FileService {
     } else if (fileInfo.tag === 'user-picture') {
       // this.fileService.uploadUserPicture(uploadedFile);
     } else if (fileInfo.tag === 'user-background') {
-      // this.fileService.uploadUserBackGround(uploadedFile);
+      await this.userBackgroundService.deleteUserBackground(file.url);
     }
 
     await this.fileTagRepository.delete(tag.id);
