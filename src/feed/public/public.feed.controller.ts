@@ -44,9 +44,6 @@ export class PublicFeedController {
       route: '/public/feed',
     });
   }
-  // async findByFeedPages(): Promise<Feed[]> {
-  //   return await this.feedService.findByPageTest();
-  // }
 
   @Get('/public/authFeed')
   @UseGuards(AuthGuard()) //

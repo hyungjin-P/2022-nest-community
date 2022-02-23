@@ -40,32 +40,4 @@ export class FeedRepository extends Repository<Feed> {
 
     return await paginateRaw<any>(queryBuilder, options);
   }
-
-  async findByPageTest(): Promise<Feed[]> {
-    const queryBuilder = await this.createQueryBuilder('feed')
-      .select(
-        'feed.id, feed.state, feed.content, feed.picture, feed.created_at',
-      )
-      .addSelect('writer.nickname, writer.email')
-      .addSelect('writer_picture.url')
-      .addSelect('COUNT(pictures.url) AS pictureCount')
-      .addSelect('tags.name')
-      .addSelect('COUNT(likes.user_id) AS likeCount')
-      .addSelect('COUNT(comments.id) AS commentCount')
-      .leftJoin('user', 'writer', 'writer.id = feed.user_id')
-      .leftJoin(
-        'user_picture',
-        'writer_picture',
-        'writer_picture.user_id = writer.id',
-      )
-      .leftJoin('feed_picture', 'pictures', 'feed.id = pictures.feed_id')
-      .leftJoin('feed_tag', 'tags', 'feed.id = tags.feed_id')
-      .leftJoin('feed_like', 'likes', 'feed.id = likes.feed_id')
-      .leftJoin('feed_comment', 'comments', 'feed.id = comments.feed_id')
-      .orderBy('feed.created_at', 'DESC');
-
-    // console.log(await queryBuilder.execute());
-    console.log(queryBuilder.getSql());
-    return await queryBuilder.execute();
-  }
 }

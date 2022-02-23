@@ -30,10 +30,6 @@ export class FeedService {
     return feedRows;
   }
 
-  async findByPageTest(): Promise<Feed[]> {
-    return this.feedRepository.findByPageTest();
-  }
-
   async findByFeedId(id: string): Promise<Feed> {
     return await this.feedRepository.findOne({ id });
   }
