@@ -57,18 +57,23 @@ export class FeedService {
     // 기존에 피드 있을 시, 해당 정보 리턴 작업
   }
 
-  async modityFeed(id: string, feedModifyDto: FeedModifyDto): Promise<void> {
-    const feedRows = await this.feedRepository.findOne(id);
-    feedRows.content = feedModifyDto.content;
-    feedRows.picture = feedModifyDto.picture;
-    if (feedModifyDto.posting) {
-      feedRows.content = 'feed_state_posting';
+  async modifyFeed(id: string, feedModifyDto: FeedModifyDto): Promise<Feed> {
+    const feedRows: Feed = await this.feedRepository.findOne({ id });
+    if (feedModifyDto.content !== '') {
+      feedRows.content = feedModifyDto.content;
     }
-    await this.feedRepository.save(feedRows);
+    if (feedModifyDto.picture !== '') {
+      feedRows.picture = feedModifyDto.picture;
+    }
+
+    if (feedModifyDto.posting) {
+      feedRows.state = 'feed_state_posting';
+    }
+    return await this.feedRepository.save(feedRows);
   }
 
   async deleteFeed(id: string): Promise<void> {
-    const feedRows = await this.feedRepository.findOne(id);
+    const feedRows: Feed = await this.feedRepository.findOne({ id });
     feedRows.deletedAt = new Date();
 
     await this.feedRepository.save(feedRows);

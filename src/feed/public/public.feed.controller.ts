@@ -34,19 +34,19 @@ export class PublicFeedController {
     description: '피드 페이지를 조회한다.',
     type: CodeItem,
   })
-  // async findByFeedPages(
-  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  //   @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  // ): Promise<Pagination<any>> {
-  //   return await this.feedService.findByPage({
-  //     page,
-  //     limit,
-  //     route: '/public/feed',
-  //   });
-  // }
-  async findByFeedPages(): Promise<Feed[]> {
-    return await this.feedService.findByPageTest();
+  async findByFeedPages(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<Pagination<any>> {
+    return await this.feedService.findByPage({
+      page,
+      limit,
+      route: '/public/feed',
+    });
   }
+  // async findByFeedPages(): Promise<Feed[]> {
+  //   return await this.feedService.findByPageTest();
+  // }
 
   @Get('/public/authFeed')
   @UseGuards(AuthGuard()) //
@@ -82,6 +82,7 @@ export class PublicFeedController {
     type: CodeCategory,
   })
   async findFeedDetails(@Param('id') feedId: string): Promise<Feed> {
+    console.log(feedId);
     const feed: Feed = await this.feedService.findByFeedId(feedId);
 
     // feed.likeUsers = 좋아요 한 사람들 조회해서 넣고

@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { IsString } from 'class-validator';
+import { Feed } from '../feed.entity';
 
 @Entity()
 export class FeedTag {
@@ -23,4 +25,7 @@ export class FeedTag {
     default: () => 'CURRENT_TIMESTAMP()',
   })
   createdAt: Date;
+
+  @ManyToOne(() => Feed, (feed) => feed.tags)
+  feed: Feed;
 }

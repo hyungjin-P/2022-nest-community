@@ -21,6 +21,7 @@ import { FeedTag } from './feed-tag/feed-tag.entity';
 import { FeedTagService } from './feed-tag/feed-tag.service';
 import { FeedLikeService } from './feed-like/feed-like.service';
 import { FeedLike } from './feed-like/feed-like.entity';
+import { CodeCategory } from '../codes/code-category/code-category.entity';
 
 @ApiTags('피드')
 @Controller('feed')
@@ -49,11 +50,15 @@ export class FeedController {
     summary: '피드 수정',
     description: '피드 수정',
   })
+  @ApiCreatedResponse({
+    description: '피드 1건 수정',
+    type: CodeCategory,
+  })
   async modifyFeed(
     @Body() feedModifyDto: FeedModifyDto,
-    @Param('id') id: string,
-  ): Promise<void> {
-    return await this.feedService.modityFeed(id, feedModifyDto);
+    @Param('feedId') feedId: string,
+  ): Promise<Feed> {
+    return await this.feedService.modifyFeed(feedId, feedModifyDto);
   }
 
   @Delete('/:feedId')
@@ -61,8 +66,12 @@ export class FeedController {
     summary: '피드 삭제',
     description: '피드 삭제',
   })
-  async deleteFeed(@Param('id') id: string): Promise<void> {
-    return await this.feedService.deleteFeed(id);
+  @ApiCreatedResponse({
+    description: '피드 1건 삭제',
+    type: CodeCategory,
+  })
+  async deleteFeed(@Param('feedId') feedId: string): Promise<void> {
+    return await this.feedService.deleteFeed(feedId);
   }
 
   @Post('/:feedId/tag')

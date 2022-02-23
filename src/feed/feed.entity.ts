@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../user/user.entity';
 import { FeedPicture } from './feed-picture/feed-picture.entity';
@@ -9,6 +17,7 @@ export class Feed {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
   @ApiProperty({ default: '40490ba6-7ad0-485b-914b-d8c3b882c799' })
   userId: string;
 
@@ -25,7 +34,8 @@ export class Feed {
 
   pictures: FeedPicture[];
 
-  tags?: FeedTag[];
+  @OneToMany(() => FeedTag, (tags) => tags.feed)
+  tags: FeedTag[];
 
   tagsStr: string;
 
@@ -33,19 +43,20 @@ export class Feed {
 
   likeUsers?: User[];
 
-  @Column()
+  @DeleteDateColumn()
   deletedAt: Date;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   // Swagger 송신 테스트 용도
   @ApiProperty({ default: false })
   rewrite: boolean;
 
+  pictureCount?: number;
   likeCount?: number;
   commentCount?: number;
 }
