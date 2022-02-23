@@ -33,12 +33,10 @@ export class FeedRepository extends Repository<Feed> {
         'writer_picture.user_id = writer.id',
       )
       .leftJoin('feed_picture', 'pictures', 'feed.id = pictures.feed_id')
-      .leftJoin('feed_like', 'likes', 'feed.id = likes.feed_id')
-      .leftJoin('feed_comment', 'comments', 'feed.id = comments.feed_id')
-      .groupBy('tags.name, feed.created_at')
+      .leftJoin('feed_tag', 'tags', 'feed.id = tags.feed_id')
       .orderBy('feed.created_at', 'DESC');
 
-    console.log(queryBuilder.getSql());
+    // console.log(await queryBuilder.execute());
 
     return await paginateRaw<any>(queryBuilder, options);
   }

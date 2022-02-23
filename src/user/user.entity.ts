@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -6,11 +7,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { File } from '../common/file';
+import { UserBackground } from "./user-background/user-background.entity";
+import { UserPicture } from "./user-picture/user-picture.entity";
 
 @Entity('user')
-export class User {
-  @ApiProperty()
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -77,6 +79,7 @@ export class User {
   @Column()
   fcmToken: string;
 
+  /* 자기소개 */
   @Column()
   aboutMe: string;
 
@@ -100,6 +103,10 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  picture: Array<UserPicture>;
+
+  background: Array<UserBackground>;
 
   accessToken: string;
 

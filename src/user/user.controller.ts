@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
@@ -22,9 +27,9 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 @Controller('user')
 export class UserController {
   constructor(
-    private userService: UserService,
-    private commonUtil: CommonUtil,
-    private emailService: EmailService,
+    private readonly userService: UserService,
+    private readonly commonUtil: CommonUtil,
+    private readonly emailService: EmailService,
   ) {}
 
   @Get('/getAll')
@@ -41,6 +46,7 @@ export class UserController {
   }
 
   @Get('/findById')
+  @ApiBearerAuth('accessToken')
   @ApiOperation({
     summary: '사용자 id(key)로 조회',
     description: '사용자 id(key)로 조회',

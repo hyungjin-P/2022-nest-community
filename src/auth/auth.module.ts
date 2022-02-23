@@ -4,12 +4,11 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import * as config from 'config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../user/user.repository';
 import { FirebaseService } from '../services/firebase/firebase.service';
-
-// const jwtConfig = config.get('jwt');
+import { UserPictureRepository } from '../user/user-picture/user-picture.repository';
+import { UserBackgroundRepository } from '../user/user-background/user-background.repository';
 
 @Module({
   imports: [
@@ -20,7 +19,11 @@ import { FirebaseService } from '../services/firebase/firebase.service';
         expiresIn: 600,
       },
     }),
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      UserPictureRepository,
+      UserBackgroundRepository,
+    ]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, FirebaseService],
