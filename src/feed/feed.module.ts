@@ -10,6 +10,7 @@ import { FeedLikeRepository } from './feed-like/feed-like.repository';
 import { FeedTagService } from './feed-tag/feed-tag.service';
 import { FeedLikeService } from './feed-like/feed-like.service';
 import { AuthModule } from '../auth/auth.module';
+import { FeedCommentRepository } from './feed-comment/feed-comment.repository';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from '../auth/auth.module';
       FeedTagRepository,
       FeedLikeRepository,
       FeedPictureRepository,
+      FeedCommentRepository,
     ]),
     AuthModule,
   ],

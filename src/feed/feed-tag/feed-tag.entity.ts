@@ -26,6 +26,6 @@ export class FeedTag {
   })
   createdAt: Date;
 
-  @ManyToOne(() => Feed, (feed) => feed.tags)
-  feed: Feed;
+  // @ManyToOne(() => Feed, (feed) => feed.tags)
+  // feed: Feed;
 }

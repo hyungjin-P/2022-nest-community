@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -34,7 +33,7 @@ export class Feed {
 
   pictures: FeedPicture[];
 
-  @OneToMany(() => FeedTag, (tags) => tags.feed)
+  // @OneToMany(() => FeedTag, (tags) => tags.feed)
   tags: FeedTag[];
 
   tagsStr: string;
