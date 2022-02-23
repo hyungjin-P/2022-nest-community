@@ -16,7 +16,7 @@ import { FeedComment } from './feed-comment/feed-comment.entity';
 
 @EntityRepository(Feed)
 export class FeedRepository extends Repository<Feed> {
-  async findByPage(options: IPaginationOptions): Promise<Pagination<any[]>> {
+  async findByPage(options: IPaginationOptions): Promise<Pagination<Feed[]>> {
     const queryBuilder = await this.createQueryBuilder('feed')
       .select(
         'feed.id, feed.state, feed.content, feed.picture, feed.created_at',
@@ -40,6 +40,8 @@ export class FeedRepository extends Repository<Feed> {
       )
       .leftJoin('feed_picture', 'pictures', 'feed.id = pictures.feed_id')
       .leftJoin('feed_tag', 'tags', 'feed.id = tags.feed_id')
+      .where('feed.state = "feed_state_posting"')
+      .andWhere('feed.deleted_at IS NULL')
       .orderBy('feed.created_at', 'DESC');
 
     return await paginateRaw<any>(queryBuilder, options);

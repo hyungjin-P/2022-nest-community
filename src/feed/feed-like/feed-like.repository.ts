@@ -14,20 +14,6 @@ import { User } from '../../user/user.entity';
 
 @EntityRepository(FeedLike)
 export class FeedLikeRepository extends Repository<FeedLike> {
-  // async saveFeedLike(feedId: string, userId: string) {
-  //   const feedLike = await getConnection()
-  //     .createQueryBuilder()
-  //     .insert()
-  //     .into(FeedLike)
-  //     .values([{ feedId: feedId, userId: userId }]);
-  //
-  //   const [sql, args] = feedLike.getQueryAndParameters();
-  //   const nsql = sql.replace('INSERT INTO', 'INSERT IGNORE INTO');
-  //
-  //   const result = await getConnection().manager.query(nsql, args);
-  //   return result;
-  // }
-
   async getFeedLikeWithUser(feedId: string): Promise<any[]> {
     const feedLike: any[] = await getManager()
       .createQueryBuilder('feed_like', 'feedLike')

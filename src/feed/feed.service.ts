@@ -17,6 +17,10 @@ export class FeedService {
     private feedPictureRepository: FeedPictureRepository,
   ) {}
 
+  /*
+   * 전체 피드 조회
+   * 개인 로그인 피드 조회 - 유저별로 좋아요, 북마크 상태 추적 표시 추가해야함.
+   * */
   async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
     const feedPage: Pagination<any> =
       await this.feedRepository.findByPageReFactory(options);
@@ -36,10 +40,18 @@ export class FeedService {
     return feedPage;
   }
 
+  /*
+   * 상세 피드 조회 - 작업 미실시
+   * 개인 로그인 피드 조회 - 유저별로 좋아요, 북마크 상태 추적 표시 추가해야함.
+   * */
   async findByFeedId(id: string): Promise<Feed> {
     return await this.feedRepository.findOne({ id });
   }
 
+  /*
+   * 피드생성 - 작업 중 중단
+   * 기존 피드 있을 시, 해당 정보 리턴 해야함.
+   * */
   async createFeed(feed: Feed) {
     let feedRows: Feed = await this.feedRepository.findOne({
       userId: feed.userId,
@@ -59,6 +71,10 @@ export class FeedService {
     // 기존에 피드 있을 시, 해당 정보 리턴 작업
   }
 
+  /*
+   * 피드 수정 - 작업 완료
+   * 현재 웹 반응 => 피드 글쓰기 완료 시, 업데이트
+   * */
   async modifyFeed(id: string, feedModifyDto: FeedModifyDto): Promise<Feed> {
     const feedRows: Feed = await this.feedRepository.findOne({ id });
     if (feedModifyDto.content !== '') {
@@ -74,6 +90,9 @@ export class FeedService {
     return await this.feedRepository.save(feedRows);
   }
 
+  /*
+   * 피드 삭제 - 작업 완료
+   * */
   async deleteFeed(id: string): Promise<void> {
     const feedRows: Feed = await this.feedRepository.findOne({ id });
     feedRows.deletedAt = new Date();

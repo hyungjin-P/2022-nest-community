@@ -37,7 +37,7 @@ export class PublicFeedController {
   async findByFeedPages(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ): Promise<Pagination<any>> {
+  ): Promise<Pagination<Feed[]>> {
     return await this.feedService.findByPage({
       page,
       limit,
@@ -59,7 +59,7 @@ export class PublicFeedController {
   async authFeed(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ): Promise<Pagination<Feed>> {
+  ): Promise<Pagination<Feed[]>> {
     console.log('----- 피드 권한 테스트 -----');
 
     return await this.feedService.findByPage({

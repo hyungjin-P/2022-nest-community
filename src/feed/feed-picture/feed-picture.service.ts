@@ -10,6 +10,10 @@ export class FeedPictureService {
     @InjectRepository(FeedPictureRepository)
     private feedPictureRepository: FeedPictureRepository,
   ) {}
+
+  /*
+   * 아래 기능은 /file.c명ntroller 에서 추가적인 함수 호출로 동작.
+   * */
   createFeedPicture(feedId: string, uploadedFile: File[]) {
     const feedPictures = [];
 
