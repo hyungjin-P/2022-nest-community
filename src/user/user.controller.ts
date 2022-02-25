@@ -6,6 +6,7 @@ import {
   Get,
   HttpException,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
 import { UserRegistrationDto } from './dto/user.registration.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { UserProfileDto } from './dto/user.profile.dto';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -242,5 +244,48 @@ export class UserController {
       limit,
       route: '/user/findUserPage',
     });
+  }
+
+  @Get('/duplicateUserNickname')
+  @ApiOperation({
+    summary: '유저 닉네임 중복검사',
+    description: '유저 닉네임 중복검사',
+  })
+  @ApiCreatedResponse({
+    description: '유저 닉네임을 중복검사한다.',
+    type: User,
+  })
+  async duplicateUserNickname(
+    @Query('nickName') nickName: string,
+    @Query('userId') userId: string,
+  ): Promise<boolean> {
+    const result: boolean = await this.userService.duplicateUserNickName(
+      nickName,
+      userId,
+    );
+
+    if (!result) {
+      throw new HttpException(
+        { code: 'failure', message: '이미 사용중인 닉네임 입니다.' },
+        500,
+      );
+    }
+
+    return result;
+  }
+
+  @Patch('/modifyProfile')
+  @ApiOperation({
+    summary: '유저 프로필 수정',
+    description: '유저 프로필 수정',
+  })
+  @ApiCreatedResponse({
+    description: '유저 프로필 (넥네임, 자기소개) 수정',
+    type: User,
+  })
+  async modifyUserProfile(
+    @Body() userProfileDto: UserProfileDto,
+  ): Promise<User> {
+    return await this.userService.modifyUserProfile(userProfileDto);
   }
 }

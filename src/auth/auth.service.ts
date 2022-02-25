@@ -29,7 +29,6 @@ export class AuthService {
    * @param userEmailSignInDto
    */
   async signIn(userEmailSignInDto: UserEmailSignInDto): Promise<User> {
-    console.log('userEmailSignInDto : ', userEmailSignInDto);
     // 가입한 이메일 조회
     const user: User = await this.userRepository.findOne({
       where: {

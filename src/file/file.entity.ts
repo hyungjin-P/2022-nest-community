@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity()
-export class File {
+@Entity('file')
+export class FileEntity {
   @PrimaryColumn()
   bucket: string;
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserBackgroundRepository } from './user-background.repository';
-import { File } from '../../file/file.entity';
+import { FileEntity } from '../../file/file.entity';
 import { UserBackground } from './user-background.entity';
 
 @Injectable()
@@ -18,9 +18,12 @@ export class UserBackgroundService {
    */
   async createUserBackground(
     userId: string,
-    uploadedFile: File[],
+    uploadedFile: FileEntity[],
   ): Promise<void> {
     const userBackgrounds = [];
+
+    // 기존 백그라운드 이미지 삭제
+    await this.userBackgroundRepository.delete({ userId });
 
     uploadedFile.forEach((file) => {
       const userBackground = new UserBackground();
@@ -34,9 +37,9 @@ export class UserBackgroundService {
 
   /**
    * 파일 삭제
-   * @param fileUrl
+   * @param url
    */
-  async deleteUserBackground(fileUrl: string): Promise<void> {
-    await this.userBackgroundRepository.delete({ url: fileUrl });
+  async deleteUserBackground(url: string): Promise<void> {
+    await this.userBackgroundRepository.delete({ url });
   }
 }

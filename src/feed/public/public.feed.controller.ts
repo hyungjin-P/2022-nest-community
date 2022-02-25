@@ -46,7 +46,7 @@ export class PublicFeedController {
   }
 
   @Get('/public/authFeed')
-  @UseGuards(AuthGuard()) //
+  @UseGuards(AuthGuard())
   @ApiOperation({
     summary: '피드 테스트',
     description: '피드 테스트',
@@ -60,8 +60,6 @@ export class PublicFeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ): Promise<Pagination<Feed>> {
-    console.log('----- 피드 권한 테스트 -----');
-
     return await this.feedService.findByPage({
       page,
       limit,
@@ -83,7 +81,6 @@ export class PublicFeedController {
     const feed: Feed = await this.feedService.findByFeedId(feedId);
 
     // feed.likeUsers = 좋아요 한 사람들 조회해서 넣고
-
     return feed;
   }
 }

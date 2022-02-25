@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FeedPicture } from './feed-picture.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FeedPictureRepository } from './feed-picture.repository';
-import { File } from '../../file/file.entity';
+import { FileEntity } from '../../file/file.entity';
 
 @Injectable()
 export class FeedPictureService {
@@ -10,7 +10,7 @@ export class FeedPictureService {
     @InjectRepository(FeedPictureRepository)
     private feedPictureRepository: FeedPictureRepository,
   ) {}
-  createFeedPicture(feedId: string, uploadedFile: File[]) {
+  createFeedPicture(feedId: string, uploadedFile: FileEntity[]) {
     const feedPictures = [];
 
     for (const file of uploadedFile) {

@@ -8,6 +8,8 @@ import { FeedPictureService } from '../feed/feed-picture/feed-picture.service';
 import { FeedPictureRepository } from '../feed/feed-picture/feed-picture.repository';
 import { UserBackgroundRepository } from '../user/user-background/user-background.repository';
 import { UserBackgroundService } from '../user/user-background/user-background.service';
+import { UserPictureRepository } from '../user/user-picture/user-picture.repository';
+import { UserPictureService } from '../user/user-picture/user-picture.service';
 
 @Module({
   imports: [
@@ -16,9 +18,15 @@ import { UserBackgroundService } from '../user/user-background/user-background.s
       FileTagRepository,
       FeedPictureRepository,
       UserBackgroundRepository,
+      UserPictureRepository,
     ]),
   ],
-  providers: [FileService, FeedPictureService, UserBackgroundService],
+  providers: [
+    FileService,
+    FeedPictureService,
+    UserBackgroundService,
+    UserPictureService,
+  ],
   controllers: [FileController],
 })
 export class FileModule {}

@@ -70,4 +70,23 @@ export class UserRepository extends Repository<User> {
 
     return await this.save(user[0]);
   }
+
+  async countUserNicknameAndUserId(
+    nickName: string,
+    userId: string,
+  ): Promise<boolean> {
+    const users: User[] = await getRepository(User)
+      .createQueryBuilder('user')
+      .where(`user.nickname = :nickName`, { nickName })
+      .getMany();
+
+    if (users.length > 0) {
+      const count: number = users.filter((user) => user.id !== userId).length;
+      if (count > 0) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

@@ -18,8 +18,9 @@ export class FeedService {
   ) {}
 
   async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
-    const feedPage: Pagination<any> =
-      await this.feedRepository.findByPageReFactory(options);
+    const feedPage: Pagination<any> = await this.feedRepository.findFeedPages(
+      options,
+    );
 
     if (feedPage.items.length > 0) {
       const feedIds: string[] = feedPage.items.map((r) => r.id);

@@ -7,9 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { File } from '../common/file';
-import { UserBackground } from "./user-background/user-background.entity";
-import { UserPicture } from "./user-picture/user-picture.entity";
+import { UserBackground } from './user-background/user-background.entity';
+import { UserPicture } from './user-picture/user-picture.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -104,9 +103,9 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  picture: Array<UserPicture>;
+  picture: UserPicture[];
 
-  background: Array<UserBackground>;
+  background: UserBackground[];
 
   accessToken: string;
 

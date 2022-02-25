@@ -10,6 +10,9 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { UserPictureRepository } from './user-picture/user-picture.repository';
 import { UserBackgroundRepository } from './user-background/user-background.repository';
+import { UserPicture } from './user-picture/user-picture.entity';
+import { UserBackground } from './user-background/user-background.entity';
+import { UserProfileDto } from './dto/user.profile.dto';
 
 @Injectable()
 export class UserService {
@@ -49,6 +52,12 @@ export class UserService {
         500,
       );
     }
+
+    // 프로필 사진, 배경 사진
+    const userPictureAndBackground: any =
+      await this.getUserPictureAndBackground(user.id);
+    user.picture = userPictureAndBackground.picture;
+    user.background = userPictureAndBackground.background;
 
     return user;
   }
@@ -133,5 +142,67 @@ export class UserService {
       .orderBy('user.created_at', 'DESC');
 
     return paginate<User>(queryBuilder, options);
+  }
+
+  /**
+   * 닉네임 중복확인
+   * @param nickName
+   * @param userId
+   */
+  async duplicateUserNickName(
+    nickName: string,
+    userId: string,
+  ): Promise<boolean> {
+    return this.userRepository.countUserNicknameAndUserId(nickName, userId);
+  }
+
+  async getUserPictureAndBackground(userId: string): Promise<any> {
+    const picture: UserPicture[] = await this.userPictureRepository
+      .createQueryBuilder('userPicture')
+      .where('userPicture.user_id = :userId', { userId })
+      .orderBy('userPicture.created_at', 'DESC')
+      .getMany();
+
+    const background: UserBackground[] = await this.userBackgroundRepository
+      .createQueryBuilder('background')
+      .where('background.user_id = :userId', { userId })
+      .orderBy('background.created_at', 'DESC')
+      .getMany();
+
+    return {
+      picture,
+      background,
+    };
+  }
+
+  /**
+   * 유저 프로필 수정
+   * @param userProfileDto
+   */
+  async modifyUserProfile(userProfileDto: UserProfileDto): Promise<User> {
+    const user: User = await this.userRepository.findOne({
+      id: userProfileDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException(
+        { code: 'failure', message: '해당 사용자가 존재하지 않습니다.' },
+        500,
+      );
+    }
+
+    user.nickname = userProfileDto.nickName;
+    user.aboutMe = userProfileDto.aboutMe;
+
+    await this.userRepository.save(user);
+
+    const pictureAndBackground: any = await this.getUserPictureAndBackground(
+      user.id,
+    );
+
+    user.picture = pictureAndBackground.picture;
+    user.background = pictureAndBackground.background;
+
+    return user;
   }
 }

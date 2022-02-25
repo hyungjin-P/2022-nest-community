@@ -2,14 +2,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { FileRepository } from './file.repository';
-import { File } from './file.entity';
+import { FileEntity } from './file.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { FileUploadDto } from './dto/file.upload.dto';
 import { FileTagRepository } from './file-tag.repository';
 import { FileTag } from './file-tag.entity';
 import { FeedPictureService } from '../feed/feed-picture/feed-picture.service';
 import { FileDeleteDto } from './dto/file.delete.dto';
-import { UserBackgroundService } from "../user/user-background/user-background.service";
+import { UserBackgroundService } from '../user/user-background/user-background.service';
+import { UserPictureService } from '../user/user-picture/user-picture.service';
 
 @Injectable()
 export class FileService {
@@ -19,9 +20,10 @@ export class FileService {
     private readonly fileTagRepository: FileTagRepository,
     private readonly feedPictureService: FeedPictureService,
     private readonly userBackgroundService: UserBackgroundService,
+    private readonly userPictureService: UserPictureService,
   ) {}
 
-  async uploadFile(files, filesInfo: FileUploadDto): Promise<File[]> {
+  async uploadFile(files, filesInfo: FileUploadDto): Promise<FileEntity[]> {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
@@ -80,7 +82,7 @@ export class FileService {
         uploadFilesTag.push(uploadFileTag);
 
         // RDS 저장 - file
-        const uploadFile = new File();
+        const uploadFile = new FileEntity();
         uploadFile.userId = filesInfo.userId;
         uploadFile.url = `https://${domainName}/${stored.Key}`;
         uploadFile.originalname = file.originalname;
@@ -109,15 +111,16 @@ export class FileService {
           uploadFiles,
         );
       } else if (filesInfo.tags === 'user-picture') {
-        // this.fileService.uploadUserPicture(uploadedFile);
+        await this.userPictureService.createUserPicture(
+          filesInfo.userId,
+          uploadFiles,
+        );
       } else if (filesInfo.tags === 'user-background') {
-        console.log('user-background :');
         await this.userBackgroundService.createUserBackground(
           filesInfo.userId,
           uploadFiles,
         );
       }
-
       return result;
     } catch (e) {
       throw new BadRequestException(e.message);
@@ -145,6 +148,7 @@ export class FileService {
       key: file.key,
     });
 
+    // tag에 따라 서비스 분기
     if (fileInfo.tag === 'feed') {
       await this.feedPictureService.deleteFeedPicture(
         fileInfo.tagInId,

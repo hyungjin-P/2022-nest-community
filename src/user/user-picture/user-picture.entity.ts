@@ -17,15 +17,6 @@ export class UserPicture extends BaseEntity {
   @Column()
   url: string;
 
-  @Column()
-  originalname: string;
-
-  @Column()
-  mimetype: string;
-
-  @Column()
-  size: number;
-
   @CreateDateColumn()
   createdAt: Date;
 }
