@@ -10,7 +10,11 @@ export class FeedPictureService {
     @InjectRepository(FeedPictureRepository)
     private feedPictureRepository: FeedPictureRepository,
   ) {}
+
   createFeedPicture(feedId: string, uploadedFile: FileEntity[]) {
+    /**
+     * 아래 기능은 /file.cntroller 에서 추가적인 함수 호출로 동작.
+     **/
     const feedPictures = [];
 
     for (const file of uploadedFile) {
