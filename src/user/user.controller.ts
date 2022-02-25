@@ -24,6 +24,7 @@ import moment from 'moment-timezone';
 import { UserRegistrationDto } from './dto/user.registration.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserProfileDto } from './dto/user.profile.dto';
+import { UserPasswordChangeDto } from './dto/user.password-change.dto';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -287,5 +288,20 @@ export class UserController {
     @Body() userProfileDto: UserProfileDto,
   ): Promise<User> {
     return await this.userService.modifyUserProfile(userProfileDto);
+  }
+
+  @Patch('/changePassword')
+  @ApiOperation({
+    summary: '비밀번호 변경',
+    description: '비밀번호 변경',
+  })
+  @ApiCreatedResponse({
+    description: '비밀번호 변경',
+    type: User,
+  })
+  async changePassword(
+    @Body() userPasswordChangeDto: UserPasswordChangeDto,
+  ): Promise<void> {
+    await this.userService.changeUserPassword(userPasswordChangeDto);
   }
 }

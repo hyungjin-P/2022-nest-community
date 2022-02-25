@@ -13,6 +13,8 @@ import { UserBackgroundRepository } from './user-background/user-background.repo
 import { UserPicture } from './user-picture/user-picture.entity';
 import { UserBackground } from './user-background/user-background.entity';
 import { UserProfileDto } from './dto/user.profile.dto';
+import * as bcrypt from 'bcryptjs';
+import { UserPasswordChangeDto } from './dto/user.password-change.dto';
 
 @Injectable()
 export class UserService {
@@ -204,5 +206,42 @@ export class UserService {
     user.background = pictureAndBackground.background;
 
     return user;
+  }
+
+  /**
+   * 유저 비밀번호 변경
+   * @param userPasswordChangeDto
+   * @return password
+   * */
+  async changeUserPassword(
+    userPasswordChangeDto: UserPasswordChangeDto,
+  ): Promise<void> {
+    const user: User = await this.userRepository.findOne({
+      id: userPasswordChangeDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException(
+        { code: 'failure', message: '해당 사용자가 존재하지 않습니다.' },
+        500,
+      );
+    }
+
+    if (
+      !(await bcrypt.compare(userPasswordChangeDto.oldPassword, user.password))
+    ) {
+      throw new HttpException(
+        {
+          code: 'failure',
+          message: '기존 비밀번호가 일치하지 않습니다.',
+        },
+        500,
+      );
+    }
+
+    const salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(userPasswordChangeDto.newPassword, salt);
+
+    await this.userRepository.save(user);
   }
 }
