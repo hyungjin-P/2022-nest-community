@@ -10,6 +10,7 @@ import { FeedModule } from './feed/feed.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
+import { MagazineModule } from './magazine/magazine.module';
 
 const stage = 'development';
 
@@ -26,6 +27,7 @@ const stage = 'development';
     CodeCategoryModule,
     CodesModule,
     AuthModule,
+    MagazineModule,
   ],
   controllers: [AppController],
   providers: [AppService],

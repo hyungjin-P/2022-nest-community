@@ -77,7 +77,7 @@ export class FileService {
         uploadFileTag.userId = filesInfo.userId;
         uploadFileTag.bucket = stored.Bucket;
         uploadFileTag.key = stored.Key;
-        uploadFileTag.name = filesInfo.tags;
+        uploadFileTag.name = filesInfo.tag;
 
         uploadFilesTag.push(uploadFileTag);
 
@@ -95,6 +95,10 @@ export class FileService {
         uploadFile.etag = stored.ETag;
 
         uploadFiles.push(uploadFile);
+
+        if (filesInfo.tag === 'magazine') {
+          return uploadFiles;
+        }
       } catch (e) {
         throw new Error(e);
       }
@@ -105,22 +109,23 @@ export class FileService {
       await this.fileTagRepository.save(uploadFilesTag);
 
       // 테이블 분류에 따른 데이터 저장 로직
-      if (filesInfo.tags === 'feed') {
+      if (filesInfo.tag === 'feed') {
         this.feedPictureService.createFeedPicture(
           filesInfo.tagInId,
           uploadFiles,
         );
-      } else if (filesInfo.tags === 'user-picture') {
+      } else if (filesInfo.tag === 'user-picture') {
         await this.userPictureService.createUserPicture(
           filesInfo.userId,
           uploadFiles,
         );
-      } else if (filesInfo.tags === 'user-background') {
+      } else if (filesInfo.tag === 'user-background') {
         await this.userBackgroundService.createUserBackground(
           filesInfo.userId,
           uploadFiles,
         );
       }
+      console.log('result: ', result);
       return result;
     } catch (e) {
       throw new BadRequestException(e.message);
