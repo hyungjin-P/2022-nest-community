@@ -39,7 +39,7 @@ export class FeedController {
   })
   async createFeed(
     @Body() feed: Feed,
-    @Param() rewrite: boolean,
+    @Query('rewrite') rewrite: boolean,
   ): Promise<void> {
     feed.rewrite = rewrite;
     return await this.feedService.createFeed(feed);

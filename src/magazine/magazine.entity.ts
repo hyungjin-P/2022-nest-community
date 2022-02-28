@@ -6,14 +6,18 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
-export class magazineEntity {
+@Entity('magazine')
+export class MagazineEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  uesrId: string;
+  @Column()
+  @ApiProperty({ default: 'a41d829e-add3-4867-9429-0eca34fc1e48' })
+  userId: string;
 
+  @Column()
   state: string;
 
   @Column()
@@ -24,5 +28,9 @@ export class magazineEntity {
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
+
+  // Swagger 송신 테스트 용도
+  @ApiProperty({ default: false })
+  rewrite: boolean;
 }

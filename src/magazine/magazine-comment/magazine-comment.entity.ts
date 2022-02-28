@@ -15,7 +15,7 @@ export class magazineCommentEntity {
 
   magazineId: string;
   userId: string;
-  parent_id: string;
+  parentId: string;
 
   @Column()
   @IsString()
