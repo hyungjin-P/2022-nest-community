@@ -10,18 +10,24 @@ export class FeedLikeService {
     private feedLikeRepository: FeedLikeRepository,
   ) {}
 
-  async createFeedLike(feedId: string, userId: string) {
+  /**
+   * 피드 좋아요
+   * @param feedId
+   * @param userId
+   * @return feedLikeCount => 좋아요 수
+   */
+  async createFeedLike(feedId: string, userId: string): Promise<number> {
     await this.feedLikeRepository.save({ feedId: feedId, userId: userId });
+    return await this.feedLikeRepository.count({ feedId });
   }
 
-  async deleteFeedLike(feedId: string, userId: string) {
+  /**
+   * 피드 좋아요 취소
+   * @param feedId
+   * @param userId
+   */
+  async deleteFeedLike(feedId: string, userId: string): Promise<number> {
     await this.feedLikeRepository.delete({ feedId: feedId, userId: userId });
-  }
-
-  /*
-   * 좋아요 인원 찾기 - 페이징 형식으로 변경 해야함
-   * */
-  async findByFeedId(feedId: string): Promise<FeedLike[]> {
-    return await this.feedLikeRepository.getFeedLikeWithUser(feedId);
+    return await this.feedLikeRepository.count({ feedId });
   }
 }

@@ -8,9 +8,8 @@ export class FeedLike {
   @PrimaryColumn()
   userId: string;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP()',
-  })
+  @CreateDateColumn()
   createdAt: Date;
+
+  likeCount: number;
 }

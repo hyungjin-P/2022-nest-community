@@ -11,4 +11,7 @@ export class FeedModifyDto {
   @ApiProperty()
   @IsBoolean()
   posting: boolean;
+  @ApiProperty()
+  @IsString()
+  feedId: string;
 }
