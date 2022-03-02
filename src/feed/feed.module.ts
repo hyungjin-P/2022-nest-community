@@ -11,6 +11,7 @@ import { FeedTagService } from './feed-tag/feed-tag.service';
 import { FeedLikeService } from './feed-like/feed-like.service';
 import { AuthModule } from '../auth/auth.module';
 import { FeedCommentRepository } from './feed-comment/feed-comment.repository';
+import { FeedBookmarkModule } from './feed-bookmark/feed-bookmark.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FeedCommentRepository } from './feed-comment/feed-comment.repository';
       FeedCommentRepository,
     ]),
     AuthModule,
+    FeedBookmarkModule,
   ],
   controllers: [FeedController, PublicFeedController],
   providers: [FeedService, FeedTagService, FeedLikeService],

@@ -34,7 +34,7 @@ export class PublicFeedController {
     description: '피드 페이지를 조회한다.',
     type: CodeItem,
   })
-  async findByFeedPages(
+  async findByPublicFeedPages(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ): Promise<Pagination<any>> {
@@ -79,8 +79,6 @@ export class PublicFeedController {
   async findFeedDetails(@Param('id') feedId: string): Promise<Feed> {
     console.log(feedId);
     const feed: Feed = await this.feedService.findByFeedId(feedId);
-
-    // feed.likeUsers = 좋아요 한 사람들 조회해서 넣고
     return feed;
   }
 }

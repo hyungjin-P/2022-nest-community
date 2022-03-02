@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { FeedRepository } from './feed.repository';
 import { Feed } from './feed.entity';
 import { FeedModifyDto } from './dto/feed.modify.dto';
@@ -7,20 +6,22 @@ import { FeedTagRepository } from './feed-tag/feed-tag.repository';
 import { FeedPictureRepository } from './feed-picture/feed-picture.repository';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { FeedTag } from './feed-tag/feed-tag.entity';
+import { FeedLikeRepository } from './feed-like/feed-like.repository';
+import { FeedLike } from './feed-like/feed-like.entity';
 
 @Injectable()
 export class FeedService {
   constructor(
-    @InjectRepository(FeedRepository)
     private feedRepository: FeedRepository,
     private feedTagRepository: FeedTagRepository,
     private feedPictureRepository: FeedPictureRepository,
+    private feedLikeRepository: FeedLikeRepository,
   ) {}
 
-  /*
-   * 전체 피드 조회
-   * 개인 로그인 피드 조회 - 유저별로 좋아요, 북마크 상태 추적 표시 추가해야함.
-   * */
+  /**
+   * 공개 피드 조회
+   * @param options { page, limit }
+   */
   async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
     const feedPage: Pagination<any> = await this.feedRepository.findFeedPages(
       options,
@@ -41,9 +42,51 @@ export class FeedService {
     return feedPage;
   }
 
+  /**
+   * 피드 (로그인)
+   * @param options { page, limit }
+   * @param userId
+   */
+  async findByPageWithBookmarkAndLike(
+    options: IPaginationOptions,
+    userId: string,
+  ): Promise<Pagination<any>> {
+    const feedPage: Pagination<any> = await this.feedRepository.findFeedPages(
+      options,
+    );
+
+    if (feedPage.items.length > 0) {
+      const feedIds: string[] = feedPage.items.map((r) => r.id);
+      const feedTags: FeedTag[] =
+        await this.feedTagRepository.getFeedTagInFeedIds(feedIds);
+      const feedLikes: FeedLike[] =
+        await this.feedLikeRepository.findFeedLikeOfUser(feedIds, userId);
+
+      if (feedTags.length > 0 || feedLikes.length > 0) {
+        feedPage.items.forEach((feed) => {
+          if (feedLikes.length > 0) {
+            const isLike = feedLikes.filter(
+              (feedLike) => feedLike.feedId === feed.id,
+            ).length;
+            feed.isLike = isLike > 0;
+          }
+          if (feedTags.length > 0) {
+            feed.tags = feedTags.filter(
+              (feedTag) => feedTag.feedId === feed.id,
+            );
+          }
+        });
+      }
+    }
+
+    console.log('findByPageWithBookmarkAndLike : ', feedPage);
+
+    return feedPage;
+  }
+
   /*
-   * 상세 피드 조회 - 작업 미실시
-   * 개인 로그인 피드 조회 - 유저별로 좋아요, 북마크 상태 추적 표시 추가해야함.
+   * 상세 피드 조회 - 작업 중
+   * 개인 로그인 피드 조회 - 유저별로 좋아요, 북마크 상태 추적 표시 추가해야함
    * */
   async findByFeedId(id: string): Promise<Feed> {
     return await this.feedRepository.findOne({ id });
@@ -51,7 +94,7 @@ export class FeedService {
 
   /*
    * 피드생성 - 작업 중 중단
-   * 기존 피드 있을 시, 해당 정보 리턴 해야함.
+   * 기존 피드 있을 시, 해당 정보 리턴 해야함
    * */
   async createFeed(feed: Feed) {
     let feedRows: Feed = await this.feedRepository.findOne({

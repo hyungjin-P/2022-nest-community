@@ -33,7 +33,6 @@ export class Feed {
 
   pictures: FeedPicture[];
 
-  // @OneToMany(() => FeedTag, (tags) => tags.feed)
   tags: FeedTag[];
 
   tagsStr: string;
@@ -42,20 +41,23 @@ export class Feed {
 
   likeUsers?: User[];
 
-  @DeleteDateColumn()
-  deletedAt: Date;
-
   @CreateDateColumn()
   createdAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Swagger 송신 테스트 용도
-  @ApiProperty({ default: false })
   rewrite: boolean;
 
   pictureCount?: number;
+
   likeCount?: number;
+
   commentCount?: number;
+
+  // 유저가 좋아요한 피드인지
+  isLike = false;
 }
