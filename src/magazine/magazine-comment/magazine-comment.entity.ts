@@ -8,13 +8,18 @@ import {
 } from 'typeorm';
 import { IsString } from 'class-validator';
 
-@Entity()
-export class magazineCommentEntity {
+@Entity('magazine_comment')
+export class MagazineCommentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
   magazineId: string;
+
+  @Column()
   userId: string;
+
+  @Column()
   parentId: string;
 
   @Column()

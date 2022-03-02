@@ -6,20 +6,20 @@ import { MagazineCommentService } from './magazine-comment/magazine-comment.serv
 import { MagazineLikeService } from './magazine-like/magazine-like.service';
 import { MagazineTagService } from './magazine-tag/magazine-tag.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { magazineCommentRepository } from './magazine-comment/magazine-comment.repository';
-import { magazineLikeRepository } from './magazine-like/magazine-like.repository';
-import { magazinePictureRepository } from './magazine-picture/magazine_picture.repository';
-import { magazineTagRepository } from './magazine-tag/magazine-tag.repository';
+import { MagazineCommentRepository } from './magazine-comment/magazine-comment.repository';
+import { MagazineLikeRepository } from './magazine-like/magazine-like.repository';
+import { MagazinePictureRepository } from './magazine-picture/magazine_picture.repository';
+import { MagazineTagRepository } from './magazine-tag/magazine-tag.repository';
 import { magazineRepository } from './magazine.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       magazineRepository,
-      magazineCommentRepository,
-      magazineLikeRepository,
-      magazinePictureRepository,
-      magazineTagRepository,
+      MagazineCommentRepository,
+      MagazineLikeRepository,
+      MagazinePictureRepository,
+      MagazineTagRepository,
     ]),
   ],
   controllers: [MagazineController],

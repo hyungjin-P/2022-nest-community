@@ -1,12 +1,19 @@
-import { CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity()
-export class magazineLikeEntity {
+@Entity('magazine_like')
+export class MagazineLikeEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
   magazineId: string;
 
+  @Column()
   userId: string;
 
   @CreateDateColumn()

@@ -14,7 +14,9 @@ export class FileUploadDto {
   @IsString()
   path: string;
 
-  @ApiProperty({ enum: ['feed', 'user-picture', 'user-background'] })
+  @ApiProperty({
+    enum: ['feed', 'user-picture', 'user-background', 'magazine'],
+  })
   @IsString()
   tag: string;
 
