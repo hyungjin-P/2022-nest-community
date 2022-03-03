@@ -11,6 +11,7 @@ import { FeedPictureService } from '../feed/feed-picture/feed-picture.service';
 import { FileDeleteDto } from './dto/file.delete.dto';
 import { UserBackgroundService } from '../user/user-background/user-background.service';
 import { UserPictureService } from '../user/user-picture/user-picture.service';
+import { MagazinePictureService } from '../magazine/magazine-picture/magazine-picture.service';
 
 @Injectable()
 export class FileService {
@@ -21,6 +22,7 @@ export class FileService {
     private readonly feedPictureService: FeedPictureService,
     private readonly userBackgroundService: UserBackgroundService,
     private readonly userPictureService: UserPictureService,
+    private readonly magazinePictureService: MagazinePictureService,
   ) {}
 
   async uploadFile(files, filesInfo: FileUploadDto): Promise<FileEntity[]> {
@@ -96,6 +98,7 @@ export class FileService {
 
         uploadFiles.push(uploadFile);
 
+        // 저장 방지 임시 동작
         if (filesInfo.tag === 'magazine') {
           return uploadFiles;
         }
@@ -122,6 +125,11 @@ export class FileService {
       } else if (filesInfo.tag === 'user-background') {
         await this.userBackgroundService.createUserBackground(
           filesInfo.userId,
+          uploadFiles,
+        );
+      } else if (filesInfo.tag === 'magazine') {
+        await this.magazinePictureService.createMagazinePicture(
+          filesInfo.tagInId,
           uploadFiles,
         );
       }
@@ -163,6 +171,11 @@ export class FileService {
       // this.fileService.uploadUserPicture(uploadedFile);
     } else if (fileInfo.tag === 'user-background') {
       await this.userBackgroundService.deleteUserBackground(file.url);
+    } else if (fileInfo.tag === 'magazine') {
+      await this.magazinePictureService.deleteMagazinePicture(
+        fileInfo.tagInId,
+        file.url,
+      );
     }
 
     await this.fileTagRepository.delete(tag.id);

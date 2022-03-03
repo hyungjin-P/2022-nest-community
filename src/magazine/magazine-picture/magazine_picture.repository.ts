@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { magazinePictureEntity } from './magazine-picture.entity';
+import { MagazinePictureEntity } from './magazine-picture.entity';
 
-@EntityRepository(magazinePictureEntity)
-export class magazinePictureRepository extends Repository<magazinePictureEntity> {}
+@EntityRepository(MagazinePictureEntity)
+export class MagazinePictureRepository extends Repository<MagazinePictureEntity> {}

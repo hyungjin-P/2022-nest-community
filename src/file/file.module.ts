@@ -10,6 +10,8 @@ import { UserBackgroundRepository } from '../user/user-background/user-backgroun
 import { UserBackgroundService } from '../user/user-background/user-background.service';
 import { UserPictureRepository } from '../user/user-picture/user-picture.repository';
 import { UserPictureService } from '../user/user-picture/user-picture.service';
+import { MagazinePictureService } from '../magazine/magazine-picture/magazine-picture.service';
+import { MagazinePictureRepository } from '../magazine/magazine-picture/magazine_picture.repository';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { UserPictureService } from '../user/user-picture/user-picture.service';
       FeedPictureRepository,
       UserBackgroundRepository,
       UserPictureRepository,
+      MagazinePictureRepository,
     ]),
   ],
   providers: [
@@ -26,6 +29,7 @@ import { UserPictureService } from '../user/user-picture/user-picture.service';
     FeedPictureService,
     UserBackgroundService,
     UserPictureService,
+    MagazinePictureService,
   ],
   controllers: [FileController],
 })
