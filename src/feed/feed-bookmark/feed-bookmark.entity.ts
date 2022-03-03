@@ -18,7 +18,4 @@ export class FeedBookmark {
 
   @CreateDateColumn()
   createdAt: Date;
-
-  /* 북마크 여부 */
-  isBookmark = false;
 }

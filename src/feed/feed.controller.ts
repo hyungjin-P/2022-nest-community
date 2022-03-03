@@ -20,6 +20,8 @@ import { CodeCategory } from '../codes/code-category/code-category.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { CodeItem } from '../codes/code-item/code-item.entity';
 import { FeedLikeDto } from './dto/feed-like.dto';
+import { FeedBookmarkDto } from './dto/feed-bookmark.dto';
+import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 
 @ApiTags('피드')
 @Controller('feed')
@@ -28,6 +30,7 @@ export class FeedController {
     private feedService: FeedService,
     private feedTagService: FeedTagService,
     private feedLikeService: FeedLikeService,
+    private feedBookmarkService: FeedBookmarkService,
   ) {}
 
   @Get('/findPages')
@@ -131,7 +134,7 @@ export class FeedController {
     return await this.feedLikeService.deleteFeedLike(feedId, userId);
   }
 
-  @Post('/')
+  @Post('/createFeed')
   @ApiOperation({
     summary: '피드 생성',
     description: '피드 생성',
@@ -142,5 +145,34 @@ export class FeedController {
   ): Promise<void> {
     feed.rewrite = rewrite;
     return await this.feedService.createFeed(feed);
+  }
+
+  @Post('/addBookmark')
+  @ApiOperation({
+    summary: '피드 북마크 추가',
+    description: '피드 북마크 추가',
+  })
+  @ApiCreatedResponse({
+    description: '북마크를 추가한다',
+    type: CodeCategory,
+  })
+  async addBookmark(@Body() feedBookmarkDto: FeedBookmarkDto): Promise<void> {
+    await this.feedBookmarkService.addBookmark(feedBookmarkDto);
+  }
+
+  @Delete('/deleteBookmark')
+  @ApiOperation({
+    summary: '피드 북마크 삭제',
+    description: '피드 북마크 삭제',
+  })
+  @ApiCreatedResponse({
+    description: '북마크를 삭제한다',
+    type: CodeCategory,
+  })
+  async deleteBookmark(
+    @Query('feedId') feedId: string,
+    @Query('userId') userId: string,
+  ): Promise<void> {
+    await this.feedBookmarkService.deleteBookmark({ feedId, userId });
   }
 }

@@ -60,4 +60,7 @@ export class Feed {
 
   // 유저가 좋아요한 피드인지
   isLike = false;
+
+  /* 북마크 여부 */
+  isBookmark = false;
 }

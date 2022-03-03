@@ -8,6 +8,8 @@ import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { FeedTag } from './feed-tag/feed-tag.entity';
 import { FeedLikeRepository } from './feed-like/feed-like.repository';
 import { FeedLike } from './feed-like/feed-like.entity';
+import { FeedBookmark } from './feed-bookmark/feed-bookmark.entity';
+import { FeedBookmarkRepository } from './feed-bookmark/feed-bookmark.repository';
 
 @Injectable()
 export class FeedService {
@@ -16,6 +18,7 @@ export class FeedService {
     private feedTagRepository: FeedTagRepository,
     private feedPictureRepository: FeedPictureRepository,
     private feedLikeRepository: FeedLikeRepository,
+    private feedBookmarkRepository: FeedBookmarkRepository,
   ) {}
 
   /**
@@ -61,6 +64,11 @@ export class FeedService {
         await this.feedTagRepository.getFeedTagInFeedIds(feedIds);
       const feedLikes: FeedLike[] =
         await this.feedLikeRepository.findFeedLikeOfUser(feedIds, userId);
+      const feedBookmarks: FeedBookmark[] =
+        await this.feedBookmarkRepository.findFeedBookmarkOfUser(
+          feedIds,
+          userId,
+        );
 
       if (feedTags.length > 0 || feedLikes.length > 0) {
         feedPage.items.forEach((feed) => {
@@ -74,6 +82,12 @@ export class FeedService {
             feed.tags = feedTags.filter(
               (feedTag) => feedTag.feedId === feed.id,
             );
+          }
+          if (feedBookmarks.length > 0) {
+            const isBookmark = feedBookmarks.filter(
+              (feedBookmark) => feedBookmark.feedId === feed.id,
+            ).length;
+            feed.isBookmark = isBookmark > 0;
           }
         });
       }
