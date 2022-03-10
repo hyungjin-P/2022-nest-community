@@ -1,16 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { magazineRepository } from './magazine.repository';
+import { MagazineRepository } from './magazineRepository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MagazineEntity } from './magazine.entity';
 import { MagazineModifyDto } from './dto/magazine.modify.dto';
 import { Feed } from '../feed/feed.entity';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
+import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
 
 @Injectable()
 export class MagazineService {
   constructor(
-    @InjectRepository(magazineRepository)
-    private repository: magazineRepository,
+    @InjectRepository(MagazineRepository)
+    private repository: MagazineRepository,
+    private magazineBookmarkRepository: MagazineBookmarkRepository,
   ) {}
+
+  async findByPageWithBookmark(
+    options: IPaginationOptions,
+    category: string,
+    userId?: string,
+  ): Promise<Pagination<any>> {
+    let magazinePage: Pagination<any>;
+    if (category === 'all') {
+      magazinePage = await this.repository.findPagesAll(options);
+    } else {
+      magazinePage = await this.repository.findPages(options, category);
+    }
+
+    if (userId !== 'null' && magazinePage.items.length > 0) {
+      //magazine bookmark checking
+      const magazineIds: string[] = magazinePage.items.map((r) => r.id);
+
+      const magazineBookmarks: MagazineBookmarkEntity[] =
+        await this.magazineBookmarkRepository.findMagazineBookmarkOfUser(
+          magazineIds,
+          userId,
+        );
+      if (magazineBookmarks.length > 0) {
+        magazinePage.items.forEach((magazine) => {
+          const isBookmark = magazineBookmarks.filter(
+            (magazineBookmark) => magazineBookmark.magazineId === magazine.id,
+          ).length;
+          magazine.isBookmark = isBookmark > 0;
+        });
+      }
+    }
+
+    return magazinePage;
+  }
+
   async create(magazine: MagazineEntity) {
     let magazineRows: MagazineEntity = await this.repository.findOne({
       userId: magazine.userId,

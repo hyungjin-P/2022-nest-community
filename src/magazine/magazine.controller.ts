@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -15,6 +17,9 @@ import { MagazineModifyDto } from './dto/magazine.modify.dto';
 import { MagazineTagService } from './magazine-tag/magazine-tag.service';
 import { MagazineLikeService } from './magazine-like/magazine-like.service';
 import { MagazineTagEntity } from './magazine-tag/magazine-tag.entity';
+import { CodeItem } from '../codes/code-item/code-item.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { required } from 'joi';
 
 @ApiTags('매거진')
 @Controller('magazine')
@@ -24,6 +29,32 @@ export class MagazineController {
     private readonly magazineTagService: MagazineTagService,
     private readonly magazineLikeService: MagazineLikeService,
   ) {}
+
+  @Get('/findPages')
+  @ApiOperation({
+    summary: '매거진 페이지 조회',
+    description: '매거진 페이지 조회',
+  })
+  @ApiCreatedResponse({
+    description: '매거진 페이지를 조회한다.',
+    type: CodeItem,
+  })
+  async findByPage(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('category') category: string,
+    @Query('userId') userId?: string,
+  ): Promise<Pagination<any>> {
+    return await this.magazineService.findByPageWithBookmark(
+      {
+        page,
+        limit,
+        route: '/magazine/findPages',
+      },
+      category,
+      userId,
+    );
+  }
 
   @Post('/')
   @ApiOperation({

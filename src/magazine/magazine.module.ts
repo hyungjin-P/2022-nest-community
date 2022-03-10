@@ -10,16 +10,20 @@ import { MagazineCommentRepository } from './magazine-comment/magazine-comment.r
 import { MagazineLikeRepository } from './magazine-like/magazine-like.repository';
 import { MagazinePictureRepository } from './magazine-picture/magazine_picture.repository';
 import { MagazineTagRepository } from './magazine-tag/magazine-tag.repository';
-import { magazineRepository } from './magazine.repository';
+import { MagazineRepository } from './magazineRepository';
+import { MagazineBookmarkService } from './magazine-bookmark/magazine-bookmark.service';
+import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
+import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      magazineRepository,
+      MagazineRepository,
       MagazineCommentRepository,
       MagazineLikeRepository,
       MagazinePictureRepository,
       MagazineTagRepository,
+      MagazineBookmarkRepository,
     ]),
   ],
   controllers: [MagazineController],
@@ -29,6 +33,7 @@ import { magazineRepository } from './magazine.repository';
     MagazineLikeService,
     MagazinePictureService,
     MagazineTagService,
+    MagazineBookmarkService,
   ],
 })
 export class MagazineModule {}

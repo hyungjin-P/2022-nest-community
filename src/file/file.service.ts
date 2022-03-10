@@ -97,11 +97,6 @@ export class FileService {
         uploadFile.etag = stored.ETag;
 
         uploadFiles.push(uploadFile);
-
-        // 저장 방지 임시 동작
-        if (filesInfo.tag === 'magazine') {
-          return uploadFiles;
-        }
       } catch (e) {
         throw new Error(e);
       }
@@ -144,7 +139,7 @@ export class FileService {
     AWS.config.update({
       accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
-      region: this.configService.get('process.env.AWS_SES_REGION'),
+      region: this.configService.get('AWS_SES_REGION'),
     });
     const s3 = new AWS.S3();
 
