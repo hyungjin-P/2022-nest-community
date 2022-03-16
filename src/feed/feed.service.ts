@@ -68,9 +68,12 @@ export class FeedService {
       const feedTags: FeedTag[] =
         await this.feedTagRepository.getFeedTagInFeedIds(feedIds);
       const feedLikes: FeedLike[] =
-        await this.feedLikeRepository.findFeedLikeOfUser(feedIds, userId);
+        await this.feedLikeRepository.findFeedLikeInFeedIdsOfUser(
+          feedIds,
+          userId,
+        );
       const feedBookmarks: FeedBookmark[] =
-        await this.feedBookmarkRepository.findFeedBookmarkOfUser(
+        await this.feedBookmarkRepository.findFeedBookmarkInFeedIdsOfUser(
           feedIds,
           userId,
         );
@@ -98,19 +101,56 @@ export class FeedService {
       }
     }
 
-    console.log('findByPageWithBookmarkAndLike : ', feedPage);
+    // console.log('findByPageWithBookmarkAndLike : ', feedPage);
 
     return feedPage;
   }
 
-  /*
-   * 상세 피드 조회 - 작업 중
-   * 공통 로그인 피드 조회
-   * */
-  async findByFeedId(feedId: string): Promise<Feed> {
-    const feed: Feed = await this.feedRepository.findFeedPage(feedId);
-    feed[0].likeCount = await this.feedLikeService.getCount(feedId);
-    feed[0].commentCount = await this.feedCommentService.getCount(feedId);
+  /**
+   * 비로그인 피드 상세조회
+   * @param feedId
+   */
+  async findByFeedId(feedId: string): Promise<Feed[]> {
+    const feed: Feed[] = await this.feedRepository.findByFeedId(feedId);
+    if (feed.length > 0) {
+      feed[0].likeCount = await this.feedLikeService.getCount(feedId);
+      feed[0].commentCount = await this.feedCommentService.getCount(feedId);
+    }
+    return feed;
+  }
+
+  /**
+   * 로그인 피드 상세조회 (작업중)
+   * @param feedId
+   * @param userId
+   */
+  async findByFeedIdWithUserBehavior(
+    feedId: string,
+    userId: string,
+  ): Promise<Feed[]> {
+    const feed: Feed[] = await this.feedRepository.findByFeedId(feedId);
+    if (feed.length > 0) {
+      feed[0].likeCount = await this.feedLikeService.getCount(feedId);
+      feed[0].commentCount = await this.feedCommentService.getCount(feedId);
+
+      const feedLikes: FeedLike[] =
+        await this.feedLikeRepository.findFeedLikeInFeedIdOfUser(
+          feedId,
+          userId,
+        );
+      const feedBookmarks: FeedBookmark[] =
+        await this.feedBookmarkRepository.findFeedBookmarkInFeedIdOfUser(
+          feedId,
+          userId,
+        );
+
+      if (feedLikes.length > 0) {
+        feed[0].isLike = true;
+      }
+      if (feedBookmarks.length > 0) {
+        feed[0].isBookmark = true;
+      }
+    }
 
     return feed;
   }

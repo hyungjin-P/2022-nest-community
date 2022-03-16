@@ -4,7 +4,7 @@ import { FeedLike } from '../feed-like/feed-like.entity';
 
 @EntityRepository(FeedBookmark)
 export class FeedBookmarkRepository extends Repository<FeedBookmark> {
-  async findFeedBookmarkOfUser(
+  async findFeedBookmarkInFeedIdsOfUser(
     feedIds: string[],
     userId: string,
   ): Promise<FeedBookmark[]> {
@@ -12,6 +12,19 @@ export class FeedBookmarkRepository extends Repository<FeedBookmark> {
       .createQueryBuilder('feed_bookmark')
       .where('feed_id in (:feedIds) and user_id = :userId', {
         feedIds,
+        userId,
+      })
+      .getMany();
+  }
+
+  async findFeedBookmarkInFeedIdOfUser(
+    feedId: string,
+    userId: string,
+  ): Promise<FeedBookmark[]> {
+    return await getRepository(FeedBookmark)
+      .createQueryBuilder('feed_bookmark')
+      .where('feed_id = :feedId and user_id = :userId', {
+        feedId,
         userId,
       })
       .getMany();

@@ -67,7 +67,7 @@ export class PublicFeedController {
     });
   }
 
-  @Get('/public/feed/findPageOne')
+  @Get('/public/feed/findById')
   @ApiOperation({
     summary: '피드 1건 상세 조회',
     description: '피드 1건 상세 조회',
@@ -76,7 +76,7 @@ export class PublicFeedController {
     description: '피드 1건을 상세조회한다.',
     type: CodeCategory,
   })
-  async findFeedDetails(@Query('feedId') feedId: string): Promise<Feed> {
+  async findByPublicFeedById(@Query('feedId') feedId: string): Promise<Feed[]> {
     return await this.feedService.findByFeedId(feedId);
   }
 }

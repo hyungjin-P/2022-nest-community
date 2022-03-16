@@ -54,7 +54,7 @@ export class FeedRepository extends Repository<Feed> {
     return await paginateRaw<any>(queryBuilder, options);
   }
 
-  async findFeedPage(feedId: string): Promise<any> {
+  async findByFeedId(feedId: string): Promise<Feed[]> {
     return await getRepository(Feed)
       .createQueryBuilder('feed')
       .leftJoinAndSelect('feed.writer', 'user')
