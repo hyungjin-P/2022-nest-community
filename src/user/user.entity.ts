@@ -4,11 +4,14 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserBackground } from './user-background/user-background.entity';
 import { UserPicture } from './user-picture/user-picture.entity';
+import { FeedLike } from '../feed/feed-like/feed-like.entity';
+import { Feed } from '../feed/feed.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -112,4 +115,10 @@ export class User extends BaseEntity {
   refreshToken: string;
 
   customToken: string;
+
+  @OneToOne((type) => Feed, (feed) => feed.writer)
+  feed: Feed;
+
+  @OneToOne((type) => FeedLike, (feedlike) => feedlike.user)
+  feedLike: FeedLike;
 }

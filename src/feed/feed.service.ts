@@ -10,6 +10,8 @@ import { FeedLikeRepository } from './feed-like/feed-like.repository';
 import { FeedLike } from './feed-like/feed-like.entity';
 import { FeedBookmark } from './feed-bookmark/feed-bookmark.entity';
 import { FeedBookmarkRepository } from './feed-bookmark/feed-bookmark.repository';
+import { FeedLikeService } from './feed-like/feed-like.service';
+import { FeedCommentService } from './feed-comment/feed-comment.service';
 
 @Injectable()
 export class FeedService {
@@ -19,6 +21,9 @@ export class FeedService {
     private feedPictureRepository: FeedPictureRepository,
     private feedLikeRepository: FeedLikeRepository,
     private feedBookmarkRepository: FeedBookmarkRepository,
+
+    private feedLikeService: FeedLikeService,
+    private feedCommentService: FeedCommentService,
   ) {}
 
   /**
@@ -100,10 +105,14 @@ export class FeedService {
 
   /*
    * 상세 피드 조회 - 작업 중
-   * 개인 로그인 피드 조회 - 유저별로 좋아요, 북마크 상태 추적 표시 추가해야함
+   * 공통 로그인 피드 조회
    * */
-  async findByFeedId(id: string): Promise<Feed> {
-    return await this.feedRepository.findOne({ id });
+  async findByFeedId(feedId: string): Promise<Feed> {
+    const feed: Feed = await this.feedRepository.findFeedPage(feedId);
+    feed[0].likeCount = await this.feedLikeService.getCount(feedId);
+    feed[0].commentCount = await this.feedCommentService.getCount(feedId);
+
+    return feed;
   }
 
   /*

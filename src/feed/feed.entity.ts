@@ -3,15 +3,19 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../user/user.entity';
 import { FeedPicture } from './feed-picture/feed-picture.entity';
 import { FeedTag } from './feed-tag/feed-tag.entity';
+import { FeedLike } from './feed-like/feed-like.entity';
+import { PublicUserProFile } from '../user/public/public.user.entity';
 
-@Entity()
+@Entity('feed')
 export class Feed {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -20,7 +24,9 @@ export class Feed {
   @ApiProperty({ default: '40490ba6-7ad0-485b-914b-d8c3b882c799' })
   userId: string;
 
-  writer: User;
+  @OneToOne((type) => PublicUserProFile, (user) => user.feed)
+  @JoinColumn({ name: 'user_id' })
+  writer: PublicUserProFile;
 
   @Column()
   state: string;
@@ -31,15 +37,18 @@ export class Feed {
   @Column()
   picture: string;
 
+  @OneToMany((type) => FeedPicture, (picture) => picture.feed)
   pictures: FeedPicture[];
 
+  @OneToMany((type) => FeedTag, (tag) => tag.feed)
   tags: FeedTag[];
 
   tagsStr: string;
 
   like?: boolean;
 
-  likeUsers?: User[];
+  @OneToMany((type) => FeedLike, (feedLike) => feedLike.feed)
+  likeUsers?: FeedLike[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -54,9 +63,9 @@ export class Feed {
 
   pictureCount?: number;
 
-  likeCount?: number;
+  likeCount?: number = 0;
 
-  commentCount?: number;
+  commentCount?: number = 0;
 
   // 유저가 좋아요한 피드인지
   isLike = false;

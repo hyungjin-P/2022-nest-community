@@ -13,25 +13,29 @@ import { AuthModule } from '../auth/auth.module';
 import { FeedCommentRepository } from './feed-comment/feed-comment.repository';
 import { FeedBookmarkRepository } from './feed-bookmark/feed-bookmark.repository';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
+import { FeedCommentService } from './feed-comment/feed-comment.service';
+import { FeedPictureService } from './feed-picture/feed-picture.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       FeedRepository,
-      FeedTagRepository,
+      FeedBookmarkRepository,
+      FeedCommentRepository,
       FeedLikeRepository,
       FeedPictureRepository,
-      FeedCommentRepository,
-      FeedBookmarkRepository,
+      FeedTagRepository,
     ]),
     AuthModule,
   ],
   controllers: [FeedController, PublicFeedController],
   providers: [
     FeedService,
-    FeedTagService,
-    FeedLikeService,
     FeedBookmarkService,
+    FeedCommentService,
+    FeedLikeService,
+    FeedPictureService,
+    FeedTagService,
   ],
 })
 export class FeedModule {}

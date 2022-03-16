@@ -53,4 +53,19 @@ export class FeedRepository extends Repository<Feed> {
 
     return await paginateRaw<any>(queryBuilder, options);
   }
+
+  async findFeedPage(feedId: string): Promise<any> {
+    return await getRepository(Feed)
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.writer', 'user')
+      .leftJoinAndSelect('user.picture', 'user_picture')
+      .leftJoinAndSelect('feed.pictures', 'feed_picture')
+      .leftJoinAndSelect('feed.tags', 'feed_tag')
+      .leftJoinAndSelect('feed.likeUsers', 'likeUsers')
+      .limit(4)
+      .leftJoinAndSelect('likeUsers.user', 'likeUser')
+      .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')
+      .where('feed.id = :feedId', { feedId: feedId })
+      .getMany();
+  }
 }

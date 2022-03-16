@@ -3,8 +3,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PublicUserProFile } from '../public/public.user.entity';
 
 @Entity('user_picture')
 export class UserPicture extends BaseEntity {
@@ -19,4 +21,7 @@ export class UserPicture extends BaseEntity {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToOne((type) => PublicUserProFile, (user) => user.picture)
+  user: PublicUserProFile;
 }

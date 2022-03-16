@@ -30,4 +30,8 @@ export class FeedLikeService {
     await this.feedLikeRepository.delete({ feedId: feedId, userId: userId });
     return await this.feedLikeRepository.count({ feedId });
   }
+
+  async getCount(feedId: string): Promise<number> {
+    return await this.feedLikeRepository.count({ feedId });
+  }
 }

@@ -25,7 +25,7 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 export class PublicFeedController {
   constructor(private feedService: FeedService) {}
 
-  @Get('/public/feed')
+  @Get('/public/feed/findPages')
   @ApiOperation({
     summary: '피드 페이지 조회',
     description: '피드 페이지 조회',
@@ -67,7 +67,7 @@ export class PublicFeedController {
     });
   }
 
-  @Get('/public/feed/:id')
+  @Get('/public/feed/findPageOne')
   @ApiOperation({
     summary: '피드 1건 상세 조회',
     description: '피드 1건 상세 조회',
@@ -76,9 +76,7 @@ export class PublicFeedController {
     description: '피드 1건을 상세조회한다.',
     type: CodeCategory,
   })
-  async findFeedDetails(@Param('id') feedId: string): Promise<Feed> {
-    console.log(feedId);
-    const feed: Feed = await this.feedService.findByFeedId(feedId);
-    return feed;
+  async findFeedDetails(@Query('feedId') feedId: string): Promise<Feed> {
+    return await this.feedService.findByFeedId(feedId);
   }
 }
