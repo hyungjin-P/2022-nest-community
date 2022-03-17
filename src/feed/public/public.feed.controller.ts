@@ -41,7 +41,7 @@ export class PublicFeedController {
     return await this.feedService.findByPage({
       page,
       limit,
-      route: '/public/feed',
+      route: '/public/feed/findPages',
     });
   }
 
@@ -78,5 +78,29 @@ export class PublicFeedController {
   })
   async findByPublicFeedById(@Query('feedId') feedId: string): Promise<Feed[]> {
     return await this.feedService.findByFeedId(feedId);
+  }
+
+  @Get('/public/feed/like/findPages')
+  @ApiOperation({
+    summary: '피드 좋아요 조회',
+    description: '피드 좋아요 조회',
+  })
+  @ApiCreatedResponse({
+    description: '피드 좋아요를 페이지형식으로 조회한다.',
+    type: CodeItem,
+  })
+  async findFeedLikePage(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('feedId') feedId: string,
+  ): Promise<Pagination<any>> {
+    return await this.feedService.findByLikePage(
+      {
+        page,
+        limit,
+        route: '/public/feed/like/findPages',
+      },
+      feedId,
+    );
   }
 }

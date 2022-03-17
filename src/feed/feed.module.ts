@@ -15,6 +15,8 @@ import { FeedBookmarkRepository } from './feed-bookmark/feed-bookmark.repository
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FeedCommentService } from './feed-comment/feed-comment.service';
 import { FeedPictureService } from './feed-picture/feed-picture.service';
+import { FeedCommentController } from './feed-comment/feed-comment.controller';
+import { FeedCommentModule } from './feed-comment/feed-comment.module';
 
 @Module({
   imports: [
@@ -27,8 +29,9 @@ import { FeedPictureService } from './feed-picture/feed-picture.service';
       FeedTagRepository,
     ]),
     AuthModule,
+    FeedCommentModule,
   ],
-  controllers: [FeedController, PublicFeedController],
+  controllers: [FeedController, PublicFeedController, FeedCommentController],
   providers: [
     FeedService,
     FeedBookmarkService,

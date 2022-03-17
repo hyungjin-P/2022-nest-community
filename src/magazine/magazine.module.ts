@@ -14,6 +14,7 @@ import { MagazineRepository } from './magazineRepository';
 import { MagazineBookmarkService } from './magazine-bookmark/magazine-bookmark.service';
 import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
 import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
+import { PublicMagazineController } from './public/public.magazine.controller';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmar
       MagazineBookmarkRepository,
     ]),
   ],
-  controllers: [MagazineController],
+  controllers: [MagazineController, PublicMagazineController],
   providers: [
     MagazineService,
     MagazineCommentService,

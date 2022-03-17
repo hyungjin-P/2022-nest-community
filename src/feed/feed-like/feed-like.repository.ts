@@ -1,5 +1,10 @@
 import { EntityRepository, getRepository, Repository } from 'typeorm';
 import { FeedLike } from './feed-like.entity';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @EntityRepository(FeedLike)
 export class FeedLikeRepository extends Repository<FeedLike> {
@@ -32,5 +37,18 @@ export class FeedLikeRepository extends Repository<FeedLike> {
         userId,
       })
       .getMany();
+  }
+
+  async findPages(
+    options: IPaginationOptions,
+    feedId: string,
+  ): Promise<Pagination<FeedLike>> {
+    const queryBuilder = await getRepository(FeedLike)
+      .createQueryBuilder('feed_like')
+      .leftJoinAndSelect('feed_like.user', 'likeUser')
+      .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')
+      .where('feed_id = :feedId', { feedId })
+      .orderBy('feed_like.created_at', 'DESC');
+    return await paginate(queryBuilder, options);
   }
 }

@@ -47,7 +47,7 @@ export class FeedController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('userId') userId: string,
   ): Promise<Pagination<any>> {
-    return await this.feedService.findByPageWithBookmarkAndLike(
+    return await this.feedService.findByPageWithUserBehavior(
       {
         page,
         limit,
@@ -123,6 +123,32 @@ export class FeedController {
     @Param('tagId') tagId: string,
   ) {
     return await this.feedTagService.deleteFeedTag(feedId, tagId);
+  }
+
+  @Get('/like/findPages')
+  @ApiOperation({
+    summary: '피드 좋아요 조회',
+    description: '피드 좋아요 조회',
+  })
+  @ApiCreatedResponse({
+    description: '피드 좋아요를 페이지형식으로 조회한다.',
+    type: CodeItem,
+  })
+  async findFeedLikePage(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('feedId') feedId: string,
+    @Query('userId') userId: string,
+  ): Promise<Pagination<any>> {
+    return await this.feedService.findByLikePageWithUserBehavior(
+      {
+        page,
+        limit,
+        route: '/feed/like/findPages',
+      },
+      feedId,
+      userId,
+    );
   }
 
   @Post('/addLike')

@@ -36,7 +36,7 @@ export class MagazineController {
     description: '매거진 페이지 조회',
   })
   @ApiCreatedResponse({
-    description: '매거진 페이지를 조회한다.',
+    description: '로그인 상태의 매거진 페이지를 조회한다.',
     type: CodeItem,
   })
   async findByPage(
@@ -45,7 +45,7 @@ export class MagazineController {
     @Query('category') category: string,
     @Query('userId') userId?: string,
   ): Promise<Pagination<any>> {
-    return await this.magazineService.findByPageWithBookmark(
+    return await this.magazineService.findByPageWithUserBehavior(
       {
         page,
         limit,

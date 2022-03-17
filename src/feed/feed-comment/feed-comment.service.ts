@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FeedCommentRepository } from './feed-comment.repository';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class FeedCommentService {
@@ -17,5 +18,14 @@ export class FeedCommentService {
    * */
   async getCount(feedId: string) {
     return await this.feedCommentRepository.count({ feedId });
+  }
+
+  async findByPage(
+    options: IPaginationOptions,
+    userId: string,
+  ): Promise<Pagination<any>> {
+    const commentPage: Pagination<any> =
+      await this.feedCommentRepository.findCommentPages(options);
+    return undefined;
   }
 }

@@ -27,7 +27,7 @@ export class FeedService {
   ) {}
 
   /**
-   * 공개 피드 조회
+   * 공개 피드 상세 조회
    * @param options { page, limit }
    */
   async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
@@ -55,7 +55,7 @@ export class FeedService {
    * @param options { page, limit }
    * @param userId
    */
-  async findByPageWithBookmarkAndLike(
+  async findByPageWithUserBehavior(
     options: IPaginationOptions,
     userId: string,
   ): Promise<Pagination<any>> {
@@ -206,5 +206,28 @@ export class FeedService {
     feedRows.deletedAt = new Date();
 
     await this.feedRepository.save(feedRows);
+  }
+
+  async findByLikePage(
+    options: IPaginationOptions,
+    feedId: string,
+  ): Promise<Pagination<any>> {
+    const feedLikeRows: Pagination<FeedLike> =
+      await this.feedLikeRepository.findPages(options, feedId);
+
+    return feedLikeRows;
+  }
+
+  async findByLikePageWithUserBehavior(
+    options: IPaginationOptions,
+    feedId: string,
+    userId: string,
+  ): Promise<Pagination<any>> {
+    const feedLikeRows: Pagination<FeedLike> =
+      await this.feedLikeRepository.findPages(options, feedId);
+
+    // user별로 isFllow 추가 해야함
+
+    return feedLikeRows;
   }
 }

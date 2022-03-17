@@ -20,7 +20,21 @@ export class MagazineService {
     private magazineBookmarkRepository: MagazineBookmarkRepository,
   ) {}
 
-  async findByPageWithBookmark(
+  async findByPage(
+    options: IPaginationOptions,
+    category: string,
+  ): Promise<Pagination<any>> {
+    let magazinePage: Pagination<any>;
+    if (category === 'all') {
+      magazinePage = await this.repository.findPagesAll(options);
+    } else {
+      magazinePage = await this.repository.findPages(options, category);
+    }
+
+    return magazinePage;
+  }
+
+  async findByPageWithUserBehavior(
     options: IPaginationOptions,
     category: string,
     userId?: string,
@@ -32,7 +46,7 @@ export class MagazineService {
       magazinePage = await this.repository.findPages(options, category);
     }
 
-    if (userId !== 'null' && magazinePage.items.length > 0) {
+    if (magazinePage.items.length > 0) {
       //magazine bookmark checking
       const magazineIds: string[] = magazinePage.items.map((r) => r.id);
 
