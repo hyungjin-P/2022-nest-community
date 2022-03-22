@@ -19,11 +19,15 @@ import { CodeItem } from '../../codes/code-item/code-item.entity';
 import { CodeCategory } from '../../codes/code-category/code-category.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { FeedCommentService } from '../feed-comment/feed-comment.service';
 
 @ApiTags('피드(공개)')
 @Controller()
 export class PublicFeedController {
-  constructor(private feedService: FeedService) {}
+  constructor(
+    private feedService: FeedService,
+    private feedCommentService: FeedCommentService,
+  ) {}
 
   @Get('/public/feed/findPages')
   @ApiOperation({
@@ -101,6 +105,54 @@ export class PublicFeedController {
         route: '/public/feed/like/findPages',
       },
       feedId,
+    );
+  }
+
+  @Get('public/feed/comment/findPages')
+  @ApiOperation({
+    summary: '피드 댓글 조회',
+    description: '피드 댓글 조회',
+  })
+  @ApiCreatedResponse({
+    description: '댓글을 페이지 별로 조회한다.',
+    type: CodeItem,
+  })
+  async findFeedCommentPage(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('feedId') feedId: string,
+  ): Promise<Pagination<any>> {
+    return await this.feedCommentService.findByPage(
+      {
+        page,
+        limit,
+        route: '/public/feed/comment/findPages',
+      },
+      feedId,
+    );
+  }
+
+  @Get('public/feed/comment/sub/findPages')
+  @ApiOperation({
+    summary: '대댓글 조회',
+    description: '피드 대댓글 조회',
+  })
+  @ApiCreatedResponse({
+    description: '대댓글을 페이지 별로 조회한다.',
+    type: CodeItem,
+  })
+  async findFeedSubCommentPage(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('feedCommentId') feedCommentId: string,
+  ): Promise<Pagination<any>> {
+    return await this.feedCommentService.findSubByPage(
+      {
+        page,
+        limit,
+        route: '/public/feed/comment/sub/findPages',
+      },
+      feedCommentId,
     );
   }
 }

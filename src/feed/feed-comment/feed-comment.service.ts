@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FeedCommentRepository } from './feed-comment.repository';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import { FeedComment } from './feed-comment.entity';
 
 @Injectable()
 export class FeedCommentService {
@@ -22,10 +23,74 @@ export class FeedCommentService {
 
   async findByPage(
     options: IPaginationOptions,
+    feedId: string,
+  ): Promise<Pagination<any>> {
+    const commentPage: Pagination<any> =
+      await this.feedCommentRepository.findCommentPages(options, feedId);
+
+    return commentPage;
+  }
+
+  async findSubByPage(
+    options: IPaginationOptions,
+    feedCommentId: string,
+  ): Promise<Pagination<any>> {
+    const subCommentPage: Pagination<any> =
+      await this.feedCommentRepository.findSubCommentPage(
+        options,
+        feedCommentId,
+      );
+
+    return subCommentPage;
+  }
+
+  async findByPageWithUserBehavior(
+    options: IPaginationOptions,
+    feedId: string,
     userId: string,
   ): Promise<Pagination<any>> {
     const commentPage: Pagination<any> =
-      await this.feedCommentRepository.findCommentPages(options);
-    return undefined;
+      await this.feedCommentRepository.findCommentPages(options, feedId);
+
+    // 댓글 좋아요 불러와야 함.
+
+    return commentPage;
+  }
+
+  async findSubByPageWithUserBehavior(
+    options: IPaginationOptions,
+    feedCommentId: string,
+    userId: string,
+  ): Promise<Pagination<any>> {
+    const subCommentPage: Pagination<any> =
+      await this.feedCommentRepository.findSubCommentPage(
+        options,
+        feedCommentId,
+      );
+    // 댓글 좋아요 불러와야 함.
+
+    return subCommentPage;
+  }
+
+  async createFeedComment(feedComment: FeedComment): Promise<FeedComment> {
+    return await this.feedCommentRepository.save(feedComment);
+  }
+
+  async modifyFeedComment(
+    feedCommentId: string,
+    text: string,
+  ): Promise<FeedComment> {
+    return await this.feedCommentRepository.save({
+      id: feedCommentId,
+      text: text,
+    });
+  }
+
+  async deleteFeedComment(feedCommentId: string): Promise<FeedComment> {
+    const feedCommentRows: FeedComment =
+      await this.feedCommentRepository.findOne({ id: feedCommentId });
+
+    feedCommentRows.deletedAt = new Date();
+    return await this.feedCommentRepository.save(feedCommentRows);
   }
 }

@@ -7,7 +7,6 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Feed } from '../feed.entity';
-import { User } from '../../user/user.entity';
 import { PublicUserProFile } from '../../user/public/public.user.entity';
 
 @Entity()
@@ -26,7 +25,7 @@ export class FeedLike {
 
   @OneToOne((type) => PublicUserProFile, (user) => user.feedLike)
   @JoinColumn()
-  user: PublicUserProFile[];
+  user: PublicUserProFile;
 
   likeCount: number;
 }

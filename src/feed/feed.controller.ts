@@ -72,6 +72,19 @@ export class FeedController {
     return await this.feedService.findByFeedIdWithUserBehavior(feedId, userId);
   }
 
+  @Post('/createFeed')
+  @ApiOperation({
+    summary: '피드 생성',
+    description: '피드 생성',
+  })
+  async createFeed(
+    @Body() feed: Feed,
+    @Query('rewrite') rewrite: boolean,
+  ): Promise<void> {
+    feed.rewrite = rewrite;
+    return await this.feedService.createFeed(feed);
+  }
+
   @Post('/modifyFeed')
   @ApiOperation({
     summary: '피드 수정',
@@ -173,19 +186,6 @@ export class FeedController {
     @Query('userId') userId: string,
   ): Promise<number> {
     return await this.feedLikeService.deleteFeedLike(feedId, userId);
-  }
-
-  @Post('/createFeed')
-  @ApiOperation({
-    summary: '피드 생성',
-    description: '피드 생성',
-  })
-  async createFeed(
-    @Body() feed: Feed,
-    @Query('rewrite') rewrite: boolean,
-  ): Promise<void> {
-    feed.rewrite = rewrite;
-    return await this.feedService.createFeed(feed);
   }
 
   @Post('/addBookmark')

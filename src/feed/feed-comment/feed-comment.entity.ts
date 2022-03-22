@@ -4,9 +4,15 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { FeedCommentMention } from './comment-mention/comment-mention.entity';
+import { PublicUserProFile } from '../../user/public/public.user.entity';
 
 @Entity('feed_comment')
 export class FeedComment extends BaseEntity {
@@ -14,15 +20,19 @@ export class FeedComment extends BaseEntity {
   id: string;
 
   @Column()
+  @ApiProperty({ default: 'ab27c954-5f79-458c-8a0a-c64497c81a5d' })
   feedId: string;
 
   @Column()
+  @ApiProperty({ default: 'a41d829e-add3-4867-9429-0eca34fc1e48' })
   userId: string;
 
   @Column()
+  @ApiProperty({ nullable: true })
   parentId: string;
 
   @Column()
+  @ApiProperty()
   text: string;
 
   @DeleteDateColumn()
@@ -33,4 +43,11 @@ export class FeedComment extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne((type) => PublicUserProFile, (user) => user.feedComment)
+  @JoinColumn({ name: 'user_id' })
+  writer: PublicUserProFile;
+
+  @OneToMany((type) => FeedCommentMention, (mention) => mention.feedComment)
+  mentions: FeedCommentMention[];
 }

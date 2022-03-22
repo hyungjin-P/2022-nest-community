@@ -17,6 +17,8 @@ import { FeedCommentService } from './feed-comment/feed-comment.service';
 import { FeedPictureService } from './feed-picture/feed-picture.service';
 import { FeedCommentController } from './feed-comment/feed-comment.controller';
 import { FeedCommentModule } from './feed-comment/feed-comment.module';
+import { FeedCommentMentionService } from './feed-comment/comment-mention/comment-mention.service';
+import { FeedCommentMentionRepository } from './feed-comment/comment-mention/comment-mention.repository';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { FeedCommentModule } from './feed-comment/feed-comment.module';
       FeedRepository,
       FeedBookmarkRepository,
       FeedCommentRepository,
+      FeedCommentMentionRepository,
       FeedLikeRepository,
       FeedPictureRepository,
       FeedTagRepository,
@@ -36,6 +39,7 @@ import { FeedCommentModule } from './feed-comment/feed-comment.module';
     FeedService,
     FeedBookmarkService,
     FeedCommentService,
+    FeedCommentMentionService,
     FeedLikeService,
     FeedPictureService,
     FeedTagService,

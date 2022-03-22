@@ -218,6 +218,9 @@ export class FeedService {
     return feedLikeRows;
   }
 
+  /*
+   * 작업 미완료, 팔로우 정보 조회 추가
+   * */
   async findByLikePageWithUserBehavior(
     options: IPaginationOptions,
     feedId: string,

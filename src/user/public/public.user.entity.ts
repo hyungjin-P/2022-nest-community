@@ -11,6 +11,9 @@ import { UserPicture } from '../user-picture/user-picture.entity';
 import { Feed } from '../../feed/feed.entity';
 import { FeedLike } from '../../feed/feed-like/feed-like.entity';
 import { UserBackground } from '../user-background/user-background.entity';
+import { type } from 'os';
+import { FeedComment } from '../../feed/feed-comment/feed-comment.entity';
+import { FeedCommentMention } from '../../feed/feed-comment/comment-mention/comment-mention.entity';
 
 @Entity('user')
 export class PublicUserProFile {
@@ -38,6 +41,15 @@ export class PublicUserProFile {
   @OneToOne((type) => Feed, (feed) => feed.writer)
   feed: Feed;
 
-  @OneToOne((type) => FeedLike, (feedlike) => feedlike.user)
+  @OneToOne((type) => FeedLike, (feedLike) => feedLike.user)
   feedLike: FeedLike;
+
+  @OneToOne((type) => FeedComment, (feedComment) => feedComment.writer)
+  feedComment: FeedComment;
+
+  @OneToOne(
+    (type) => FeedCommentMention,
+    (feedCommentMention) => feedCommentMention.mentionUser,
+  )
+  feedCommentMention: FeedCommentMention;
 }
