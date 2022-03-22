@@ -6,16 +6,23 @@ import { FeedCommentService } from './feed-comment.service';
 import { AuthModule } from '../../auth/auth.module';
 import { FeedCommentMentionService } from './comment-mention/comment-mention.service';
 import { FeedCommentMentionRepository } from './comment-mention/comment-mention.repository';
+import { FeedCommentLikeService } from './commnet-like/comment-like.service';
+import { FeedCommentLikeRepository } from './commnet-like/comment-like.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       FeedCommentRepository,
       FeedCommentMentionRepository,
+      FeedCommentLikeRepository,
     ]),
     AuthModule,
   ],
   controllers: [FeedCommentController],
-  providers: [FeedCommentService, FeedCommentMentionService],
+  providers: [
+    FeedCommentService,
+    FeedCommentMentionService,
+    FeedCommentLikeService,
+  ],
 })
 export class FeedCommentModule {}

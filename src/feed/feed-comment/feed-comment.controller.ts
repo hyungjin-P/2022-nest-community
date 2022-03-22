@@ -15,6 +15,7 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { FeedComment } from './feed-comment.entity';
 import { FeedCommentMentionService } from './comment-mention/comment-mention.service';
 import { FeedCommentMention } from './comment-mention/comment-mention.entity';
+import { FeedCommentLikeService } from './commnet-like/comment-like.service';
 
 @ApiTags('피드 댓글')
 @Controller('/feed/comment')
@@ -22,6 +23,7 @@ export class FeedCommentController {
   constructor(
     private feedCommentService: FeedCommentService,
     private feedCommentMentionService: FeedCommentMentionService,
+    private feedCommentLikeService: FeedCommentLikeService,
   ) {}
 
   @Get('/findPages')
@@ -128,5 +130,29 @@ export class FeedCommentController {
   })
   async deleteCommentMention(@Query('mentionId') mentionId: string) {
     return await this.feedCommentMentionService.deleteMention(mentionId);
+  }
+
+  @Post('/addLike')
+  @ApiOperation({
+    summary: '댓글 좋아요 추가',
+    description: '댓글 좋아요 추가',
+  })
+  async createCommentLike(
+    @Query('feedCommentId') feedCommentId: string,
+    @Query('userId') userId: string,
+  ): Promise<number> {
+    return await this.feedCommentLikeService.createLike(feedCommentId, userId);
+  }
+
+  @Delete('/deleteLike')
+  @ApiOperation({
+    summary: '댓글 좋아요 취소',
+    description: '댓글 좋아요 취소',
+  })
+  async deleteCommentLike(
+    @Query('feedCommentId') feedCommentId: string,
+    @Query('userId') userId: string,
+  ): Promise<number> {
+    return await this.feedCommentLikeService.deleteLike(feedCommentId, userId);
   }
 }

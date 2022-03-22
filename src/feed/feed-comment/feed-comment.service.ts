@@ -3,12 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FeedCommentRepository } from './feed-comment.repository';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { FeedComment } from './feed-comment.entity';
+import { FeedLike } from '../feed-like/feed-like.entity';
+import { FeedCommentLikeRepository } from './commnet-like/comment-like.repository';
+import { FeedCommentLike } from './commnet-like/commnet-like.entity';
+import { FeedCommentLikeService } from './commnet-like/comment-like.service';
 
 @Injectable()
 export class FeedCommentService {
   constructor(
     @InjectRepository(FeedCommentRepository)
     private feedCommentRepository: FeedCommentRepository,
+    private feedCommentLikeRepository: FeedCommentLikeRepository,
+
+    private feedCommentLikeService: FeedCommentLikeService,
   ) {}
 
   /*
@@ -28,6 +35,14 @@ export class FeedCommentService {
     const commentPage: Pagination<any> =
       await this.feedCommentRepository.findCommentPages(options, feedId);
 
+    if (commentPage.items.length > 0) {
+      for (const comment of commentPage.items) {
+        comment.likeCount = await this.feedCommentLikeService.getCount(
+          comment.id,
+        );
+      }
+    }
+
     return commentPage;
   }
 
@@ -41,6 +56,14 @@ export class FeedCommentService {
         feedCommentId,
       );
 
+    if (subCommentPage.items.length > 0) {
+      for (const comment of subCommentPage.items) {
+        comment.likeCount = await this.feedCommentLikeService.getCount(
+          comment.id,
+        );
+      }
+    }
+
     return subCommentPage;
   }
 
@@ -53,6 +76,29 @@ export class FeedCommentService {
       await this.feedCommentRepository.findCommentPages(options, feedId);
 
     // 댓글 좋아요 불러와야 함.
+    if (commentPage.items.length > 0) {
+      const commentIds: string[] = commentPage.items.map((r) => r.id);
+      const commentLikes: FeedCommentLike[] =
+        await this.feedCommentLikeRepository.findCommentLikeInCommentIdsOfUser(
+          commentIds,
+          userId,
+        );
+
+      for (const comment of commentPage.items) {
+        //like Count
+        comment.likeCount = await this.feedCommentLikeService.getCount(
+          comment.id,
+        );
+
+        //isLike
+        if (commentLikes.length > 0) {
+          const isLike = commentLikes.filter(
+            (commentLike) => commentLike.feedCommentId === comment.id,
+          ).length;
+          comment.isLike = isLike > 0;
+        }
+      }
+    }
 
     return commentPage;
   }
@@ -67,7 +113,32 @@ export class FeedCommentService {
         options,
         feedCommentId,
       );
+
     // 댓글 좋아요 불러와야 함.
+    if (subCommentPage.items.length > 0) {
+      const commentIds: string[] = subCommentPage.items.map((r) => r.id);
+      const commentLikes: FeedCommentLike[] =
+        await this.feedCommentLikeRepository.findCommentLikeInCommentIdsOfUser(
+          commentIds,
+          userId,
+        );
+      if (commentLikes.length > 0) {
+        for (const comment of subCommentPage.items) {
+          //like Count
+          comment.likeCount = await this.feedCommentLikeService.getCount(
+            comment.id,
+          );
+
+          //isLike
+          if (commentLikes.length > 0) {
+            const isLike = commentLikes.filter(
+              (commentLike) => commentLike.feedCommentId === comment.id,
+            ).length;
+            comment.isLike = isLike > 0;
+          }
+        }
+      }
+    }
 
     return subCommentPage;
   }
