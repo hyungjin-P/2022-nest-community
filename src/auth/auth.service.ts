@@ -90,7 +90,9 @@ export class AuthService {
     await this.userRepository.save(newUser);
 
     const userPictureUrl: string = kakaoUserInfo.thumbnail_image;
-    userPictureUrl.replace('http://', 'https://');
+    if (userPictureUrl) {
+      userPictureUrl.replace('http://', 'https://');
+    }
 
     const userPicture: UserPicture = new UserPicture();
     userPicture.userId = newUser.id;
