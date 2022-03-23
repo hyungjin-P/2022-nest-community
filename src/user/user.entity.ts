@@ -12,6 +12,7 @@ import { UserBackground } from './user-background/user-background.entity';
 import { UserPicture } from './user-picture/user-picture.entity';
 import { FeedLike } from '../feed/feed-like/feed-like.entity';
 import { Feed } from '../feed/feed.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -121,4 +122,8 @@ export class User extends BaseEntity {
 
   @OneToOne((type) => FeedLike, (feedlike) => feedlike.user)
   feedLike: FeedLike;
+
+  // @Column({ nullable: true })
+  // @Exclude()
+  // currentHashedRefreshToken?: string;
 }

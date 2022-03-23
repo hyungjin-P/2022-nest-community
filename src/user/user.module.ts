@@ -25,5 +25,6 @@ import { UserBackgroundService } from './user-background/user-background.service
   ],
   controllers: [UserController],
   providers: [UserService, CommonUtil, EmailService, UserBackgroundService],
+  exports: [UserService],
 })
 export class UserModule {}

@@ -15,6 +15,7 @@ import { UserBackground } from './user-background/user-background.entity';
 import { UserProfileDto } from './dto/user.profile.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserPasswordChangeDto } from './dto/user.password-change.dto';
+import { UserModifyServiceTermDto } from '../auth/dto/user-modify-service-term.dto';
 
 @Injectable()
 export class UserService {
@@ -70,7 +71,10 @@ export class UserService {
    */
   async modify(user: User): Promise<User> {
     if (!user.id) {
-      throw new Error();
+      throw new HttpException(
+        { code: 'failure', message: '사용자가 존재하지 않습니다' },
+        500,
+      );
     }
     return await this.userRepository.save(user);
   }
@@ -243,5 +247,32 @@ export class UserService {
     user.password = await bcrypt.hash(userPasswordChangeDto.newPassword, salt);
 
     await this.userRepository.save(user);
+  }
+
+  /**
+   * 유저 서비스 이용약관 수정
+   * @param modifyInfo
+   */
+  async modifyUserServiceTerm(
+    modifyInfo: UserModifyServiceTermDto,
+  ): Promise<void> {
+    const user: User = await this.userRepository.findOne({
+      where: { id: modifyInfo.userId },
+    });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          code: 'failure',
+          message: '사용자가 존재하지 않습니다.',
+        },
+        500,
+      );
+    }
+
+    const serviceTerm = modifyInfo;
+    delete serviceTerm.userId;
+
+    await this.userRepository.save({ ...user, ...serviceTerm });
   }
 }

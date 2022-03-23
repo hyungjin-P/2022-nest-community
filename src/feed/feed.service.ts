@@ -175,8 +175,6 @@ export class FeedService {
     if (feedRows === undefined) {
       await this.feedRepository.save(feed);
     }
-
-    // 기존에 피드 있을 시, 해당 정보 리턴 작업
   }
 
   /*

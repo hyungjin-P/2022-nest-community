@@ -2,7 +2,6 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
-  Param,
   ParseIntPipe,
   Query,
   UseGuards,
@@ -17,9 +16,9 @@ import {
 } from '@nestjs/swagger';
 import { CodeItem } from '../../codes/code-item/code-item.entity';
 import { CodeCategory } from '../../codes/code-category/code-category.entity';
-import { AuthGuard } from '@nestjs/passport';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { FeedCommentService } from '../feed-comment/feed-comment.service';
+import { LocalAuthGuard } from '../../auth/guards/local-auth-guard';
 
 @ApiTags('피드(공개)')
 @Controller()
@@ -50,7 +49,7 @@ export class PublicFeedController {
   }
 
   @Get('/public/authFeed')
-  @UseGuards(AuthGuard())
+  @UseGuards(LocalAuthGuard)
   @ApiOperation({
     summary: '피드 테스트',
     description: '피드 테스트',
@@ -59,7 +58,7 @@ export class PublicFeedController {
     description: '피드 권한 테스트',
     type: CodeItem,
   })
-  @ApiBearerAuth('accessToken') //
+  @ApiBearerAuth('accessToken')
   async authFeed(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
