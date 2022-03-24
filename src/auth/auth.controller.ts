@@ -1,18 +1,22 @@
 import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '../user/user.entity';
 import { UserEmailSignInDto } from './dto/user-email-sign-in.dto';
 import { KakaoAccessDto } from './dto/kakao-access.dto';
 import { NaverAccessDto } from './dto/naver-access.dto';
 import { UserService } from '../user/user.service';
 import { UserModifyServiceTermDto } from './dto/user-modify-service-term.dto';
+import { FirebaseService } from '../services/firebase/firebase.service';
+import { GoogleAccessDto } from './dto/google-access.dto';
 
 @Controller('auth')
+@ApiTags('인증')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private firebaseService: FirebaseService,
   ) {}
 
   @Post('/signIn')
@@ -76,5 +80,19 @@ export class AuthController {
     @Body() modifyInfo: UserModifyServiceTermDto,
   ): Promise<void> {
     await this.userService.modifyUserServiceTerm(modifyInfo);
+  }
+
+  @ApiOperation({
+    summary: '구글 로그인',
+    description: '구글 로그인',
+  })
+  @ApiCreatedResponse({
+    description: '구글 로그인',
+  })
+  @Post('/firebaseSignIn')
+  async signInGoogleLogin(
+    @Body() googleAccessDto: GoogleAccessDto,
+  ): Promise<User> {
+    return await this.authService.signInGoogle(googleAccessDto);
   }
 }

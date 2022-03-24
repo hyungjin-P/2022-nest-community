@@ -16,6 +16,7 @@ import { UserPicture } from '../user/user-picture/user-picture.entity';
 import { UserBackground } from '../user/user-background/user-background.entity';
 import { KakaoUserInfoDto } from './dto/kakao-user-info.dto';
 import { NaverUserInfoDtd } from './dto/naver-user-info.dtd';
+import { GoogleAccessDto } from './dto/google-access.dto';
 
 @Injectable()
 export class AuthService {
@@ -380,6 +381,88 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { id },
     });
+
+    return user;
+  }
+
+  /**
+   * 구글 로그인
+   * @param googleAccessDto
+   */
+  async signInGoogle(googleAccessDto: GoogleAccessDto): Promise<User> {
+    const googleUser: any = await this.firebaseService.verifyIdToken(
+      googleAccessDto.accessToken,
+    );
+
+    if (!googleUser) {
+      throw new HttpException(
+        { code: 'failure', message: '잘못된 요청입니다.' },
+        500,
+      );
+    }
+
+    console.log('googleUser : ', googleUser);
+
+    let user: User = await this.userRepository.findOne({
+      where: {
+        providedId: googleUser.user_id,
+      },
+    });
+
+    if (!user) {
+      return this.signUpGoogle(googleUser);
+      // 회원가입
+    } else {
+      const tokens: any = await this.createTokens(user.providedId, user.id);
+      const images: any = await this.getUserPictureAndBackground(user.id);
+
+      user = { ...user, ...tokens, ...images };
+
+      return user;
+    }
+  }
+
+  /**
+   * 구글 회원가입
+   * @param googleUser
+   * @description googleUser is firebaseService.verifyIdToken(accessToken) for return value.
+   */
+  async signUpGoogle(googleUser: any): Promise<User> {
+    if (!googleUser) {
+      throw new HttpException(
+        { code: 'failure', message: '잘못된 요청입니다.' },
+        500,
+      );
+    }
+
+    let user: User;
+
+    const appendValue: any = {
+      provider: 'google.com',
+      providedId: googleUser.user_id,
+      email: googleUser.email,
+      emailVerified: googleUser.email_verified,
+      name: googleUser.name,
+      color: this.commonUtil.randomColor(),
+    };
+
+    user = { ...appendValue };
+
+    await this.userRepository.save(user);
+
+    if (googleUser?.picture) {
+      const userPicture: UserPicture = new UserPicture();
+      userPicture.userId = user.id;
+      userPicture.url = googleUser.picture;
+
+      await this.userPictureRepository.save(userPicture);
+
+      user.picture = [userPicture];
+    }
+
+    const tokens = await this.createTokens(user.providedId, user.id);
+
+    user = { ...user, ...tokens };
 
     return user;
   }
