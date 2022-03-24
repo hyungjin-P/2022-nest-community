@@ -29,6 +29,8 @@ export class PublicUserProFile {
   @Column()
   email: string;
 
+  isFollow: boolean;
+
   // @ViewColumn()
   // aboutMe: string;
 

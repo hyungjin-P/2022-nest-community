@@ -21,6 +21,8 @@ import { FeedCommentMentionService } from './feed-comment/comment-mention/commen
 import { FeedCommentMentionRepository } from './feed-comment/comment-mention/comment-mention.repository';
 import { FeedCommentLikeRepository } from './feed-comment/commnet-like/comment-like.repository';
 import { FeedCommentLikeService } from './feed-comment/commnet-like/comment-like.service';
+import { FollowService } from '../user/follow/follow.service';
+import { FollowRepository } from '../user/follow/follow.repository';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { FeedCommentLikeService } from './feed-comment/commnet-like/comment-like
       FeedLikeRepository,
       FeedPictureRepository,
       FeedTagRepository,
+
+      FollowRepository,
     ]),
     AuthModule,
     FeedCommentModule,
@@ -47,6 +51,8 @@ import { FeedCommentLikeService } from './feed-comment/commnet-like/comment-like
     FeedLikeService,
     FeedPictureService,
     FeedTagService,
+
+    FollowService,
   ],
 })
 export class FeedModule {}

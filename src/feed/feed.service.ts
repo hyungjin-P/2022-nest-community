@@ -12,6 +12,8 @@ import { FeedBookmark } from './feed-bookmark/feed-bookmark.entity';
 import { FeedBookmarkRepository } from './feed-bookmark/feed-bookmark.repository';
 import { FeedLikeService } from './feed-like/feed-like.service';
 import { FeedCommentService } from './feed-comment/feed-comment.service';
+import { FollowService } from '../user/follow/follow.service';
+import { Follow } from '../user/follow/follow.entity';
 
 @Injectable()
 export class FeedService {
@@ -24,10 +26,12 @@ export class FeedService {
 
     private feedLikeService: FeedLikeService,
     private feedCommentService: FeedCommentService,
+
+    private followService: FollowService,
   ) {}
 
   /**
-   * 공개 피드 상세 조회
+   * 공개 피드 페이지 형식 조회
    * @param options { page, limit }
    */
   async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
@@ -152,6 +156,11 @@ export class FeedService {
       }
     }
 
+    feed[0].writer.isFollow = await this.followService.checkFollowUser(
+      feed[0].userId,
+      userId,
+    );
+
     return feed;
   }
 
@@ -228,7 +237,21 @@ export class FeedService {
       await this.feedLikeRepository.findPages(options, feedId);
 
     // user별로 isFllow 추가 해야함
+    if (feedLikeRows.items.length > 0) {
+      const followUsers: Follow[] = await this.followService.getFollowUsers(
+        userId,
+      );
 
+      feedLikeRows.items.forEach((feedLike) => {
+        if (followUsers.length > 0) {
+          const isFollow = followUsers.filter(
+            (follow) => follow.toUser === feedLike.userId,
+          ).length;
+
+          feedLike.user.isFollow = isFollow > 0;
+        }
+      });
+    }
     return feedLikeRows;
   }
 }
