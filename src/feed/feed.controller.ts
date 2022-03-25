@@ -78,11 +78,10 @@ export class FeedController {
     description: '피드 생성',
   })
   async createFeed(
-    @Body() feed: Feed,
     @Query('rewrite') rewrite: boolean,
-  ): Promise<void> {
-    feed.rewrite = rewrite;
-    return await this.feedService.createFeed(feed);
+    @Query('userId') userId: string,
+  ): Promise<Feed> {
+    return await this.feedService.createFeed(rewrite, userId);
   }
 
   @Post('/modifyFeed')

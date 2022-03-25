@@ -168,22 +168,24 @@ export class FeedService {
    * 피드생성 - 작업 중 중단
    * 기존 피드 있을 시, 해당 정보 리턴 해야함
    * */
-  async createFeed(feed: Feed) {
+  async createFeed(rewrite: boolean, userId: string): Promise<Feed> {
     let feedRows: Feed = await this.feedRepository.findOne({
-      userId: feed.userId,
+      userId: userId,
       state: 'feed_state_pending',
     });
 
     // 피드 재생성 여부 확인
-    if (feed.rewrite === true && feedRows !== undefined) {
+    if (rewrite === true && feedRows !== undefined) {
       //생성된 피드 삭제
       await this.feedRepository.delete({ id: feedRows.id });
       feedRows = undefined;
     }
 
     if (feedRows === undefined) {
-      await this.feedRepository.save(feed);
+      feedRows = await this.feedRepository.save({ userId: userId });
     }
+
+    return feedRows;
   }
 
   /*
