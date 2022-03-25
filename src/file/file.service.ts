@@ -33,8 +33,6 @@ export class FileService {
     });
     const s3 = new AWS.S3();
 
-    console.log('fileInfo : ', filesInfo);
-
     // 도메인 검사
     const domainNames = ['public.keeping.link', 'storage.keeping.link'];
     const domainName = filesInfo.domainName;
@@ -128,7 +126,6 @@ export class FileService {
           uploadFiles,
         );
       }
-      console.log('result: ', result);
       return result;
     } catch (e) {
       throw new BadRequestException(e.message);
@@ -172,7 +169,6 @@ export class FileService {
         file.url,
       );
     }
-
     await this.fileTagRepository.delete(tag.id);
     await this.fileRepository.delete({ url: file.url });
   }

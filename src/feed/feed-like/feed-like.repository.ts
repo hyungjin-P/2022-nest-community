@@ -51,4 +51,14 @@ export class FeedLikeRepository extends Repository<FeedLike> {
       .orderBy('feed_like.created_at', 'DESC');
     return await paginate(queryBuilder, options);
   }
+
+  async getFeedLikeUsersOfLimit(feedId: string) {
+    return await getRepository(FeedLike)
+      .createQueryBuilder('feed_like')
+      .leftJoinAndSelect('feed_like.user', 'likeUser')
+      .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')
+      .limit(4)
+      .where('feed_id = :feedId', { feedId })
+      .getMany();
+  }
 }

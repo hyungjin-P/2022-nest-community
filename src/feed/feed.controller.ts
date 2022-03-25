@@ -78,7 +78,7 @@ export class FeedController {
     description: '피드 생성',
   })
   async createFeed(
-    @Query('rewrite') rewrite: boolean,
+    @Query('rewrite') rewrite: string,
     @Query('userId') userId: string,
   ): Promise<Feed> {
     return await this.feedService.createFeed(rewrite, userId);
@@ -119,7 +119,7 @@ export class FeedController {
     description: '피드 태그 추가',
   })
   async createFeedTag(
-    @Param('feedId') feedId: string,
+    @Query('feedId') feedId: string,
     @Query('name') name: string,
   ): Promise<FeedTag> {
     return await this.feedTagService.createFeedTag(feedId, name);
@@ -131,8 +131,8 @@ export class FeedController {
     description: '피드 태그 삭제',
   })
   async deleteFeedTag(
-    @Param('feedId') feedId: string,
-    @Param('tagId') tagId: string,
+    @Query('feedId') feedId: string,
+    @Query('tagId') tagId: string,
   ) {
     return await this.feedTagService.deleteFeedTag(feedId, tagId);
   }

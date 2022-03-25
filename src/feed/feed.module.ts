@@ -23,6 +23,7 @@ import { FeedCommentLikeRepository } from './feed-comment/commnet-like/comment-l
 import { FeedCommentLikeService } from './feed-comment/commnet-like/comment-like.service';
 import { FollowService } from '../user/follow/follow.service';
 import { FollowRepository } from '../user/follow/follow.repository';
+import { FileModule } from '../file/file.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { FollowRepository } from '../user/follow/follow.repository';
       FollowRepository,
     ]),
     AuthModule,
+    FileModule,
     FeedCommentModule,
   ],
   controllers: [FeedController, PublicFeedController, FeedCommentController],

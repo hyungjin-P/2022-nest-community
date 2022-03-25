@@ -37,7 +37,15 @@ export class FileController {
     summary: '파일 삭제',
     description: '파일 삭제',
   })
-  async deleteObject(@Body() fileInfo: FileDeleteDto) {
+  async deleteObject(
+    @Query('tag') tag: string,
+    @Query('tagInId') tagInId: string,
+    @Query('url') url: string,
+  ) {
+    const fileInfo: FileDeleteDto = new FileDeleteDto();
+    fileInfo.tag = tag;
+    fileInfo.tagInId = tagInId;
+    fileInfo.url = url;
     return this.fileService.deleteFile(fileInfo);
   }
 

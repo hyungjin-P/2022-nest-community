@@ -49,6 +49,7 @@ export class FeedRepository extends Repository<Feed> {
           .from(FeedComment, 'feed_comment')
           .where('feed_comment.feed_id = feed.id');
       }, 'commentCount')
+      .where('feed.state = :feedState', { feedState: 'feed_state_posting' })
       .orderBy('feed.created_at', 'DESC');
 
     return await paginateRaw<any>(queryBuilder, options);
@@ -58,13 +59,12 @@ export class FeedRepository extends Repository<Feed> {
     return await getRepository(Feed)
       .createQueryBuilder('feed')
       .leftJoinAndSelect('feed.writer', 'user')
-      .leftJoinAndSelect('user.picture', 'user_picture')
-      .leftJoinAndSelect('feed.pictures', 'feed_picture')
-      .leftJoinAndSelect('feed.tags', 'feed_tag')
-      .leftJoinAndSelect('feed.likeUsers', 'likeUsers')
-      .limit(4)
-      .leftJoinAndSelect('likeUsers.user', 'likeUser')
-      .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')
+      .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('feed.pictures', 'feedPicture')
+      .leftJoinAndSelect('feed.tags', 'feedTag')
+      // .leftJoinAndSelect('feed.likeUsers', 'likeUsers')
+      // .leftJoinAndSelect('likeUsers.user', 'likeUser')
+      // .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')
       .where('feed.id = :feedId', { feedId: feedId })
       .getMany();
   }

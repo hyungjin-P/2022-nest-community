@@ -14,6 +14,8 @@ import { FeedLikeService } from './feed-like/feed-like.service';
 import { FeedCommentService } from './feed-comment/feed-comment.service';
 import { FollowService } from '../user/follow/follow.service';
 import { Follow } from '../user/follow/follow.entity';
+import { FileService } from '../file/file.service';
+import { FileDeleteDto } from '../file/dto/file.delete.dto';
 
 @Injectable()
 export class FeedService {
@@ -27,6 +29,7 @@ export class FeedService {
     private feedLikeService: FeedLikeService,
     private feedCommentService: FeedCommentService,
 
+    private fileService: FileService,
     private followService: FollowService,
   ) {}
 
@@ -118,6 +121,10 @@ export class FeedService {
     const feed: Feed[] = await this.feedRepository.findByFeedId(feedId);
     if (feed.length > 0) {
       feed[0].likeCount = await this.feedLikeService.getCount(feedId);
+      if (feed[0].likeCount > 0) {
+        feed[0].likeUsers =
+          await this.feedLikeRepository.getFeedLikeUsersOfLimit(feedId);
+      }
       feed[0].commentCount = await this.feedCommentService.getCount(feedId);
     }
     return feed;
@@ -133,8 +140,13 @@ export class FeedService {
     userId: string,
   ): Promise<Feed[]> {
     const feed: Feed[] = await this.feedRepository.findByFeedId(feedId);
+
     if (feed.length > 0) {
       feed[0].likeCount = await this.feedLikeService.getCount(feedId);
+      if (feed[0].likeCount > 0) {
+        feed[0].likeUsers =
+          await this.feedLikeRepository.getFeedLikeUsersOfLimit(feedId);
+      }
       feed[0].commentCount = await this.feedCommentService.getCount(feedId);
 
       const feedLikes: FeedLike[] =
@@ -168,21 +180,41 @@ export class FeedService {
    * 피드생성 - 작업 중 중단
    * 기존 피드 있을 시, 해당 정보 리턴 해야함
    * */
-  async createFeed(rewrite: boolean, userId: string): Promise<Feed> {
-    let feedRows: Feed = await this.feedRepository.findOne({
-      userId: userId,
-      state: 'feed_state_pending',
-    });
+  async createFeed(rewrite: string, userId: string): Promise<Feed> {
+    let feedRows: Feed = await this.feedRepository.findOne(
+      {
+        userId: userId,
+        state: 'feed_state_pending',
+      },
+      { relations: ['pictures', 'tags'] },
+    );
 
     // 피드 재생성 여부 확인
-    if (rewrite === true && feedRows !== undefined) {
+    if (rewrite === 'true') {
       //생성된 피드 삭제
+      if (feedRows.pictures.length > 0) {
+        for (const feedPicture of feedRows.pictures) {
+          const fileInfo: FileDeleteDto = new FileDeleteDto();
+          fileInfo.tag = 'feed';
+          fileInfo.tagInId = feedRows.id;
+          fileInfo.url = feedPicture.url;
+          await this.fileService.deleteFile(fileInfo);
+        }
+      }
+
+      if (feedRows.tags.length > 0) {
+        await this.feedTagRepository.delete({ feedId: feedRows.id });
+      }
       await this.feedRepository.delete({ id: feedRows.id });
       feedRows = undefined;
     }
 
     if (feedRows === undefined) {
       feedRows = await this.feedRepository.save({ userId: userId });
+      feedRows = await this.feedRepository.findOne(
+        { id: feedRows.id },
+        { relations: ['pictures', 'tags'] },
+      );
     }
 
     return feedRows;

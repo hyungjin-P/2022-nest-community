@@ -2,7 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 export class FileDeleteDto {
-  @ApiProperty({ enum: ['feed', 'user-picture', 'user-background'] })
+  @ApiProperty({
+    enum: ['feed', 'user-picture', 'user-background', 'magazine'],
+  })
   @IsString()
   tag: string;
 

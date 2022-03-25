@@ -32,5 +32,18 @@ import { MagazinePictureRepository } from '../magazine/magazine-picture/magazine
     MagazinePictureService,
   ],
   controllers: [FileController],
+  exports: [
+    FileService,
+    UserBackgroundService,
+    UserPictureService,
+    MagazinePictureService,
+    TypeOrmModule.forFeature([
+      FileRepository,
+      FileTagRepository,
+      UserBackgroundRepository,
+      UserPictureRepository,
+      MagazinePictureRepository,
+    ]),
+  ],
 })
 export class FileModule {}
