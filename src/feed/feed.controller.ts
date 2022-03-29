@@ -56,6 +56,31 @@ export class FeedController {
       userId,
     );
   }
+
+  @Get('/findPagesOverFollow')
+  @ApiOperation({
+    summary: '피드 팔로우 페이지 조회',
+    description: '피드 팔로우 페이지 조회',
+  })
+  @ApiCreatedResponse({
+    description: '팔로우 한 인원의 피드를 페이지 형식으로 조회한다.',
+    type: CodeItem,
+  })
+  async findFeedPageOverFollow(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('userId') userId: string,
+  ): Promise<Pagination<any>> {
+    return await this.feedService.findByPageOverFollow(
+      {
+        page,
+        limit,
+        route: '/feed/findPagesOverFollow',
+      },
+      userId,
+    );
+  }
+
   @Get('/findById')
   @ApiOperation({
     summary: '피드 1건 상세 조회',

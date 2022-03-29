@@ -4,7 +4,11 @@ import { Feed } from './feed.entity';
 import { FeedModifyDto } from './dto/feed.modify.dto';
 import { FeedTagRepository } from './feed-tag/feed-tag.repository';
 import { FeedPictureRepository } from './feed-picture/feed-picture.repository';
-import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import {
+  IPaginationOptions,
+  paginateRawAndEntities,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 import { FeedTag } from './feed-tag/feed-tag.entity';
 import { FeedLikeRepository } from './feed-like/feed-like.repository';
 import { FeedLike } from './feed-like/feed-like.entity';
@@ -113,6 +117,56 @@ export class FeedService {
     return feedPage;
   }
 
+  async findByPageOverFollow(
+    options: IPaginationOptions,
+    userId: string,
+  ): Promise<Pagination<any[]>> {
+    // 팔로우한 인원 조회
+    const followUsers = await this.followService.getFollowUsers(userId);
+    const followUserIds = followUsers.map((r) => r.toUser);
+
+    // 피드 조회, userId in (followUserIds)
+    const feedPage: Pagination<any> =
+      await this.feedRepository.findFeedPageOverFollow(options, followUserIds);
+
+    // 피드 상세 형식으로 추가로 불러야할 항목들 부르기
+    if (feedPage.items.length > 0) {
+      const feedIds: string[] = feedPage.items.map((r) => r.id);
+      const feedLikes: FeedLike[] =
+        await this.feedLikeRepository.findFeedLikeInFeedIdsOfUser(
+          feedIds,
+          userId,
+        );
+      const feedBookmarks: FeedBookmark[] =
+        await this.feedBookmarkRepository.findFeedBookmarkInFeedIdsOfUser(
+          feedIds,
+          userId,
+        );
+
+      for (const feed of feedPage.items) {
+        feed.likeCount = await this.feedLikeService.getCount(feed.id);
+        feed.likeUsers = await this.feedLikeRepository.getFeedLikeUsersOfLimit(
+          feed.id,
+        );
+        feed.commentCount = await this.feedCommentService.getCount(feed.id);
+
+        if (feedLikes.length > 0) {
+          const isLike = feedLikes.filter(
+            (feedLike) => feedLike.feedId === feed.id,
+          ).length;
+          feed.isLike = isLike > 0;
+        }
+        if (feedBookmarks.length > 0) {
+          const isBookmark = feedBookmarks.filter(
+            (feedBookmark) => feedBookmark.feedId === feed.id,
+          ).length;
+          feed.isBookmark = isBookmark > 0;
+        }
+      }
+    }
+    return feedPage;
+  }
+
   /**
    * 비로그인 피드 상세조회
    * @param feedId
@@ -121,10 +175,9 @@ export class FeedService {
     const feed: Feed[] = await this.feedRepository.findByFeedId(feedId);
     if (feed.length > 0) {
       feed[0].likeCount = await this.feedLikeService.getCount(feedId);
-      if (feed[0].likeCount > 0) {
-        feed[0].likeUsers =
-          await this.feedLikeRepository.getFeedLikeUsersOfLimit(feedId);
-      }
+      feed[0].likeUsers = await this.feedLikeRepository.getFeedLikeUsersOfLimit(
+        feedId,
+      );
       feed[0].commentCount = await this.feedCommentService.getCount(feedId);
     }
     return feed;
@@ -259,9 +312,12 @@ export class FeedService {
     return feedLikeRows;
   }
 
-  /*
-   * 작업 미완료, 팔로우 정보 조회 추가
-   * */
+  /**
+   * 피드 좋아요한 인원 리스트 조회 - 작업 완료
+   * @param options
+   * @param feedId
+   * @param userId
+   */
   async findByLikePageWithUserBehavior(
     options: IPaginationOptions,
     feedId: string,

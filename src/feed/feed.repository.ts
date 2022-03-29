@@ -7,7 +7,9 @@ import {
 import { Feed } from './feed.entity';
 import {
   IPaginationOptions,
+  paginate,
   paginateRaw,
+  paginateRawAndEntities,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { FeedPicture } from './feed-picture/feed-picture.entity';
@@ -67,5 +69,25 @@ export class FeedRepository extends Repository<Feed> {
       // .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')
       .where('feed.id = :feedId', { feedId: feedId })
       .getMany();
+  }
+
+  async findFeedPageOverFollow(
+    options: IPaginationOptions,
+    followUserIds: string[],
+  ): Promise<Pagination<any>> {
+    const queryBuilder = await getRepository(Feed)
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.writer', 'user')
+      .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('feed.pictures', 'feedPicture')
+      .leftJoinAndSelect('feed.tags', 'feedTag')
+      .where('feed.user_id in (:followUserIds) and feed.state = :feedState', {
+        followUserIds: followUserIds,
+        feedState: 'feed_state_posting',
+      })
+      // .groupBy('feed.id')
+      .orderBy('feed.created_at', 'DESC');
+
+    return await paginate<Feed>(queryBuilder, options);
   }
 }
