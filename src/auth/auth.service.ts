@@ -154,7 +154,6 @@ export class AuthService {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-
     return await lastValueFrom(this.httpService.post(url, {}, config));
   }
 
@@ -381,7 +380,6 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { id },
     });
-
     return user;
   }
 

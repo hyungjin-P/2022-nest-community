@@ -7,7 +7,6 @@ import { KakaoAccessDto } from './dto/kakao-access.dto';
 import { NaverAccessDto } from './dto/naver-access.dto';
 import { UserService } from '../user/user.service';
 import { UserModifyServiceTermDto } from './dto/user-modify-service-term.dto';
-import { FirebaseService } from '../services/firebase/firebase.service';
 import { GoogleAccessDto } from './dto/google-access.dto';
 
 @Controller('auth')
@@ -16,7 +15,6 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private firebaseService: FirebaseService,
   ) {}
 
   @Post('/signIn')

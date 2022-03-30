@@ -6,8 +6,6 @@ import { Injectable } from '@nestjs/common';
 export class CryptoService {
   constructor(private readonly configService: ConfigService) {}
 
-
-
   encrypt(encryptTarget: any): string {
     const itemStr: string = this._utf8_encode(JSON.stringify(encryptTarget));
     const plainText = this.configService.get('UTILS_CRYPTO_PLAINTEXT');
@@ -28,7 +26,7 @@ export class CryptoService {
     let resultText = '';
 
     for (let n = 0; n < str.length; n++) {
-      let c = str.charCodeAt(n);
+      const c = str.charCodeAt(n);
 
       if (c < 128) {
         resultText += String.fromCharCode(c);
