@@ -10,11 +10,15 @@ import { MagazineCommentRepository } from './magazine-comment/magazine-comment.r
 import { MagazineLikeRepository } from './magazine-like/magazine-like.repository';
 import { MagazinePictureRepository } from './magazine-picture/magazine_picture.repository';
 import { MagazineTagRepository } from './magazine-tag/magazine-tag.repository';
-import { MagazineRepository } from './magazineRepository';
+import { MagazineRepository } from './magazine.repository';
 import { MagazineBookmarkService } from './magazine-bookmark/magazine-bookmark.service';
 import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
 import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
 import { PublicMagazineController } from './public/public.magazine.controller';
+import { MagazineBodyEnService } from './magazine-body-en/magazine-body-en.service';
+import { MagazineBodyKoService } from './magazine-body-ko/magazine-body-ko.service';
+import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
+import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
 
 @Module({
   imports: [
@@ -25,6 +29,8 @@ import { PublicMagazineController } from './public/public.magazine.controller';
       MagazinePictureRepository,
       MagazineTagRepository,
       MagazineBookmarkRepository,
+      MagazineBodyEnRepository,
+      MagazineBodyKoRepository,
     ]),
   ],
   controllers: [MagazineController, PublicMagazineController],
@@ -35,6 +41,8 @@ import { PublicMagazineController } from './public/public.magazine.controller';
     MagazinePictureService,
     MagazineTagService,
     MagazineBookmarkService,
+    MagazineBodyEnService,
+    MagazineBodyKoService,
   ],
 })
 export class MagazineModule {}

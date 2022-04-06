@@ -71,9 +71,9 @@ export class FeedRepository extends Repository<Feed> {
       .getMany();
   }
 
-  async findFeedPageOverFollow(
+  async findFeedPageByUserIds(
     options: IPaginationOptions,
-    followUserIds: string[],
+    userIds: string[],
   ): Promise<Pagination<any>> {
     const queryBuilder = await getRepository(Feed)
       .createQueryBuilder('feed')
@@ -81,8 +81,28 @@ export class FeedRepository extends Repository<Feed> {
       .leftJoinAndSelect('user.picture', 'userPicture')
       .leftJoinAndSelect('feed.pictures', 'feedPicture')
       .leftJoinAndSelect('feed.tags', 'feedTag')
-      .where('feed.user_id in (:followUserIds) and feed.state = :feedState', {
-        followUserIds: followUserIds,
+      .where('feed.user_id in (:userIds) and feed.state = :feedState', {
+        userIds: userIds,
+        feedState: 'feed_state_posting',
+      })
+      // .groupBy('feed.id')
+      .orderBy('feed.created_at', 'DESC');
+
+    return await paginate<Feed>(queryBuilder, options);
+  }
+
+  async findFeedPageByFeedIds(
+    options: IPaginationOptions,
+    feedIds: string[],
+  ): Promise<Pagination<any>> {
+    const queryBuilder = await getRepository(Feed)
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.writer', 'user')
+      .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('feed.pictures', 'feedPicture')
+      .leftJoinAndSelect('feed.tags', 'feedTag')
+      .where('feed.id in (:feedIds) and feed.state = :feedState', {
+        feedIds: feedIds,
         feedState: 'feed_state_posting',
       })
       // .groupBy('feed.id')

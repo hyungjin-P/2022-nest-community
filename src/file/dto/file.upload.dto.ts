@@ -2,7 +2,7 @@ import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class FileUploadDto {
-  @ApiProperty({ default: '40490ba6-7ad0-485b-914b-d8c3b882c799' })
+  @ApiProperty({ default: 'cba1a1c5-eefa-4926-ba04-1331d3659c14' })
   @IsString()
   userId: string;
 
@@ -10,7 +10,9 @@ export class FileUploadDto {
   @IsString()
   domainName: string;
 
-  @ApiProperty({ default: '/users/40490ba6-7ad0-485b-914b-d8c3b882c799/feed' })
+  @ApiProperty({
+    default: '/temp/magazine',
+  })
   @IsString()
   path: string;
 

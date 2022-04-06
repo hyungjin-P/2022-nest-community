@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MagazineEntity } from './magazine.entity';
+import { Magazine } from './magazine.entity';
 import { MagazineService } from './magazine.service';
 import { CodeCategory } from '../codes/code-category/code-category.entity';
 import { MagazineModifyDto } from './dto/magazine.modify.dto';
@@ -61,10 +61,7 @@ export class MagazineController {
     summary: '매거진 생성',
     description: '매거진 생성',
   })
-  async createMagazine(
-    @Body() magazine: MagazineEntity,
-    @Query() rewrite: boolean,
-  ) {
+  async createMagazine(@Body() magazine: Magazine, @Query() rewrite: boolean) {
     magazine.rewrite = rewrite;
     return this.magazineService.create(magazine);
   }

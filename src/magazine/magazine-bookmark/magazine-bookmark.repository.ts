@@ -1,6 +1,6 @@
 import { EntityRepository, getRepository, Repository } from 'typeorm';
 import { MagazineBookmarkEntity } from './magazine-bookmark.entity';
-import { MagazineRepository } from '../magazineRepository';
+import { MagazineRepository } from '../magazine.repository';
 
 @EntityRepository(MagazineBookmarkEntity)
 export class MagazineBookmarkRepository extends Repository<MagazineBookmarkEntity> {

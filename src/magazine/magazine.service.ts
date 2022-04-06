@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { MagazineRepository } from './magazineRepository';
+import { MagazineRepository } from './magazine.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MagazineEntity } from './magazine.entity';
+import { Magazine } from './magazine.entity';
 import { MagazineModifyDto } from './dto/magazine.modify.dto';
 import { Feed } from '../feed/feed.entity';
 import {
@@ -11,12 +11,16 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
 import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
+import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
+import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
 
 @Injectable()
 export class MagazineService {
   constructor(
     @InjectRepository(MagazineRepository)
     private repository: MagazineRepository,
+    private bodyKoRepository: MagazineBodyKoRepository,
+    private bodyEnRepository: MagazineBodyEnRepository,
     private magazineBookmarkRepository: MagazineBookmarkRepository,
   ) {}
 
@@ -68,8 +72,8 @@ export class MagazineService {
     return magazinePage;
   }
 
-  async create(magazine: MagazineEntity) {
-    let magazineRows: MagazineEntity = await this.repository.findOne({
+  async create(magazine: Magazine) {
+    let magazineRows: Magazine = await this.repository.findOne({
       userId: magazine.userId,
       state: 'magazine_state_pending',
     });
@@ -81,19 +85,18 @@ export class MagazineService {
 
     if (magazineRows === undefined) {
       magazineRows = await this.repository.save(magazine);
-      console.log(magazineRows);
+      await this.bodyKoRepository.save({ magazineId: magazineRows.id });
+      await this.bodyEnRepository.save({ magazineId: magazineRows.id });
     }
 
     return magazineRows;
   }
 
   async modify(id: string, magazine: MagazineModifyDto) {
-    const magazineRow: MagazineEntity = await this.repository.findOne({
+    const magazineRow: Magazine = await this.repository.findOne({
       id: id,
     });
-    if (magazine.content !== '') {
-      magazineRow.content = magazine.content;
-    }
+
     if (magazine.posting === true) {
       magazineRow.state = 'magazine_state_posting';
     }
@@ -102,7 +105,7 @@ export class MagazineService {
   }
 
   async delete(id: string) {
-    const magazineRow: MagazineEntity = await this.repository.findOne({ id });
+    const magazineRow: Magazine = await this.repository.findOne({ id });
     magazineRow.deletedAt = new Date();
 
     await this.repository.save(magazineRow);

@@ -3,22 +3,29 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../user/user.entity';
+import { MagazineBodyEn } from './magazine-body-en/magazine-body-en.entity';
+import { MagazineBodyKo } from './magazine-body-ko/magazine-body-ko.entity';
+import { PublicUserProFile } from '../user/public/public.user.entity';
 
 @Entity('magazine')
-export class MagazineEntity {
+export class Magazine {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ default: 'a41d829e-add3-4867-9429-0eca34fc1e48' })
+  @ApiProperty({ default: 'cba1a1c5-eefa-4926-ba04-1331d3659c14' })
   @Column()
   userId: string;
 
-  writer: User;
+  @OneToOne((type) => PublicUserProFile, (user) => user.magazine)
+  @JoinColumn({ name: 'user_id' })
+  writer: PublicUserProFile;
 
   @ApiProperty({
     enum: ['magazine_category_news', 'magazine_category_release'],
@@ -28,12 +35,6 @@ export class MagazineEntity {
 
   @Column()
   state: string;
-
-  @Column()
-  title: string;
-
-  @Column()
-  content: string;
 
   @Column()
   picture: string;
@@ -54,4 +55,12 @@ export class MagazineEntity {
 
   /* 북마크 여부 */
   isBookmark = false;
+
+  body: any;
+
+  @OneToOne((type) => MagazineBodyEn, (body) => body.magazine)
+  en: MagazineBodyEn;
+
+  @OneToOne((type) => MagazineBodyKo, (body) => body.magazine)
+  ko: MagazineBodyKo;
 }

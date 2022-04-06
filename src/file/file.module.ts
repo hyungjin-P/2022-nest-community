@@ -12,6 +12,7 @@ import { UserPictureRepository } from '../user/user-picture/user-picture.reposit
 import { UserPictureService } from '../user/user-picture/user-picture.service';
 import { MagazinePictureService } from '../magazine/magazine-picture/magazine-picture.service';
 import { MagazinePictureRepository } from '../magazine/magazine-picture/magazine_picture.repository';
+import { MagazineRepository } from '../magazine/magazine.repository';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MagazinePictureRepository } from '../magazine/magazine-picture/magazine
       UserBackgroundRepository,
       UserPictureRepository,
       MagazinePictureRepository,
+      MagazineRepository,
     ]),
   ],
   providers: [
@@ -43,6 +45,7 @@ import { MagazinePictureRepository } from '../magazine/magazine-picture/magazine
       UserBackgroundRepository,
       UserPictureRepository,
       MagazinePictureRepository,
+      MagazineRepository,
     ]),
   ],
 })

@@ -12,6 +12,7 @@ import { FileDeleteDto } from './dto/file.delete.dto';
 import { UserBackgroundService } from '../user/user-background/user-background.service';
 import { UserPictureService } from '../user/user-picture/user-picture.service';
 import { MagazinePictureService } from '../magazine/magazine-picture/magazine-picture.service';
+import { MagazineRepository } from '../magazine/magazine.repository';
 
 @Injectable()
 export class FileService {
@@ -23,6 +24,7 @@ export class FileService {
     private readonly userBackgroundService: UserBackgroundService,
     private readonly userPictureService: UserPictureService,
     private readonly magazinePictureService: MagazinePictureService,
+    private readonly magazineRepository: MagazineRepository,
   ) {}
 
   async uploadFile(files, filesInfo: FileUploadDto): Promise<FileEntity[]> {
@@ -125,6 +127,10 @@ export class FileService {
           filesInfo.tagInId,
           uploadFiles,
         );
+        await this.magazineRepository.save({
+          id: filesInfo.tagInId,
+          picture: result[0].url,
+        });
       }
       return result;
     } catch (e) {
