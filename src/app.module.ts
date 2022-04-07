@@ -13,6 +13,7 @@ import { FileModule } from './file/file.module';
 import { MagazineModule } from './magazine/magazine.module';
 
 const stage = 'development';
+// const stage = 'production';
 
 @Module({
   imports: [

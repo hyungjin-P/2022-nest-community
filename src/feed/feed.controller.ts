@@ -22,6 +22,7 @@ import { CodeItem } from '../codes/code-item/code-item.entity';
 import { FeedLikeDto } from './dto/feed-like.dto';
 import { FeedBookmarkDto } from './dto/feed-bookmark.dto';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
+import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
 
 @ApiTags('피드')
 @Controller('feed')
@@ -259,5 +260,20 @@ export class FeedController {
     @Query('userId') userId: string,
   ): Promise<void> {
     await this.feedBookmarkService.deleteBookmark({ feedId, userId });
+  }
+
+  @Get('/findMypageFeed')
+  @ApiOperation({
+    summary: '마이페이지 피드 메인 조회',
+    description: '마이페이지 피드 메인 조회',
+  })
+  @ApiCreatedResponse({
+    description: '마이페이지내 피드 메인에 표시되는 피드를 조회한다.',
+  })
+  async findMyPageFeed(
+    @Query('userId') userId: string,
+    @Query('limit') limit: number,
+  ): Promise<MypageFeedMainDto> {
+    return await this.feedService.findMyPageFeedList(userId, limit);
   }
 }

@@ -45,26 +45,25 @@ export class CryptoService {
   _utf8_decode(str: string): string {
     let result = '';
     let i = 0;
-    let c = 0;
     let c1 = 0;
     let c2 = 0;
     let c3 = 0;
 
     while (i < str.length) {
-      c = str.charCodeAt(i);
+      c1 = str.charCodeAt(i);
 
-      if (c < 128) {
-        result += String.fromCharCode(c);
+      if (c1 < 128) {
+        result += String.fromCharCode(c1);
         i++;
-      } else if (c > 191 && c < 224) {
+      } else if (c1 > 191 && c1 < 224) {
         c2 = str.charCodeAt(i + 1);
-        result += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+        result += String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
         i += 2;
       } else {
         c2 = str.charCodeAt(i + 1);
         c3 = str.charCodeAt(i + 2);
         result += String.fromCharCode(
-          ((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63),
+          ((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63),
         );
         i += 3;
       }

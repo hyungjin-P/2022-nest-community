@@ -399,8 +399,6 @@ export class AuthService {
       );
     }
 
-    console.log('googleUser : ', googleUser);
-
     let user: User = await this.userRepository.findOne({
       where: {
         providedId: googleUser.user_id,
@@ -408,7 +406,7 @@ export class AuthService {
     });
 
     if (!user) {
-      return this.signUpGoogle(googleUser);
+      return await this.signUpGoogle(googleUser);
       // 회원가입
     } else {
       const tokens: any = await this.createTokens(user.providedId, user.id);

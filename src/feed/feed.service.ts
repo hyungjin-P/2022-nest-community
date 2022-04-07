@@ -20,6 +20,7 @@ import { FollowService } from '../user/follow/follow.service';
 import { Follow } from '../user/follow/follow.entity';
 import { FileService } from '../file/file.service';
 import { FileDeleteDto } from '../file/dto/file.delete.dto';
+import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
 
 @Injectable()
 export class FeedService {
@@ -29,10 +30,8 @@ export class FeedService {
     private feedPictureRepository: FeedPictureRepository,
     private feedLikeRepository: FeedLikeRepository,
     private feedBookmarkRepository: FeedBookmarkRepository,
-
     private feedLikeService: FeedLikeService,
     private feedCommentService: FeedCommentService,
-
     private fileService: FileService,
     private followService: FollowService,
   ) {}
@@ -395,5 +394,39 @@ export class FeedService {
       });
     }
     return feedLikeRows;
+  }
+
+  /**
+   * 마이페이지 피드 메인 조회
+   * @param userId
+   * @param limit
+   */
+  async findMyPageFeedList(
+    userId: string,
+    limit: number,
+  ): Promise<MypageFeedMainDto> {
+    const feedList: Feed[] = await this.feedRepository
+      .createQueryBuilder('feed')
+      .where('feed.user_id = :userId and feed.state = :state', {
+        userId,
+        state: 'feed_state_posting',
+      })
+      .orderBy('feed.created_at', 'DESC')
+      .limit(limit)
+      .getMany();
+    console.log('mypage feeds : ', feedList.length);
+
+    const result: MypageFeedMainDto = new MypageFeedMainDto();
+
+    result.feedList = feedList;
+
+    if (feedList.length >= limit) {
+      const feedCount: number = await this.feedRepository.count({
+        where: { userId },
+      });
+      result.otherCount = feedCount - feedList.length;
+    }
+
+    return result;
   }
 }

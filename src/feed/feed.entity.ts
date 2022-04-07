@@ -72,4 +72,8 @@ export class Feed {
 
   /* 북마크 여부 */
   isBookmark = false;
+
+  /* 조회 건수 외 표시 */
+  otherCount?: number = 0;
+
 }
