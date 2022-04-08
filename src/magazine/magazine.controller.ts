@@ -20,6 +20,7 @@ import { MagazineTagEntity } from './magazine-tag/magazine-tag.entity';
 import { CodeItem } from '../codes/code-item/code-item.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { required } from 'joi';
+import { MagazineViewsService } from './magazine-views/magazine-views.service';
 
 @ApiTags('매거진')
 @Controller('magazine')
@@ -28,6 +29,7 @@ export class MagazineController {
     private readonly magazineService: MagazineService,
     private readonly magazineTagService: MagazineTagService,
     private readonly magazineLikeService: MagazineLikeService,
+    private readonly magazineViewService: MagazineViewsService,
   ) {}
 
   @Get('/findPages')
@@ -56,7 +58,7 @@ export class MagazineController {
     );
   }
 
-  @Post('/')
+  @Post('/create')
   @ApiOperation({
     summary: '매거진 생성',
     description: '매거진 생성',
@@ -66,7 +68,7 @@ export class MagazineController {
     return this.magazineService.create(magazine);
   }
 
-  @Post('/:magazineId')
+  @Post('/modify')
   @ApiOperation({
     summary: '매거진 수정',
     description: '매거진 1건 수정',
@@ -77,13 +79,13 @@ export class MagazineController {
   })
   async modifyMagazine(
     @Body() magazine: MagazineModifyDto,
-    @Param('magazineId') magazineId: string,
+    @Query('magazineId') magazineId: string,
   ) {
     console.log(magazine);
     return await this.magazineService.modify(magazineId, magazine);
   }
 
-  @Delete('/:magazineId')
+  @Delete('/delete')
   @ApiOperation({
     summary: '매거진 삭제',
     description: '매거진 삭제',
@@ -92,66 +94,74 @@ export class MagazineController {
     description: '매거진 1건 삭제',
     type: CodeCategory,
   })
-  async deleteMagazine(@Param('magazineId') magazineId: string): Promise<void> {
+  async deleteMagazine(@Query('magazineId') magazineId: string): Promise<void> {
     return await this.magazineService.delete(magazineId);
   }
 
-  @Post('/:magazineId/tag')
+  @Post('/addTag')
   @ApiOperation({
     summary: '매거진 태그 추가',
     description: '매거진 태그 추가',
   })
   async createMagazineTag(
-    @Param('magazineId') magazineId: string,
+    @Query('magazineId') magazineId: string,
     @Query('name') name: string,
   ): Promise<MagazineTagEntity> {
     return await this.magazineTagService.createTag(magazineId, name);
   }
 
-  @Delete('/:magazineId/tag/:tagId')
+  @Delete('/deleteTag')
   @ApiOperation({
     summary: '매거진 태그 삭제',
     description: '매거진 태그 삭제',
   })
   async deleteMagazineTag(
-    @Param('magazineId') magazineId: string,
-    @Param('tagId') tagId: string,
+    @Query('magazineId') magazineId: string,
+    @Query('tagId') tagId: string,
   ) {
     return await this.magazineTagService.deleteTag(magazineId, tagId);
   }
 
-  @Post('/:magazineId/like')
+  @Post('/addLike')
   @ApiOperation({
     summary: '매거진 좋아요 추가',
     description: '매거진 좋아요 추가',
   })
   async createMagazineLike(
-    @Param('magazineId') magazineId: string,
+    @Query('magazineId') magazineId: string,
     @Query('userId') userId: string,
   ): Promise<void> {
     return await this.magazineLikeService.createLike(magazineId, userId);
   }
 
-  @Get('/:magazineId/like')
+  @Get('/findLikePage')
   @ApiOperation({
     summary: '매거진 좋아요 조회',
     description: '매거진 좋아요 목록 조회',
   })
   async getMagazineLike(
-    @Param('magazineId') magazineId: string,
+    @Query('magazineId') magazineId: string,
   ): Promise<any[]> {
     return await this.magazineLikeService.findById(magazineId);
   }
 
-  @Delete('/:magazineId/like')
+  @Delete('/deleteLike')
   @ApiOperation({
     summary: '매거진 좋아요 삭제',
     description: '매거진 좋아요 취소',
   })
   async deleteMagazineLike(
-    @Param('magazineId') magazineId: string,
+    @Query('magazineId') magazineId: string,
     @Query('userId') userId: string,
   ) {
     return await this.magazineLikeService.deleteLike(magazineId, userId);
+  }
+
+  @Post('/addView')
+  async createMagazineView(
+    @Query('magazineId') magazineId: string,
+    @Query('userId') userId: string,
+  ): Promise<void> {
+    return await this.magazineViewService.createView(magazineId, userId);
   }
 }

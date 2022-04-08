@@ -16,4 +16,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   username: 'REDACTED_DB_USERNAME',
   password: 'REDACTED_DB_PASSWORD',
   host: 'REDACTED_RDS_HOST',
+  timezone: 'Z',
 };

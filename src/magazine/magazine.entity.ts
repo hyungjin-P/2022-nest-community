@@ -56,6 +56,9 @@ export class Magazine {
   /* 북마크 여부 */
   isBookmark = false;
 
+  likeCount = 0;
+  viewCount = 0;
+
   body: any;
 
   @OneToOne((type) => MagazineBodyEn, (body) => body.magazine)
