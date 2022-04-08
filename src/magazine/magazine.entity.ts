@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,6 +14,8 @@ import { User } from '../user/user.entity';
 import { MagazineBodyEn } from './magazine-body-en/magazine-body-en.entity';
 import { MagazineBodyKo } from './magazine-body-ko/magazine-body-ko.entity';
 import { PublicUserProFile } from '../user/public/public.user.entity';
+import { MagazineTagEntity } from './magazine-tag/magazine-tag.entity';
+import { type } from 'os';
 
 @Entity('magazine')
 export class Magazine {
@@ -66,4 +69,7 @@ export class Magazine {
 
   @OneToOne((type) => MagazineBodyKo, (body) => body.magazine)
   ko: MagazineBodyKo;
+
+  @OneToMany((type) => MagazineTagEntity, (tag) => tag.magazine)
+  tags: MagazineTagEntity[];
 }

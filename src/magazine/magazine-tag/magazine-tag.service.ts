@@ -9,8 +9,8 @@ export class MagazineTagService {
     private repository: MagazineTagRepository,
   ) {}
 
-  async createTag(magazineId: string, name: string) {
-    return await this.repository.save({ magazineId: magazineId, name: name });
+  async createTag(magazineId: string, nameKo: string, nameEn: string) {
+    return await this.repository.save({ magazineId, nameKo, nameEn });
   }
 
   async deleteTag(magazineId: string, tagId: string) {

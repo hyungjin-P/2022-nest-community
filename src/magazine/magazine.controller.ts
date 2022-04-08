@@ -21,6 +21,7 @@ import { CodeItem } from '../codes/code-item/code-item.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { required } from 'joi';
 import { MagazineViewsService } from './magazine-views/magazine-views.service';
+import { MagazineBookmarkService } from './magazine-bookmark/magazine-bookmark.service';
 
 @ApiTags('매거진')
 @Controller('magazine')
@@ -30,6 +31,7 @@ export class MagazineController {
     private readonly magazineTagService: MagazineTagService,
     private readonly magazineLikeService: MagazineLikeService,
     private readonly magazineViewService: MagazineViewsService,
+    private readonly magazineBookmarkService: MagazineBookmarkService,
   ) {}
 
   @Get('/findPages')
@@ -105,9 +107,10 @@ export class MagazineController {
   })
   async createMagazineTag(
     @Query('magazineId') magazineId: string,
-    @Query('name') name: string,
+    @Query('nameKo') nameKo: string,
+    @Query('nameEn') nameEn: string,
   ): Promise<MagazineTagEntity> {
-    return await this.magazineTagService.createTag(magazineId, name);
+    return await this.magazineTagService.createTag(magazineId, nameKo, nameEn);
   }
 
   @Delete('/deleteTag')
@@ -158,10 +161,44 @@ export class MagazineController {
   }
 
   @Post('/addView')
+  @ApiOperation({
+    summary: '매거진 조회수 추가',
+    description: '매거진 조회수 추가',
+  })
   async createMagazineView(
     @Query('magazineId') magazineId: string,
     @Query('userId') userId: string,
   ): Promise<void> {
     return await this.magazineViewService.createView(magazineId, userId);
+  }
+
+  @Post('/addBookmark')
+  @ApiOperation({
+    summary: '매거진 북마크 추가',
+    description: '매거진 북마크 추가',
+  })
+  async createMagazineBookmark(
+    @Query('magazineId') magazineId: string,
+    @Query('userId') userId: string,
+  ) {
+    return await this.magazineBookmarkService.createBookmark(
+      magazineId,
+      userId,
+    );
+  }
+
+  @Delete('/deleteBookmark')
+  @ApiOperation({
+    summary: '매거진 북마크 삭제',
+    description: '매거진 북마크 삭제',
+  })
+  async deleteMagazineBookmark(
+    @Query('magazineId') magazineId: string,
+    @Query('userId') userId: string,
+  ) {
+    return await this.magazineBookmarkService.deleteBookmark(
+      magazineId,
+      userId,
+    );
   }
 }
