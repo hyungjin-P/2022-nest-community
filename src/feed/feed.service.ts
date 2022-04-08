@@ -21,6 +21,9 @@ import { Follow } from '../user/follow/follow.entity';
 import { FileService } from '../file/file.service';
 import { FileDeleteDto } from '../file/dto/file.delete.dto';
 import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
+import { FeedPicture } from './feed-picture/feed-picture.entity';
+import { UserService } from '../user/user.service';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class FeedService {
@@ -34,6 +37,7 @@ export class FeedService {
     private feedCommentService: FeedCommentService,
     private fileService: FileService,
     private followService: FollowService,
+    private userService: UserService,
   ) {}
 
   /**
@@ -414,19 +418,114 @@ export class FeedService {
       .orderBy('feed.created_at', 'DESC')
       .limit(limit)
       .getMany();
-    console.log('mypage feeds : ', feedList.length);
 
     const result: MypageFeedMainDto = new MypageFeedMainDto();
 
-    result.feedList = feedList;
+    // 결과
+    result.feedList = await this.findFeedTagAndCommentAndLikeAndBookmark(
+      feedList,
+      userId,
+    );
 
+    // 피드 메인에 출력되는 개수 외 카운트
     if (feedList.length >= limit) {
-      const feedCount: number = await this.feedRepository.count({
+      const totalCount: number = await this.feedRepository.count({
         where: { userId },
       });
-      result.otherCount = feedCount - feedList.length;
+      result.otherCount = totalCount - feedList.length;
+      result.totalCount = totalCount;
     }
 
     return result;
+  }
+
+  async findFeedMyPageDetail(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<void> {}
+
+  /**
+   * 피드 정보들 find
+   * @param feedList
+   * @param userId
+   */
+  async findFeedTagAndCommentAndLikeAndBookmark(
+    feedList: Feed[],
+    userId: string,
+  ): Promise<Feed[]> {
+    const feedListResult: Feed[] = [...feedList];
+
+    if (feedListResult.length > 0) {
+      const feedIds: string[] = feedListResult.map((r) => r.id);
+
+      // 태그
+      const feedTags: FeedTag[] =
+        await this.feedTagRepository.getFeedTagInFeedIds(feedIds);
+
+      // 좋아요
+      const feedLikes: FeedLike[] =
+        await this.feedLikeRepository.findFeedLikeIds(feedIds);
+
+      // 북마크
+      const feedBookmarks: FeedBookmark[] =
+        await this.feedBookmarkRepository.findFeedBookmarkInFeedIds(feedIds);
+
+      const feedPictures: FeedPicture[] =
+        await this.feedPictureRepository.findFeedPictureInFeedIds(feedIds);
+
+      for (const feed of feedListResult) {
+        // 댓글 갯수
+        feed.commentCount = await this.feedCommentService.getCount(feed.id);
+
+        // 업로드 한 사진
+        feed.pictures = feedPictures.filter(
+          (feedPicture) => feedPicture.feedId === feed.id,
+        );
+
+        // 사진 개수
+        feed.pictureCount = feed.pictures.length;
+
+        const filteredFeedLike: FeedLike[] = feedLikes.filter(
+          (feedLike) => feedLike.feedId === feed.id && feed.userId === userId,
+        );
+
+        // 좋아요 여부
+        feed.isLike = filteredFeedLike.length > 0;
+
+        const exposureUserIds: string[] = [];
+
+        filteredFeedLike.some((feedLike, index) => {
+          exposureUserIds.push(feedLike.userId);
+          return index === 2;
+        });
+
+        if (exposureUserIds.length > 0) {
+          feed.exposureUser = await this.userService.findUserIds(
+            exposureUserIds,
+          );
+        }
+
+        feed.writingUser = await this.userService.findById(feed.userId);
+        delete feed.writingUser.password;
+
+        // 북마크 여부
+        feed.isBookmark =
+          feedBookmarks.filter(
+            (feedBookmark) =>
+              feedBookmark.feedId === feed.id && feed.userId === userId,
+          ).length > 0;
+
+        // 좋아요 개수
+        feed.likeCount = feedLikes.filter(
+          (feedLike) => feedLike.feedId === feed.id,
+        ).length;
+
+        // 연관 태그
+        feed.tags = feedTags.filter((feedTag) => feedTag.feedId === feed.id);
+      }
+    }
+
+    return feedListResult;
   }
 }

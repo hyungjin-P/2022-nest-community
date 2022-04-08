@@ -10,9 +10,21 @@ export class FeedBookmarkRepository extends Repository<FeedBookmark> {
   ): Promise<FeedBookmark[]> {
     return await getRepository(FeedBookmark)
       .createQueryBuilder('feed_bookmark')
-      .where('feed_id in (:feedIds) and user_id = :userId', {
+      .where(
+        'feed_bookmark.feed_id in (:feedIds) and feed_bookmark.user_id = :userId',
+        {
+          feedIds,
+          userId,
+        },
+      )
+      .getMany();
+  }
+
+  async findFeedBookmarkInFeedIds(feedIds: string[]): Promise<FeedBookmark[]> {
+    return await getRepository(FeedBookmark)
+      .createQueryBuilder('feed_bookmark')
+      .where('feed_bookmark.feed_id in (:feedIds)', {
         feedIds,
-        userId,
       })
       .getMany();
   }
@@ -23,10 +35,13 @@ export class FeedBookmarkRepository extends Repository<FeedBookmark> {
   ): Promise<FeedBookmark[]> {
     return await getRepository(FeedBookmark)
       .createQueryBuilder('feed_bookmark')
-      .where('feed_id = :feedId and user_id = :userId', {
-        feedId,
-        userId,
-      })
+      .where(
+        'feed_bookmark.feed_id = :feedId and feed_bookmark.user_id = :userId',
+        {
+          feedId,
+          userId,
+        },
+      )
       .getMany();
   }
 }

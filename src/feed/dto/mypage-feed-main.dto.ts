@@ -1,11 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { Feed } from '../feed.entity';
 
 export class MypageFeedMainDto {
   @IsString()
   feedList: Feed[];
 
-  @IsString()
+  @IsNumber()
   otherCount: number = 0;
+
+  @IsNumber()
+  totalCount: number = 0;
 }

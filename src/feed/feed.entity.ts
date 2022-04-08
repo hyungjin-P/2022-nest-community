@@ -14,6 +14,7 @@ import { FeedPicture } from './feed-picture/feed-picture.entity';
 import { FeedTag } from './feed-tag/feed-tag.entity';
 import { FeedLike } from './feed-like/feed-like.entity';
 import { PublicUserProFile } from '../user/public/public.user.entity';
+import { User } from '../user/user.entity';
 
 @Entity('feed')
 export class Feed {
@@ -41,7 +42,7 @@ export class Feed {
   pictures: FeedPicture[];
 
   @OneToMany((type) => FeedTag, (tag) => tag.feed)
-  tags: FeedTag[];
+  tags?: FeedTag[];
 
   tagsStr: string;
 
@@ -76,4 +77,9 @@ export class Feed {
   /* 조회 건수 외 표시 */
   otherCount?: number = 0;
 
+  // 피드에 공개할 유저
+  exposureUser: User[];
+
+  // 작성자
+  writingUser: User;
 }

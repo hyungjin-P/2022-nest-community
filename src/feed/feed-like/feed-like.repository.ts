@@ -26,6 +26,15 @@ export class FeedLikeRepository extends Repository<FeedLike> {
       .getMany();
   }
 
+  async findFeedLikeIds(feedIds: string[]): Promise<FeedLike[]> {
+    return await getRepository(FeedLike)
+      .createQueryBuilder('feed_like')
+      .where('feed_id in (:feedIds)', {
+        feedIds,
+      })
+      .getMany();
+  }
+
   async findFeedLikeInFeedIdOfUser(
     feedId: string,
     userId: string,

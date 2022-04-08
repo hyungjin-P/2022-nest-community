@@ -24,6 +24,9 @@ import { FeedCommentLikeService } from './feed-comment/commnet-like/comment-like
 import { FollowService } from '../user/follow/follow.service';
 import { FollowRepository } from '../user/follow/follow.repository';
 import { FileModule } from '../file/file.module';
+import { UserService } from '../user/user.service';
+import { UserRepository } from '../user/user.repository';
+import { UserPictureRepository } from "../user/user-picture/user-picture.repository";
 
 @Module({
   imports: [
@@ -36,8 +39,9 @@ import { FileModule } from '../file/file.module';
       FeedLikeRepository,
       FeedPictureRepository,
       FeedTagRepository,
-
       FollowRepository,
+      UserRepository,
+      UserPictureRepository,
     ]),
     AuthModule,
     FileModule,
@@ -53,8 +57,8 @@ import { FileModule } from '../file/file.module';
     FeedLikeService,
     FeedPictureService,
     FeedTagService,
-
     FollowService,
+    UserService,
   ],
 })
 export class FeedModule {}

@@ -181,6 +181,15 @@ export class UserService {
     };
   }
 
+  async getUserPictures(userId: string): Promise<UserPicture[]> {
+    return await this.userPictureRepository
+      .createQueryBuilder('userPicture')
+      .where('userPicture.user_id = :userId', { userId })
+      .orderBy('userPicture.created_at', 'DESC')
+      .limit(1)
+      .getMany();
+  }
+
   /**
    * 유저 프로필 수정
    * @param userProfileDto
@@ -274,5 +283,22 @@ export class UserService {
     delete serviceTerm.userId;
 
     await this.userRepository.save({ ...user, ...serviceTerm });
+  }
+
+  /**
+   * 유저 ids로 조회
+   * @param userIds
+   */
+  async findUserIds(userIds: string[]): Promise<User[]> {
+    const users: User[] = await this.userRepository.findUserInIds(userIds);
+
+    if (users.length > 0) {
+      for (const user of users) {
+        user.picture = await this.getUserPictures(user.id);
+        delete user.password;
+      }
+    }
+
+    return users;
   }
 }

@@ -86,7 +86,15 @@ export class UserRepository extends Repository<User> {
         return false;
       }
     }
-
     return true;
+  }
+
+  async findUserInIds(userIds: string[]): Promise<User[]> {
+    return await getRepository(User)
+      .createQueryBuilder('user')
+      .where('user.id in (:userIds)', {
+        userIds,
+      })
+      .getMany();
   }
 }
