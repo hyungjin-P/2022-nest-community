@@ -27,10 +27,10 @@ export class MagazineRepository extends Repository<Magazine> {
       .leftJoinAndSelect('magazine.ko', 'ko')
       .leftJoinAndSelect('magazine.writer', 'user')
       .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('magazine.tags', 'tags')
       .where('category = :category', { category: category })
       .andWhere('state = :state', { state: 'magazine_state_posting' })
-      .orderBy('magazine.created_at', 'DESC');
-
+      .orderBy({ 'magazine.created_at': 'DESC', 'tags.created_at': 'DESC' });
     return await paginate<Magazine>(queryBuilder, options);
   }
 
@@ -41,9 +41,9 @@ export class MagazineRepository extends Repository<Magazine> {
       .leftJoinAndSelect('magazine.ko', 'ko')
       .leftJoinAndSelect('magazine.writer', 'user')
       .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('magazine.tags', 'tags')
       .where('magazine.state = :state', { state: 'magazine_state_posting' })
-      .orderBy('magazine.created_at', 'DESC');
-
+      .orderBy({ 'magazine.created_at': 'DESC', 'tags.created_at': 'DESC' });
     return await paginate<Magazine>(queryBuilder, options);
   }
 }

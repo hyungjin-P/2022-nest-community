@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Magazine } from '../magazine.entity';
 
 @Entity('magazine_tag')
 export class MagazineTagEntity {
@@ -14,8 +16,14 @@ export class MagazineTagEntity {
   magazineId: string;
 
   @Column()
-  name: string;
+  nameKo: string;
+
+  @Column()
+  nameEn: string;
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToOne((type) => Magazine, (magazine) => magazine.tags)
+  magazine: Magazine;
 }

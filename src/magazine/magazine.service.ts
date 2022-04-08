@@ -7,12 +7,14 @@ import { Feed } from '../feed/feed.entity';
 import {
   IPaginationOptions,
   paginate,
+  paginateRawAndEntities,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
 import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
 import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
 import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
+import { MagazineViewsService } from './magazine-views/magazine-views.service';
 
 @Injectable()
 export class MagazineService {
@@ -22,6 +24,8 @@ export class MagazineService {
     private bodyKoRepository: MagazineBodyKoRepository,
     private bodyEnRepository: MagazineBodyEnRepository,
     private magazineBookmarkRepository: MagazineBookmarkRepository,
+
+    private magazineViewService: MagazineViewsService,
   ) {}
 
   async findByPage(
@@ -33,6 +37,14 @@ export class MagazineService {
       magazinePage = await this.repository.findPagesAll(options);
     } else {
       magazinePage = await this.repository.findPages(options, category);
+    }
+
+    if (magazinePage.items.length > 0) {
+      for (const magazine of magazinePage.items) {
+        magazine.viewCount = await this.magazineViewService.getCount(
+          magazine.id,
+        );
+      }
     }
 
     return magazinePage;
@@ -59,13 +71,18 @@ export class MagazineService {
           magazineIds,
           userId,
         );
-      if (magazineBookmarks.length > 0) {
-        magazinePage.items.forEach((magazine) => {
+
+      for (const magazine of magazinePage.items) {
+        magazine.viewCount = await this.magazineViewService.getCount(
+          magazine.id,
+        );
+
+        if (magazineBookmarks.length > 0) {
           const isBookmark = magazineBookmarks.filter(
             (magazineBookmark) => magazineBookmark.magazineId === magazine.id,
           ).length;
           magazine.isBookmark = isBookmark > 0;
-        });
+        }
       }
     }
 

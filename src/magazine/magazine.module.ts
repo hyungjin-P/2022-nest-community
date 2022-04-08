@@ -19,6 +19,8 @@ import { MagazineBodyEnService } from './magazine-body-en/magazine-body-en.servi
 import { MagazineBodyKoService } from './magazine-body-ko/magazine-body-ko.service';
 import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
 import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
+import { MagazineViewsService } from './magazine-views/magazine-views.service';
+import { MagazineViewsRepository } from './magazine-views/magazine-views.repository';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.re
       MagazineBookmarkRepository,
       MagazineBodyEnRepository,
       MagazineBodyKoRepository,
+      MagazineViewsRepository,
     ]),
   ],
   controllers: [MagazineController, PublicMagazineController],
@@ -43,6 +46,7 @@ import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.re
     MagazineBookmarkService,
     MagazineBodyEnService,
     MagazineBodyKoService,
+    MagazineViewsService,
   ],
 })
 export class MagazineModule {}
