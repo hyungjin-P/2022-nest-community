@@ -4,7 +4,6 @@ import {
   DefaultValuePipe,
   Delete,
   Get,
-  Param,
   ParseIntPipe,
   Post,
   Query,
@@ -19,7 +18,6 @@ import { MagazineLikeService } from './magazine-like/magazine-like.service';
 import { MagazineTagEntity } from './magazine-tag/magazine-tag.entity';
 import { CodeItem } from '../codes/code-item/code-item.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { required } from 'joi';
 import { MagazineViewsService } from './magazine-views/magazine-views.service';
 import { MagazineBookmarkService } from './magazine-bookmark/magazine-bookmark.service';
 
@@ -56,6 +54,26 @@ export class MagazineController {
         route: '/magazine/findPages',
       },
       category,
+      userId,
+    );
+  }
+
+  @Get('/findPagesOverBookmark')
+  @ApiOperation({
+    summary: '매거진 북마크 페이지 조회',
+    description: '매거진 북마크 페이지 조회',
+  })
+  @ApiCreatedResponse({
+    description: '북마크한 매거진을 페이지 형식으로 조회한다.',
+    type: CodeItem,
+  })
+  async findMagazinePageOverBookmark(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('userId') userId: string,
+  ): Promise<Pagination<any>> {
+    return await this.magazineService.findByPageOverBookmark(
+      { page, limit, route: '/magazine/findPagesOverBookmark' },
       userId,
     );
   }
@@ -200,5 +218,14 @@ export class MagazineController {
       magazineId,
       userId,
     );
+  }
+
+  @Delete('/deleteAllBookmarkByUserId')
+  @ApiOperation({
+    summary: '매거진 북마크 전체삭제',
+    description: '매거진 북마크 전체삭제',
+  })
+  async deleteMagazineBookmarkAll(@Query('userId') userId: string) {
+    return await this.magazineBookmarkService.deleteAllBookmark(userId);
   }
 }

@@ -174,26 +174,19 @@ export class FeedService {
     options: IPaginationOptions,
     userId: string,
   ): Promise<Pagination<any[]>> {
-    // 팔로우한 인원 조회
+    // 북마크한 피드 조회
     const bookmarkFeeds = await this.feedBookmarkRepository.find({
       userId: userId,
     });
     const bookmarkFeedIds = bookmarkFeeds.map((r) => r.feedId);
 
-    // 피드 조회, userId in (followUserIds)
     const feedPage: Pagination<any> =
       await this.feedRepository.findFeedPageByFeedIds(options, bookmarkFeedIds);
 
-    // 피드 상세 형식으로 추가로 불러야할 항목들 부르기
     if (feedPage.items.length > 0) {
       const feedIds: string[] = feedPage.items.map((r) => r.id);
       const feedLikes: FeedLike[] =
         await this.feedLikeRepository.findFeedLikeInFeedIdsOfUser(
-          feedIds,
-          userId,
-        );
-      const feedBookmarks: FeedBookmark[] =
-        await this.feedBookmarkRepository.findFeedBookmarkInFeedIdsOfUser(
           feedIds,
           userId,
         );
@@ -211,12 +204,9 @@ export class FeedService {
           ).length;
           feed.isLike = isLike > 0;
         }
-        if (feedBookmarks.length > 0) {
-          const isBookmark = feedBookmarks.filter(
-            (feedBookmark) => feedBookmark.feedId === feed.id,
-          ).length;
-          feed.isBookmark = isBookmark > 0;
-        }
+
+        // 북마크한 피드만 불렀기에 isBookmark 를 true 상태로 전환
+        feed.isBookmark = true;
       }
     }
     return feedPage;

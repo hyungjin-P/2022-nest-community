@@ -15,6 +15,8 @@ import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmar
 import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
 import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
 import { MagazineViewsService } from './magazine-views/magazine-views.service';
+import { FeedLike } from '../feed/feed-like/feed-like.entity';
+import { FeedBookmark } from '../feed/feed-bookmark/feed-bookmark.entity';
 
 @Injectable()
 export class MagazineService {
@@ -126,5 +128,32 @@ export class MagazineService {
     magazineRow.deletedAt = new Date();
 
     await this.repository.save(magazineRow);
+  }
+
+  async findByPageOverBookmark(
+    options: IPaginationOptions,
+    userId: string,
+  ): Promise<Pagination<any[]>> {
+    // 북마크한 매거진 조회
+    const bookmarkMagazines = await this.magazineBookmarkRepository.find({
+      userId: userId,
+    });
+    const bookmarkMagazineIds = bookmarkMagazines.map((r) => r.magazineId);
+
+    // 매거진 조회, magazineId in (bookmarkUserIds)
+    const magazinePage: Pagination<any> =
+      await this.repository.findMagazinePageByMagazineIds(
+        options,
+        bookmarkMagazineIds,
+      );
+
+    // 추가 데이터 호출
+    if (magazinePage.items.length > 0) {
+      for (const magazine of magazinePage.items) {
+        // 북마크한 게시물만 불렀기에 isBookmark 는 true 상태
+        magazine.isBookmark = true;
+      }
+    }
+    return magazinePage;
   }
 }

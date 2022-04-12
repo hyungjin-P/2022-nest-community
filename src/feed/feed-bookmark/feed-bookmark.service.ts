@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FeedBookmarkRepository } from './feed-bookmark.repository';
 import { FeedBookmarkDto } from '../dto/feed-bookmark.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class FeedBookmarkService {
@@ -27,5 +28,9 @@ export class FeedBookmarkService {
       feedId: feedBookmarkDto.feedId,
       userId: feedBookmarkDto.userId,
     });
+  }
+
+  async deleteAllBookmark(userId: string) {
+    return await this.feedBookmarkRepository.delete({ userId: userId });
   }
 }

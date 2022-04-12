@@ -12,4 +12,8 @@ export class MagazineBookmarkService {
   async deleteBookmark(magazineId: string, userId: string) {
     return await this.repository.delete({ magazineId, userId });
   }
+
+  async deleteAllBookmark(userId: string) {
+    return await this.repository.delete({ userId });
+  }
 }

@@ -276,4 +276,13 @@ export class FeedController {
   ): Promise<MypageFeedMainDto> {
     return await this.feedService.findMyPageFeedList(userId, limit);
   }
+
+  @Delete('/deleteAllBookmarkByUserId')
+  @ApiOperation({
+    summary: '피드 북마크 전체삭제',
+    description: '피드 북마크 전체삭제',
+  })
+  async deleteFeedBookmarkAll(@Query('userId') userId: string) {
+    return await this.feedBookmarkService.deleteAllBookmark(userId);
+  }
 }

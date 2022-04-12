@@ -1,22 +1,13 @@
-import {
-  EntityRepository,
-  getRepository,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { EntityRepository, getRepository, Repository } from 'typeorm';
 import { Magazine } from './magazine.entity';
 import {
   IPaginationOptions,
   paginate,
-  paginateRaw,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { FeedLike } from '../feed/feed-like/feed-like.entity';
-import { MagazineLikeEntity } from './magazine-like/magazine-like.entity';
 
 @EntityRepository(Magazine)
 export class MagazineRepository extends Repository<Magazine> {
-  //
   async findPages(
     options: IPaginationOptions,
     category: string,
@@ -44,6 +35,29 @@ export class MagazineRepository extends Repository<Magazine> {
       .leftJoinAndSelect('magazine.tags', 'tags')
       .where('magazine.state = :state', { state: 'magazine_state_posting' })
       .orderBy({ 'magazine.created_at': 'DESC', 'tags.created_at': 'DESC' });
+    return await paginate<Magazine>(queryBuilder, options);
+  }
+
+  async findMagazinePageByMagazineIds(
+    options: IPaginationOptions,
+    magazineIds: string[],
+  ): Promise<Pagination<any>> {
+    const queryBuilder = await getRepository(Magazine)
+      .createQueryBuilder('magazine')
+      .leftJoinAndSelect('magazine.en', 'en')
+      .leftJoinAndSelect('magazine.ko', 'ko')
+      .leftJoinAndSelect('magazine.writer', 'user')
+      .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('magazine.tags', 'tags')
+      .where(
+        'magazine.id in (:magazineIds) and magazine.state = :magazineState',
+        {
+          magazineIds: magazineIds,
+          magazineState: 'magazine_state_posting',
+        },
+      )
+      .orderBy('magazine.created_at', 'DESC');
+
     return await paginate<Magazine>(queryBuilder, options);
   }
 }
