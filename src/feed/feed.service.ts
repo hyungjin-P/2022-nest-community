@@ -613,8 +613,8 @@ export class FeedService {
 
         const exposureUserIds: string[] = [];
 
-        if (feedDetail.userLike?.length > 0) {
-          feedDetail.userLike.some((feedLike, index) => {
+        if (feedDetail.likes?.length > 0) {
+          feedDetail.likes.some((feedLike, index) => {
             exposureUserIds.push(feedLike.userId);
             return index === 2;
           });
