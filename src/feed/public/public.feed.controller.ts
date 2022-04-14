@@ -19,6 +19,7 @@ import { CodeCategory } from '../../codes/code-category/code-category.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { FeedCommentService } from '../feed-comment/feed-comment.service';
 import { LocalAuthGuard } from '../../auth/guards/local-auth-guard';
+import { FindFeedEntity } from '../feed-dao/find-feed.entity';
 
 @ApiTags('피드(공개)')
 @Controller()
@@ -153,5 +154,19 @@ export class PublicFeedController {
       },
       feedCommentId,
     );
+  }
+
+  @Get('public/feed/findOneWithRelations')
+  @ApiOperation({
+    summary: '피드 및 연관 테이블 조회',
+    description: '피드 및 연관 테이블 조회',
+  })
+  @ApiCreatedResponse({
+    description: '피드 및 연관 테이블을 조회한다.',
+  })
+  async findOneFeedWithRelations(
+    @Query('userId') userId: string,
+  ): Promise<FindFeedEntity[]> {
+    return await this.feedService.findAllFeedWithRelationsForUser(userId);
   }
 }

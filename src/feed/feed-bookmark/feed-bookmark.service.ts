@@ -20,8 +20,7 @@ export class FeedBookmarkService {
 
   /**
    * 북마크 제거
-   * @param feedId
-   * @param userId
+   * @param feedBookmarkDto
    */
   async deleteBookmark(feedBookmarkDto: FeedBookmarkDto): Promise<void> {
     await this.feedBookmarkRepository.delete({
@@ -30,7 +29,19 @@ export class FeedBookmarkService {
     });
   }
 
-  async deleteAllBookmark(userId: string) {
-    return await this.feedBookmarkRepository.delete({ userId: userId });
+  /**
+   * 사용자의 북마크 전체 삭제
+   * @param userId
+   */
+  async deleteAllBookmarkOfUser(userId: string) {
+    return await this.feedBookmarkRepository.delete({ userId });
+  }
+
+  /**
+   * 피드의 북마크 전체 삭제
+   * @param feedId
+   */
+  async deleteAllBookmarkOfFeed(feedId: string) {
+    return await this.feedBookmarkRepository.delete({ feedId });
   }
 }

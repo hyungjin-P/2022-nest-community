@@ -9,7 +9,6 @@ import {
   IPaginationOptions,
   paginate,
   paginateRaw,
-  paginateRawAndEntities,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { FeedPicture } from './feed-picture/feed-picture.entity';

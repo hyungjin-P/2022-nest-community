@@ -20,7 +20,9 @@ export class FeedTag {
   @Column()
   name: string;
 
-  @ManyToOne((type) => Feed, (feed) => feed.tags)
+  @ManyToOne((type) => Feed, (feed) => feed.tags, {
+    onDelete: 'CASCADE',
+  })
   feed: Feed;
 
   @CreateDateColumn({

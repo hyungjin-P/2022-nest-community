@@ -48,4 +48,18 @@ export class FeedCommentRepository extends Repository<FeedComment> {
 
     return await paginate(queryBuilder, options);
   }
+
+  async findAllFeedCommentWithMentionAndLikes(
+    feedId: string,
+  ): Promise<FeedComment[]> {
+    const queryBuilder = getRepository(FeedComment)
+      .createQueryBuilder('feed_comment')
+      .leftJoinAndSelect('feed_comment.mentions', 'mentions')
+      .leftJoinAndSelect('feed_comment.likes', 'likes')
+      .where('feed_comment.feed_id = :feedId', {
+        feedId,
+      });
+
+    return await queryBuilder.getMany();
+  }
 }

@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { FindFeedEntity } from '../feed-dao/find-feed.entity';
 
 @Entity('feed_bookmark')
 export class FeedBookmark {
@@ -18,4 +20,7 @@ export class FeedBookmark {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToOne(() => FindFeedEntity, (feed) => feed.bookmarks)
+  feed: FindFeedEntity;
 }

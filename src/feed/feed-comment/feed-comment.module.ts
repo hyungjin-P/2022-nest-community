@@ -24,5 +24,10 @@ import { FeedCommentLikeRepository } from './commnet-like/comment-like.repositor
     FeedCommentMentionService,
     FeedCommentLikeService,
   ],
+  exports: [
+    FeedCommentService,
+    FeedCommentMentionService,
+    FeedCommentLikeService,
+  ],
 })
 export class FeedCommentModule {}

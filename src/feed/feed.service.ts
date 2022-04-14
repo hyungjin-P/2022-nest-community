@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { Feed } from './feed.entity';
 import { FeedModifyDto } from './dto/feed.modify.dto';
@@ -6,7 +6,7 @@ import { FeedTagRepository } from './feed-tag/feed-tag.repository';
 import { FeedPictureRepository } from './feed-picture/feed-picture.repository';
 import {
   IPaginationOptions,
-  paginateRawAndEntities,
+  paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { FeedTag } from './feed-tag/feed-tag.entity';
@@ -23,6 +23,9 @@ import { FileDeleteDto } from '../file/dto/file.delete.dto';
 import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
 import { FeedPicture } from './feed-picture/feed-picture.entity';
 import { UserService } from '../user/user.service';
+import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
+import { FindFeedRepository } from './feed-dao/find-feed.repository';
+import { FindFeedEntity } from './feed-dao/find-feed.entity';
 import { User } from '../user/user.entity';
 
 @Injectable()
@@ -38,6 +41,8 @@ export class FeedService {
     private fileService: FileService,
     private followService: FollowService,
     private userService: UserService,
+    private feedBookmarkService: FeedBookmarkService,
+    private findFeedRepository: FindFeedRepository,
   ) {}
 
   /**
@@ -417,23 +422,19 @@ export class FeedService {
       userId,
     );
 
+    const totalCount: number = await this.feedRepository.count({
+      where: { userId },
+    });
+
     // 피드 메인에 출력되는 개수 외 카운트
     if (feedList.length >= limit) {
-      const totalCount: number = await this.feedRepository.count({
-        where: { userId },
-      });
       result.otherCount = totalCount - feedList.length;
-      result.totalCount = totalCount;
     }
+
+    result.totalCount = totalCount;
 
     return result;
   }
-
-  async findFeedMyPageDetail(
-    userId: string,
-    page: number,
-    limit: number,
-  ): Promise<void> {}
 
   /**
    * 피드 정보들 find
@@ -517,5 +518,120 @@ export class FeedService {
     }
 
     return feedListResult;
+  }
+
+  /**
+   * 피드 삭제 (물리적 삭제)
+   * @param feedId
+   */
+  async deleteRealFeed(feedId: string): Promise<void> {
+    const feed: FindFeedEntity =
+      await this.findFeedRepository.findFeedWithRelations(feedId);
+
+    if (!feed) {
+      throw new HttpException(
+        { code: 'failure', message: '삭제할 피드가 존재하지 않습니다.' },
+        500,
+      );
+    }
+
+    // 피드 댓글
+    await this.feedCommentService.deleteAllFeedComment(feedId);
+
+    // 피드 북마크
+    await this.feedBookmarkService.deleteAllBookmarkOfFeed(feedId);
+
+    await this.findFeedRepository.remove(feed);
+  }
+
+  /**
+   * 피드 및 연관 테이블 조회
+   * @param feedId
+   */
+  async findFeedWithRelations(feedId: string): Promise<FindFeedEntity> {
+    const searchOptions: any = {
+      relations: [
+        'pictures',
+        'likes',
+        'tags',
+        'comments',
+        'bookmarks',
+        'writer',
+      ],
+      where: { feedId, state: 'feed_state_posting' },
+    };
+    return await this.findFeedRepository.findOne(searchOptions);
+  }
+
+  /**
+   * 유저 피드 목록 및 연관 테이블 조회
+   * @param userId
+   */
+  async findAllFeedWithRelationsForUser(
+    userId: string,
+  ): Promise<FindFeedEntity[]> {
+    return await this.findFeedRepository.findAllFeedWithRelations(userId);
+  }
+
+  /**
+   * 피드상세 페이지
+   * @param options
+   * @param userId
+   */
+  async findFeedDetailPage(
+    options: IPaginationOptions,
+    userId: string,
+  ): Promise<Pagination<FindFeedEntity>> {
+    const searchOptions: any = {
+      relations: [
+        'pictures',
+        'likes',
+        'tags',
+        'comments',
+        'bookmarks',
+        'writer',
+      ],
+      where: { userId, state: 'feed_state_posting' },
+    };
+
+    const feedPage = await paginate<FindFeedEntity>(
+      this.findFeedRepository,
+      options,
+      searchOptions,
+    );
+
+    if (feedPage.items.length > 0) {
+      for (const feedDetail of feedPage.items) {
+        feedDetail.isLike =
+          feedDetail.likes.filter((like) => like.userId === userId).length > 0;
+        feedDetail.isBookmark =
+          feedDetail.bookmarks.filter((bookmark) => bookmark.userId === userId)
+            .length > 0;
+        feedDetail.pictureCount = feedDetail.pictures.length;
+        feedDetail.likeCount = feedDetail.likes.length;
+        feedDetail.commentCount = feedDetail.comments.length;
+
+        const exposureUserIds: string[] = [];
+
+        if (feedDetail.userLike?.length > 0) {
+          feedDetail.userLike.some((feedLike, index) => {
+            exposureUserIds.push(feedLike.userId);
+            return index === 2;
+          });
+
+          if (exposureUserIds.length > 0) {
+            feedDetail.exposureUser = await this.userService.findUserIds(
+              exposureUserIds,
+            );
+          }
+        }
+
+        feedDetail.writer.picture = await this.userService.getUserPictures(
+          feedDetail.writer.id,
+        );
+      }
+    }
+
+    return feedPage;
   }
 }

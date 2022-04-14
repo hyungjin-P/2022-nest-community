@@ -5,6 +5,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -13,6 +14,8 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { FeedCommentMention } from './comment-mention/comment-mention.entity';
 import { PublicUserProFile } from '../../user/public/public.user.entity';
+import { FeedCommentLike } from './commnet-like/commnet-like.entity';
+import { FindFeedEntity } from '../feed-dao/find-feed.entity';
 
 @Entity('feed_comment')
 export class FeedComment extends BaseEntity {
@@ -50,4 +53,10 @@ export class FeedComment extends BaseEntity {
 
   @OneToMany((type) => FeedCommentMention, (mention) => mention.feedComment)
   mentions: FeedCommentMention[];
+
+  @OneToMany((type) => FeedCommentLike, (like) => like.feedComment)
+  likes: FeedCommentLike[];
+
+  @ManyToOne(() => FindFeedEntity, (feed) => feed.comments)
+  feed: FindFeedEntity;
 }

@@ -20,7 +20,9 @@ export class FeedLike {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne((type) => Feed, (feed) => feed.likeUsers)
+  @ManyToOne((type) => Feed, (feed) => feed.likeUsers, {
+    onDelete: 'CASCADE',
+  })
   feed: Feed;
 
   @OneToOne((type) => PublicUserProFile, (user) => user.feedLike)

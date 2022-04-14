@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Feed } from '../feed.entity';
 
-@Entity()
+@Entity('feed_picture')
 export class FeedPicture {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -19,7 +19,9 @@ export class FeedPicture {
   @PrimaryColumn()
   url: string;
 
-  @ManyToOne((type) => Feed, (feed) => feed.pictures)
+  @ManyToOne((type) => Feed, (feed) => feed.pictures, {
+    onDelete: 'CASCADE',
+  })
   feed: Feed;
 
   @CreateDateColumn({

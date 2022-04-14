@@ -15,4 +15,15 @@ export class FeedCommentLikeRepository extends Repository<FeedCommentLike> {
       })
       .getMany();
   }
+
+  async findFeedCommentInFeedCommentIds(
+    commentIds: string[],
+  ): Promise<FeedCommentLike[]> {
+    return await getRepository(FeedCommentLike)
+      .createQueryBuilder('feed_comment_like')
+      .where('feed_comment_like.feed_comment_id in (:commentIds)', {
+        commentIds,
+      })
+      .getMany();
+  }
 }

@@ -26,7 +26,8 @@ import { FollowRepository } from '../user/follow/follow.repository';
 import { FileModule } from '../file/file.module';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
-import { UserPictureRepository } from "../user/user-picture/user-picture.repository";
+import { UserPictureRepository } from '../user/user-picture/user-picture.repository';
+import { FindFeedRepository } from './feed-dao/find-feed.repository';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UserPictureRepository } from "../user/user-picture/user-picture.reposit
       FeedPictureRepository,
       FeedTagRepository,
       FollowRepository,
+      FindFeedRepository,
       UserRepository,
       UserPictureRepository,
     ]),

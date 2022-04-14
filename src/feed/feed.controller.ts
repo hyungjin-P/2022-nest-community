@@ -23,6 +23,7 @@ import { FeedLikeDto } from './dto/feed-like.dto';
 import { FeedBookmarkDto } from './dto/feed-bookmark.dto';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
+import { FindFeedEntity } from './feed-dao/find-feed.entity';
 
 @ApiTags('피드')
 @Controller('feed')
@@ -108,7 +109,7 @@ export class FeedController {
     description: '피드 1건 상세 조회',
   })
   @ApiCreatedResponse({
-    description: '피드 1건을 상세조회한다.',
+    description: '피드 1건을 상세조회 한다.',
     type: CodeCategory,
   })
   async findByPublicFeedById(
@@ -189,7 +190,7 @@ export class FeedController {
     description: '피드 좋아요 조회',
   })
   @ApiCreatedResponse({
-    description: '피드 좋아요를 페이지형식으로 조회한다.',
+    description: '피드 좋아요를 페이지 형식으로 조회한다.',
     type: CodeItem,
   })
   async findFeedLikePage(
@@ -283,6 +284,61 @@ export class FeedController {
     description: '피드 북마크 전체삭제',
   })
   async deleteFeedBookmarkAll(@Query('userId') userId: string) {
-    return await this.feedBookmarkService.deleteAllBookmark(userId);
+    return await this.feedBookmarkService.deleteAllBookmarkOfUser(userId);
+  }
+
+  @Get('/findMypageFeedDetail')
+  @ApiOperation({
+    summary: '마이페이지 피드 상세 조회',
+    description: '마이페이지 피드 상세 조회',
+  })
+  @ApiCreatedResponse({
+    description: '마이페이지내 피드 메인에 표시되는 피드를 조회한다.',
+  })
+  async findMyPageFeedDetail(
+    @Query('userId') userId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<Pagination<FindFeedEntity>> {
+    const feedDetailPage: Pagination<FindFeedEntity> =
+      await this.feedService.findFeedDetailPage(
+        {
+          page,
+          limit,
+          route: '/feed/findMypageFeedDetail',
+        },
+        userId,
+      );
+    return feedDetailPage;
+  }
+
+  @Get('/findMypageFeedDetailTest')
+  @ApiOperation({
+    summary: '마이페이지 피드 상세 테스트',
+  })
+  @ApiCreatedResponse({
+    description: '페이징 테스트 ',
+  })
+  async findMyPageFeedDetailTest(
+    @Query('userId') userId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<Pagination<FindFeedEntity>> {
+    return await this.feedService.findFeedDetailPage(
+      { page, limit, route: '/feed/findMypageFeedDetail' },
+      userId,
+    );
+  }
+
+  @Delete('/realDelete')
+  @ApiOperation({
+    summary: '피드 1건 삭제 (물리적)',
+    description: '피드 1건 삭제 (물리적)',
+  })
+  @ApiCreatedResponse({
+    description: '피드 1건을 물리적으로 삭제한다.',
+  })
+  async deleteRealFeed(@Query('feedId') feedId: string): Promise<void> {
+    await this.feedService.deleteRealFeed(feedId);
   }
 }

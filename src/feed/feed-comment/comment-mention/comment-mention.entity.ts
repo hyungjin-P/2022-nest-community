@@ -28,10 +28,14 @@ export class FeedCommentMention {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne((type) => FeedComment, (feedComment) => feedComment.mentions)
+  @ManyToOne((type) => FeedComment, (feedComment) => feedComment.mentions, {
+    onDelete: 'CASCADE',
+  })
   feedComment: FeedComment;
 
-  @OneToOne((type) => PublicUserProFile, (user) => user.feedCommentMention)
+  @OneToOne((type) => PublicUserProFile, (user) => user.feedCommentMention, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'mention_user_id' })
   mentionUser: PublicUserProFile;
 }

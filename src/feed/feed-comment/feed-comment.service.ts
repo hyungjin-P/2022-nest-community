@@ -7,6 +7,7 @@ import { FeedLike } from '../feed-like/feed-like.entity';
 import { FeedCommentLikeRepository } from './commnet-like/comment-like.repository';
 import { FeedCommentLike } from './commnet-like/commnet-like.entity';
 import { FeedCommentLikeService } from './commnet-like/comment-like.service';
+import { FeedCommentMentionRepository } from './comment-mention/comment-mention.repository';
 
 @Injectable()
 export class FeedCommentService {
@@ -14,8 +15,8 @@ export class FeedCommentService {
     @InjectRepository(FeedCommentRepository)
     private feedCommentRepository: FeedCommentRepository,
     private feedCommentLikeRepository: FeedCommentLikeRepository,
-
     private feedCommentLikeService: FeedCommentLikeService,
+    private feedCommentMentionRepository: FeedCommentMentionRepository,
   ) {}
 
   /*
@@ -163,5 +164,18 @@ export class FeedCommentService {
 
     feedCommentRows.deletedAt = new Date();
     return await this.feedCommentRepository.save(feedCommentRows);
+  }
+
+  /**
+   * 피드내 모든 댓글 삭제
+   * @param feedId
+   */
+  async deleteAllFeedComment(feedId: string): Promise<void> {
+    const feedComments: FeedComment[] =
+      await this.feedCommentRepository.findAllFeedCommentWithMentionAndLikes(
+        feedId,
+      );
+
+    await this.feedCommentRepository.remove(feedComments);
   }
 }
