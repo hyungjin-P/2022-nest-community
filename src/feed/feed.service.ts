@@ -423,7 +423,7 @@ export class FeedService {
     );
 
     const totalCount: number = await this.feedRepository.count({
-      where: { userId },
+      where: { userId, state: 'feed_state_posting' },
     });
 
     // 피드 메인에 출력되는 개수 외 카운트
@@ -541,6 +541,7 @@ export class FeedService {
     // 피드 북마크
     await this.feedBookmarkService.deleteAllBookmarkOfFeed(feedId);
 
+    // 삭제
     await this.findFeedRepository.remove(feed);
   }
 
@@ -575,13 +576,14 @@ export class FeedService {
 
   /**
    * 피드상세 페이지
-   * @param options
+   * @param pageOptions
    * @param userId
    */
   async findFeedDetailPage(
-    options: IPaginationOptions,
+    pageOptions: IPaginationOptions,
     userId: string,
   ): Promise<Pagination<FindFeedEntity>> {
+
     const searchOptions: any = {
       relations: [
         'pictures',
@@ -596,7 +598,7 @@ export class FeedService {
 
     const feedPage = await paginate<FindFeedEntity>(
       this.findFeedRepository,
-      options,
+      pageOptions,
       searchOptions,
     );
 
