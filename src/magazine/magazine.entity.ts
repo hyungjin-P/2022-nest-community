@@ -17,7 +17,11 @@ import { PublicUserProFile } from '../user/public/public.user.entity';
 import { MagazineTagEntity } from './magazine-tag/magazine-tag.entity';
 import { type } from 'os';
 
-@Entity('magazine')
+@Entity('magazine', {
+  orderBy: {
+    createdAt: 'DESC',
+  },
+})
 export class Magazine {
   @PrimaryGeneratedColumn('uuid')
   id: string;

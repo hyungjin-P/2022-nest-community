@@ -7,7 +7,11 @@ import {
 } from 'typeorm';
 import { Magazine } from '../magazine.entity';
 
-@Entity('magazine_tag')
+@Entity('magazine_tag', {
+  orderBy: {
+    createdAt: 'DESC',
+  },
+})
 export class MagazineTagEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

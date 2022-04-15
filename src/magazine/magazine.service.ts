@@ -15,8 +15,6 @@ import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmar
 import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
 import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
 import { MagazineViewsService } from './magazine-views/magazine-views.service';
-import { FeedLike } from '../feed/feed-like/feed-like.entity';
-import { FeedBookmark } from '../feed/feed-bookmark/feed-bookmark.entity';
 
 @Injectable()
 export class MagazineService {
@@ -34,20 +32,44 @@ export class MagazineService {
     options: IPaginationOptions,
     category: string,
   ): Promise<Pagination<any>> {
-    let magazinePage: Pagination<any>;
-    if (category === 'all') {
-      magazinePage = await this.repository.findPagesAll(options);
-    } else {
-      magazinePage = await this.repository.findPages(options, category);
+    const searchOptions: any = {
+      relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'magazine_state_posting',
+        });
+      },
+    };
+
+    if (category !== 'all') {
+      searchOptions.where = (qb) => {
+        qb.where({
+          state: 'magazine_state_posting',
+          category: category,
+        });
+      };
     }
 
-    if (magazinePage.items.length > 0) {
+    const magazinePage = await paginate<Magazine>(
+      this.repository,
+      options,
+      searchOptions,
+    );
+
+    // if (category === 'all') {
+    //   magazinePage = await this.repository.findPagesAll(options);
+    // } else {
+    //   magazinePage = await this.repository.findPages(options, category);
+    // }
+
+    // 조회 수 가져오기
+    /*if (magazinePage.items.length > 0) {
       for (const magazine of magazinePage.items) {
         magazine.viewCount = await this.magazineViewService.getCount(
           magazine.id,
         );
       }
-    }
+    }*/
 
     return magazinePage;
   }
@@ -57,12 +79,29 @@ export class MagazineService {
     category: string,
     userId?: string,
   ): Promise<Pagination<any>> {
-    let magazinePage: Pagination<any>;
-    if (category === 'all') {
-      magazinePage = await this.repository.findPagesAll(options);
-    } else {
-      magazinePage = await this.repository.findPages(options, category);
+    const searchOptions: any = {
+      relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'magazine_state_posting',
+        });
+      },
+    };
+
+    if (category !== 'all') {
+      searchOptions.where = (qb) => {
+        qb.where({
+          state: 'magazine_state_posting',
+          category: category,
+        });
+      };
     }
+
+    const magazinePage = await paginate<Magazine>(
+      this.repository,
+      options,
+      searchOptions,
+    );
 
     if (magazinePage.items.length > 0) {
       //magazine bookmark checking
@@ -138,9 +177,29 @@ export class MagazineService {
     const bookmarkMagazines = await this.magazineBookmarkRepository.find({
       userId: userId,
     });
+
+    const bookmarkMagazineCount = await this.magazineBookmarkRepository.count({
+      userId: userId,
+    });
+
     const bookmarkMagazineIds = bookmarkMagazines.map((r) => r.magazineId);
 
     // 매거진 조회, magazineId in (bookmarkUserIds)
+    /*const searchOptions: any = {
+      relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'magazine_state_posting',
+        });
+      },
+    };
+
+    const magazinePage = await paginate<Magazine>(
+      this.repository,
+      options,
+      searchOptions,
+    );*/
+
     const magazinePage: Pagination<any> =
       await this.repository.findMagazinePageByMagazineIds(
         options,
@@ -148,6 +207,8 @@ export class MagazineService {
       );
 
     // 추가 데이터 호출
+    magazinePage.meta.totalCount = bookmarkMagazineCount;
+
     if (magazinePage.items.length > 0) {
       for (const magazine of magazinePage.items) {
         // 북마크한 게시물만 불렀기에 isBookmark 는 true 상태

@@ -183,21 +183,33 @@ export class FeedService {
     const bookmarkFeeds = await this.feedBookmarkRepository.find({
       userId: userId,
     });
+
+    const bookmarkCount = await this.feedBookmarkRepository.count({
+      userId: userId,
+    });
+
     const bookmarkFeedIds = bookmarkFeeds.map((r) => r.feedId);
 
     const feedPage: Pagination<any> =
       await this.feedRepository.findFeedPageByFeedIds(options, bookmarkFeedIds);
 
+    feedPage.meta.totalCount = bookmarkCount;
+
+    // 현재 화면상의 필요없는 데이터 주석처리 2021.04.15
     if (feedPage.items.length > 0) {
-      const feedIds: string[] = feedPage.items.map((r) => r.id);
+      /*const feedIds: string[] = feedPage.items.map((r) => r.id);
       const feedLikes: FeedLike[] =
         await this.feedLikeRepository.findFeedLikeInFeedIdsOfUser(
           feedIds,
           userId,
-        );
+        );*/
 
       for (const feed of feedPage.items) {
-        feed.likeCount = await this.feedLikeService.getCount(feed.id);
+        // 필요없는 사진데이터 날리기
+        feed.pictures = null;
+
+        //그 외 표시 데이터 호출
+        /*feed.likeCount = await this.feedLikeService.getCount(feed.id);
         feed.likeUsers = await this.feedLikeRepository.getFeedLikeUsersOfLimit(
           feed.id,
         );
@@ -208,7 +220,7 @@ export class FeedService {
             (feedLike) => feedLike.feedId === feed.id,
           ).length;
           feed.isLike = isLike > 0;
-        }
+        }*/
 
         // 북마크한 피드만 불렀기에 isBookmark 를 true 상태로 전환
         feed.isBookmark = true;
@@ -583,7 +595,6 @@ export class FeedService {
     pageOptions: IPaginationOptions,
     userId: string,
   ): Promise<Pagination<FindFeedEntity>> {
-
     const searchOptions: any = {
       relations: [
         'pictures',
