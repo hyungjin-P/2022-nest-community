@@ -16,7 +16,11 @@ import { FeedLike } from './feed-like/feed-like.entity';
 import { PublicUserProFile } from '../user/public/public.user.entity';
 import { User } from '../user/user.entity';
 
-@Entity('feed')
+@Entity('feed', {
+  orderBy: {
+    createdAt: 'DESC',
+  },
+})
 export class Feed {
   @PrimaryGeneratedColumn('uuid')
   id: string;

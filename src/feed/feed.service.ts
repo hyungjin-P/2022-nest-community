@@ -50,19 +50,31 @@ export class FeedService {
    * @param options { page, limit }
    */
   async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
-    const feedPage: Pagination<any> = await this.feedRepository.findFeedPages(
+    const searchOptions: any = {
+      relations: ['writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'feed_state_posting',
+        });
+      },
+    };
+
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
       options,
+      searchOptions,
     );
 
     if (feedPage.items.length > 0) {
-      const feedIds: string[] = feedPage.items.map((r) => r.id);
-      const feedTags: FeedTag[] =
-        await this.feedTagRepository.getFeedTagInFeedIds(feedIds);
-
-      if (feedTags.length > 0) {
-        feedPage.items.forEach((feed) => {
-          feed.tags = feedTags.filter((feedTag) => feedTag.feedId === feed.id);
+      for (const feed of feedPage.items) {
+        // 사진 수
+        feed.pictureCount = await this.feedPictureRepository.count({
+          feedId: feed.id,
         });
+        // 좋아요 수
+        feed.likeCount = await this.feedLikeService.getCount(feed.id);
+        // 댓글 수
+        feed.commentCount = await this.feedCommentService.getCount(feed.id);
       }
     }
 
@@ -78,14 +90,23 @@ export class FeedService {
     options: IPaginationOptions,
     userId: string,
   ): Promise<Pagination<any>> {
-    const feedPage: Pagination<any> = await this.feedRepository.findFeedPages(
+    const searchOptions: any = {
+      relations: ['writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'feed_state_posting',
+        });
+      },
+    };
+
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
       options,
+      searchOptions,
     );
 
     if (feedPage.items.length > 0) {
       const feedIds: string[] = feedPage.items.map((r) => r.id);
-      const feedTags: FeedTag[] =
-        await this.feedTagRepository.getFeedTagInFeedIds(feedIds);
       const feedLikes: FeedLike[] =
         await this.feedLikeRepository.findFeedLikeInFeedIdsOfUser(
           feedIds,
@@ -97,18 +118,13 @@ export class FeedService {
           userId,
         );
 
-      if (feedTags.length > 0 || feedLikes.length > 0) {
+      if (feedBookmarks.length > 0 || feedLikes.length > 0) {
         feedPage.items.forEach((feed) => {
           if (feedLikes.length > 0) {
             const isLike = feedLikes.filter(
               (feedLike) => feedLike.feedId === feed.id,
             ).length;
             feed.isLike = isLike > 0;
-          }
-          if (feedTags.length > 0) {
-            feed.tags = feedTags.filter(
-              (feedTag) => feedTag.feedId === feed.id,
-            );
           }
           if (feedBookmarks.length > 0) {
             const isBookmark = feedBookmarks.filter(
@@ -128,14 +144,31 @@ export class FeedService {
   async findByPageOverFollow(
     options: IPaginationOptions,
     userId: string,
-  ): Promise<Pagination<any[]>> {
+  ): Promise<Pagination<Feed>> {
     // 팔로우한 인원 조회
     const followUsers = await this.followService.getFollowUsers(userId);
     const followUserIds = followUsers.map((r) => r.toUser);
 
+    const searchOptions: any = {
+      join: {
+        alias: 'feed',
+      },
+      relations: ['pictures', 'writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'feed_state_posting',
+        }).andWhere('feed.userId IN (:followUserIds)', {
+          followUserIds: followUserIds,
+        });
+      },
+    };
+
     // 피드 조회, userId in (followUserIds)
-    const feedPage: Pagination<any> =
-      await this.feedRepository.findFeedPageByUserIds(options, followUserIds);
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
+      options,
+      searchOptions,
+    );
 
     // 피드 상세 형식으로 추가로 불러야할 항목들 부르기
     if (feedPage.items.length > 0) {
@@ -178,7 +211,7 @@ export class FeedService {
   async findByPageOverBookmark(
     options: IPaginationOptions,
     userId: string,
-  ): Promise<Pagination<any[]>> {
+  ): Promise<Pagination<Feed>> {
     // 북마크한 피드 조회
     const bookmarkFeeds = await this.feedBookmarkRepository.find({
       userId: userId,
@@ -190,8 +223,25 @@ export class FeedService {
 
     const bookmarkFeedIds = bookmarkFeeds.map((r) => r.feedId);
 
-    const feedPage: Pagination<any> =
-      await this.feedRepository.findFeedPageByFeedIds(options, bookmarkFeedIds);
+    const searchOptions: any = {
+      join: {
+        alias: 'feed',
+      },
+      relations: ['writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'feed_state_posting',
+        }).andWhere('feed.id IN (:bookmarkFeedIds)', {
+          bookmarkFeedIds: bookmarkFeedIds,
+        });
+      },
+    };
+
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
+      options,
+      searchOptions,
+    );
 
     feedPage.meta.totalCount = bookmarkCount;
 

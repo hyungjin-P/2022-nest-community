@@ -3,11 +3,9 @@ import { MagazineRepository } from './magazine.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Magazine } from './magazine.entity';
 import { MagazineModifyDto } from './dto/magazine.modify.dto';
-import { Feed } from '../feed/feed.entity';
 import {
   IPaginationOptions,
   paginate,
-  paginateRawAndEntities,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
@@ -158,7 +156,7 @@ export class MagazineService {
     if (magazine.posting === true) {
       magazineRow.state = 'magazine_state_posting';
     }
-    console.log(magazineRow);
+
     return await this.repository.save(magazineRow);
   }
 
@@ -172,7 +170,7 @@ export class MagazineService {
   async findByPageOverBookmark(
     options: IPaginationOptions,
     userId: string,
-  ): Promise<Pagination<any[]>> {
+  ): Promise<Pagination<Magazine>> {
     // 북마크한 매거진 조회
     const bookmarkMagazines = await this.magazineBookmarkRepository.find({
       userId: userId,
@@ -185,11 +183,16 @@ export class MagazineService {
     const bookmarkMagazineIds = bookmarkMagazines.map((r) => r.magazineId);
 
     // 매거진 조회, magazineId in (bookmarkUserIds)
-    /*const searchOptions: any = {
+    const searchOptions: any = {
+      join: {
+        alias: 'magazine',
+      },
       relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
       where: (qb) => {
         qb.where({
           state: 'magazine_state_posting',
+        }).andWhere('magazine.id IN (:magazineIds)', {
+          magazineIds: bookmarkMagazineIds,
         });
       },
     };
@@ -198,13 +201,7 @@ export class MagazineService {
       this.repository,
       options,
       searchOptions,
-    );*/
-
-    const magazinePage: Pagination<any> =
-      await this.repository.findMagazinePageByMagazineIds(
-        options,
-        bookmarkMagazineIds,
-      );
+    );
 
     // 추가 데이터 호출
     magazinePage.meta.totalCount = bookmarkMagazineCount;

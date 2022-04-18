@@ -8,6 +8,8 @@ import {
 
 @EntityRepository(Magazine)
 export class MagazineRepository extends Repository<Magazine> {
+  // doesn't use this repository function
+
   async findPages(
     options: IPaginationOptions,
     category: string,
