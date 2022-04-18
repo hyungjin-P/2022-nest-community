@@ -26,7 +26,6 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
-import { User } from '../user/user.entity';
 
 @Injectable()
 export class FeedService {
@@ -118,21 +117,27 @@ export class FeedService {
           userId,
         );
 
-      if (feedBookmarks.length > 0 || feedLikes.length > 0) {
-        feedPage.items.forEach((feed) => {
-          if (feedLikes.length > 0) {
-            const isLike = feedLikes.filter(
-              (feedLike) => feedLike.feedId === feed.id,
-            ).length;
-            feed.isLike = isLike > 0;
-          }
-          if (feedBookmarks.length > 0) {
-            const isBookmark = feedBookmarks.filter(
-              (feedBookmark) => feedBookmark.feedId === feed.id,
-            ).length;
-            feed.isBookmark = isBookmark > 0;
-          }
+      for (const feed of feedPage.items) {
+        feed.pictureCount = await this.feedPictureRepository.count({
+          feedId: feed.id,
         });
+        // 좋아요 수
+        feed.likeCount = await this.feedLikeService.getCount(feed.id);
+        // 댓글 수
+        feed.commentCount = await this.feedCommentService.getCount(feed.id);
+
+        if (feedLikes.length > 0) {
+          const isLike = feedLikes.filter(
+            (feedLike) => feedLike.feedId === feed.id,
+          ).length;
+          feed.isLike = isLike > 0;
+        }
+        if (feedBookmarks.length > 0) {
+          const isBookmark = feedBookmarks.filter(
+            (feedBookmark) => feedBookmark.feedId === feed.id,
+          ).length;
+          feed.isBookmark = isBookmark > 0;
+        }
       }
     }
 
@@ -417,11 +422,23 @@ export class FeedService {
   async findByLikePage(
     options: IPaginationOptions,
     feedId: string,
-  ): Promise<Pagination<any>> {
-    const feedLikeRows: Pagination<FeedLike> =
-      await this.feedLikeRepository.findPages(options, feedId);
+  ): Promise<Pagination<FeedLike>> {
+    const searchOptions: any = {
+      relations: ['user', 'user.picture'],
+      where: (qb) => {
+        qb.where({
+          feedId: feedId,
+        });
+      },
+    };
 
-    return feedLikeRows;
+    const feedLikePages = await paginate<FeedLike>(
+      this.feedLikeRepository,
+      options,
+      searchOptions,
+    );
+
+    return feedLikePages;
   }
 
   /**
@@ -434,17 +451,29 @@ export class FeedService {
     options: IPaginationOptions,
     feedId: string,
     userId: string,
-  ): Promise<Pagination<any>> {
-    const feedLikeRows: Pagination<FeedLike> =
-      await this.feedLikeRepository.findPages(options, feedId);
+  ): Promise<Pagination<FeedLike>> {
+    const searchOptions: any = {
+      relations: ['user', 'user.picture'],
+      where: (qb) => {
+        qb.where({
+          feedId: feedId,
+        });
+      },
+    };
+
+    const feedLikePages = await paginate<FeedLike>(
+      this.feedLikeRepository,
+      options,
+      searchOptions,
+    );
 
     // user별로 isFllow 추가 해야함
-    if (feedLikeRows.items.length > 0) {
+    if (feedLikePages.items.length > 0) {
       const followUsers: Follow[] = await this.followService.getFollowUsers(
         userId,
       );
 
-      feedLikeRows.items.forEach((feedLike) => {
+      feedLikePages.items.forEach((feedLike) => {
         if (followUsers.length > 0) {
           const isFollow = followUsers.filter(
             (follow) => follow.toUser === feedLike.userId,
@@ -454,7 +483,7 @@ export class FeedService {
         }
       });
     }
-    return feedLikeRows;
+    return feedLikePages;
   }
 
   /**

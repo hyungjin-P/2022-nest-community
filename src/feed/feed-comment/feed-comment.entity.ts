@@ -17,7 +17,11 @@ import { PublicUserProFile } from '../../user/public/public.user.entity';
 import { FeedCommentLike } from './commnet-like/commnet-like.entity';
 import { FindFeedEntity } from '../feed-dao/find-feed.entity';
 
-@Entity('feed_comment')
+@Entity('feed_comment', {
+  orderBy: {
+    createdAt: 'DESC',
+  },
+})
 export class FeedComment extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -59,4 +63,7 @@ export class FeedComment extends BaseEntity {
 
   @ManyToOne(() => FindFeedEntity, (feed) => feed.comments)
   feed: FindFeedEntity;
+
+  likeCount?: number;
+  isLike = false;
 }

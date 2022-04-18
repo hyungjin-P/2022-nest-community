@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FeedCommentRepository } from './feed-comment.repository';
-import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 import { FeedComment } from './feed-comment.entity';
-import { FeedLike } from '../feed-like/feed-like.entity';
 import { FeedCommentLikeRepository } from './commnet-like/comment-like.repository';
 import { FeedCommentLike } from './commnet-like/commnet-like.entity';
 import { FeedCommentLikeService } from './commnet-like/comment-like.service';
@@ -33,8 +36,29 @@ export class FeedCommentService {
     options: IPaginationOptions,
     feedId: string,
   ): Promise<Pagination<any>> {
-    const commentPage: Pagination<any> =
-      await this.feedCommentRepository.findCommentPages(options, feedId);
+    const searchOptions: any = {
+      join: {
+        alias: 'feed_comment',
+      },
+      relations: [
+        'writer',
+        'writer.picture',
+        'mentions',
+        'mentions.mentionUser',
+        'mentions.mentionUser.picture',
+      ],
+      where: (qb) => {
+        qb.where({
+          feedId: feedId,
+        }).andWhere('feed_comment.parentId IS null');
+      },
+    };
+
+    const commentPage = await paginate<FeedComment>(
+      this.feedCommentRepository,
+      options,
+      searchOptions,
+    );
 
     if (commentPage.items.length > 0) {
       for (const comment of commentPage.items) {
@@ -73,8 +97,29 @@ export class FeedCommentService {
     feedId: string,
     userId: string,
   ): Promise<Pagination<any>> {
-    const commentPage: Pagination<any> =
-      await this.feedCommentRepository.findCommentPages(options, feedId);
+    const searchOptions: any = {
+      join: {
+        alias: 'feed_comment',
+      },
+      relations: [
+        'writer',
+        'writer.picture',
+        'mentions',
+        'mentions.mentionUser',
+        'mentions.mentionUser.picture',
+      ],
+      where: (qb) => {
+        qb.where({
+          feedId: feedId,
+        }).andWhere('feed_comment.parentId IS null');
+      },
+    };
+
+    const commentPage = await paginate<FeedComment>(
+      this.feedCommentRepository,
+      options,
+      searchOptions,
+    );
 
     // 댓글 좋아요 불러와야 함.
     if (commentPage.items.length > 0) {
