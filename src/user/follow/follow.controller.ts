@@ -1,8 +1,9 @@
 import { Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { FollowService } from './follow.service';
 import { Follow } from './follow.entity';
-import { query } from 'express';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('팔로우')
 @Controller('follow')
 export class FollowController {
   constructor(private followService: FollowService) {}
@@ -32,5 +33,17 @@ export class FollowController {
     @Query('toUser') toUser: string,
   ): Promise<any> {
     return await this.followService.removeFollow(fromUser, toUser);
+  }
+
+  @Get('/countFollow')
+  @ApiOperation({
+    summary: '유저의 팔로워 수 조회',
+    description: '유저의 팔로워 수 조회',
+  })
+  @ApiCreatedResponse({
+    description: '유저의 팔로워 수를 조회한다.',
+  })
+  async countFollowerAndFollowing(@Query('userId') userId: string): Promise<any> {
+    return await this.followService.countFollowerAndFollowing(userId);
   }
 }

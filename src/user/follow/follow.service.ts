@@ -36,14 +36,24 @@ export class FollowService {
       toUser: checkUserId,
     });
 
-    if (follow) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!follow;
   }
 
   async getFollowUsers(userId: string) {
     return await this.followRepository.find({ fromUser: userId });
   }
+
+  async countFollowerAndFollowing(userId: string): Promise<any> {
+    const fromUserCount = await this.followRepository.count({
+      fromUser: userId,
+    });
+    const toUserCount = await this.followRepository.count({ toUser: userId });
+
+    return {
+      fromUserCount,
+      toUserCount,
+    };
+  }
+
+  async countFollowing(): Promise<void> {}
 }

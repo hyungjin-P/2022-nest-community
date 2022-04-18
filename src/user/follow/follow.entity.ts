@@ -11,10 +11,10 @@ export class Follow {
   id: string;
 
   @Column()
-  fromUser: string;
+  fromUser: string; // 누가
 
   @Column()
-  toUser: string;
+  toUser: string; // 누구를
 
   @CreateDateColumn()
   createdAt: Date;
