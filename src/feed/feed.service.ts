@@ -26,6 +26,8 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
+import { User } from '../user/user.entity';
+import { FeedComment } from './feed-comment/feed-comment.entity';
 
 @Injectable()
 export class FeedService {

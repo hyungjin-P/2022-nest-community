@@ -6,12 +6,6 @@ import { Follow } from './follow.entity';
 export class FollowService {
   constructor(private readonly followRepository: FollowRepository) {}
 
-  async pushFollow(userId: string): Promise<void> {}
-
-  async popFollow(userId: string): Promise<void> {}
-
-  async getMyFollowCount(userId: string): Promise<void> {}
-
   async addFollow(fromUser: string, toUser: string): Promise<Follow> {
     return await this.followRepository.save({
       fromUser: fromUser,
@@ -39,11 +33,11 @@ export class FollowService {
     return !!follow;
   }
 
-  async getFollowUsers(userId: string) {
+  async getFollowUsers(userId: string): Promise<Follow[]> {
     return await this.followRepository.find({ fromUser: userId });
   }
 
-  async countFollowerAndFollowing(userId: string): Promise<any> {
+  async countFollowerAndFollowingOfUser(userId: string): Promise<any> {
     const fromUserCount = await this.followRepository.count({
       fromUser: userId,
     });
@@ -54,6 +48,4 @@ export class FollowService {
       toUserCount,
     };
   }
-
-  async countFollowing(): Promise<void> {}
 }

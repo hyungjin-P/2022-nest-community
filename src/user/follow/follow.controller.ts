@@ -8,12 +8,6 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class FollowController {
   constructor(private followService: FollowService) {}
 
-  @Get('/push')
-  async pushFollow(): Promise<void> {}
-
-  @Get('/pop')
-  async popFollow(): Promise<void> {}
-
   /**
    * 팔로우 추가
    * @param fromUser 로그인 유저
@@ -43,7 +37,9 @@ export class FollowController {
   @ApiCreatedResponse({
     description: '유저의 팔로워 수를 조회한다.',
   })
-  async countFollowerAndFollowing(@Query('userId') userId: string): Promise<any> {
-    return await this.followService.countFollowerAndFollowing(userId);
+  async countFollowerAndFollowing(
+    @Query('userId') userId: string,
+  ): Promise<any> {
+    return await this.followService.countFollowerAndFollowingOfUser(userId);
   }
 }
