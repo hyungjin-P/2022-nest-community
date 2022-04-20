@@ -11,6 +11,7 @@ import { FeedCommentLikeRepository } from './commnet-like/comment-like.repositor
 import { FeedCommentLike } from './commnet-like/commnet-like.entity';
 import { FeedCommentLikeService } from './commnet-like/comment-like.service';
 import { FeedCommentMentionRepository } from './comment-mention/comment-mention.repository';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class FeedCommentService {
@@ -20,6 +21,7 @@ export class FeedCommentService {
     private feedCommentLikeRepository: FeedCommentLikeRepository,
     private feedCommentLikeService: FeedCommentLikeService,
     private feedCommentMentionRepository: FeedCommentMentionRepository,
+    private userService: UserService,
   ) {}
 
   /*
@@ -222,5 +224,31 @@ export class FeedCommentService {
       );
 
     await this.feedCommentRepository.remove(feedComments);
+  }
+
+  /**
+   * 피드 및 관계 테이블 조회
+   * @param feedId
+   */
+  async findFeedCommentWithRelations(feedId: string): Promise<FeedComment[]> {
+    const searchOptions: any = {
+      relations: ['writer', 'mentions', 'likes'],
+      where: { feedId },
+      order: {
+        createdAt: 'ASC',
+      },
+    };
+
+    const feedComments: FeedComment[] = await this.feedCommentRepository.find(
+      searchOptions,
+    );
+
+    for (const feedComment of feedComments) {
+      feedComment.writer.picture = await this.userService.getUserPictures(
+        feedComment.writer.id,
+      );
+    }
+
+    return feedComments;
   }
 }

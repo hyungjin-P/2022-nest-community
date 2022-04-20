@@ -8,6 +8,10 @@ import { FeedCommentMentionService } from './comment-mention/comment-mention.ser
 import { FeedCommentMentionRepository } from './comment-mention/comment-mention.repository';
 import { FeedCommentLikeService } from './commnet-like/comment-like.service';
 import { FeedCommentLikeRepository } from './commnet-like/comment-like.repository';
+import { UserRepository } from '../../user/user.repository';
+import { UserService } from '../../user/user.service';
+import { UserPictureRepository } from '../../user/user-picture/user-picture.repository';
+import { UserBackgroundRepository } from '../../user/user-background/user-background.repository';
 
 @Module({
   imports: [
@@ -15,6 +19,9 @@ import { FeedCommentLikeRepository } from './commnet-like/comment-like.repositor
       FeedCommentRepository,
       FeedCommentMentionRepository,
       FeedCommentLikeRepository,
+      UserRepository,
+      UserPictureRepository,
+      UserBackgroundRepository,
     ]),
     AuthModule,
   ],
@@ -23,6 +30,7 @@ import { FeedCommentLikeRepository } from './commnet-like/comment-like.repositor
     FeedCommentService,
     FeedCommentMentionService,
     FeedCommentLikeService,
+    UserService,
   ],
   exports: [
     FeedCommentService,

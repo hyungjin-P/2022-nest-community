@@ -4,7 +4,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -35,6 +34,7 @@ export class FeedCommentMention {
 
   @OneToOne((type) => PublicUserProFile, (user) => user.feedCommentMention, {
     onDelete: 'CASCADE',
+    eager: true,
   })
   @JoinColumn({ name: 'mention_user_id' })
   mentionUser: PublicUserProFile;

@@ -120,6 +120,7 @@ export class FeedCommentController {
   async createCommentMention(
     @Body() mention: FeedCommentMention,
   ): Promise<FeedCommentMention> {
+    console.log('mention : ', mention);
     return await this.feedCommentMentionService.addMention(mention);
   }
 
@@ -154,5 +155,16 @@ export class FeedCommentController {
     @Query('userId') userId: string,
   ): Promise<number> {
     return await this.feedCommentLikeService.deleteLike(feedCommentId, userId);
+  }
+
+  @Get('/getFeedCommentsWithRelations')
+  @ApiOperation({
+    summary: '댓글 조회',
+    description: '댓글 조회',
+  })
+  async findFeedCommentWithRelations(
+    @Query('feedId') feedId: string,
+  ): Promise<FeedComment[]> {
+    return await this.feedCommentService.findFeedCommentWithRelations(feedId);
   }
 }
