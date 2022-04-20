@@ -20,6 +20,7 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { FeedCommentService } from '../feed-comment/feed-comment.service';
 import { LocalAuthGuard } from '../../auth/guards/local-auth-guard';
 import { FindFeedEntity } from '../feed-dao/find-feed.entity';
+import { FeedTagService } from '../feed-tag/feed-tag.service';
 
 @ApiTags('피드(공개)')
 @Controller()
@@ -27,6 +28,7 @@ export class PublicFeedController {
   constructor(
     private feedService: FeedService,
     private feedCommentService: FeedCommentService,
+    private feedTagService: FeedTagService,
   ) {}
 
   @Get('/public/feed/findPages')
@@ -108,7 +110,7 @@ export class PublicFeedController {
     );
   }
 
-  @Get('public/feed/comment/findPages')
+  @Get('/public/feed/comment/findPages')
   @ApiOperation({
     summary: '피드 댓글 조회',
     description: '피드 댓글 조회',
@@ -132,7 +134,7 @@ export class PublicFeedController {
     );
   }
 
-  @Get('public/feed/comment/sub/findPages')
+  @Get('/public/feed/comment/sub/findPages')
   @ApiOperation({
     summary: '대댓글 조회',
     description: '피드 대댓글 조회',
@@ -156,7 +158,7 @@ export class PublicFeedController {
     );
   }
 
-  @Get('public/feed/findOneWithRelations')
+  @Get('/public/feed/findOneWithRelations')
   @ApiOperation({
     summary: '피드 및 연관 테이블 조회',
     description: '피드 및 연관 테이블 조회',
@@ -168,5 +170,37 @@ export class PublicFeedController {
     @Query('userId') userId: string,
   ): Promise<FindFeedEntity[]> {
     return await this.feedService.findAllFeedWithRelationsForUser(userId);
+  }
+
+  @Get('/public/findTagList')
+  @ApiOperation({
+    summary: '피드 태그로 검색',
+    description: '피드 태그로 검색',
+  })
+  @ApiCreatedResponse({
+    description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
+  })
+  async findTagList(@Query('name') name: string) {
+    return await this.feedTagService.getTagList(name);
+  }
+
+  @Get('/public/feed/findPagesOverTag')
+  @ApiOperation({
+    summary: '선택된 태그로 피드 페이지 조회',
+    description: '선택된 태그로 피드 페이지 조회',
+  })
+  @ApiCreatedResponse({
+    description: '선택된 태그로 피드 페이지 조회',
+    type: CodeItem,
+  })
+  async findFeedPagesOverTag(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('name') name: string,
+  ) {
+    return await this.feedTagService.getFeedListOverTag(
+      { page: page, limit: limit, route: '/public/feed/findPagesOverTag' },
+      name,
+    );
   }
 }

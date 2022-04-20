@@ -31,6 +31,5 @@ export class FeedTag {
   })
   createdAt: Date;
 
-  // @ManyToOne(() => Feed, (feed) => feed.tags)
-  // feed: Feed;
+  tagCount: number;
 }
