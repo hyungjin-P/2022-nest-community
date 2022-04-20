@@ -55,11 +55,15 @@ export class FeedComment extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   writer: PublicUserProFile;
 
-  @OneToMany((type) => FeedCommentMention, (mention) => mention.feedComment)
+  @OneToMany((type) => FeedCommentMention, (mention) => mention.feedComment, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   mentions: FeedCommentMention[];
 
-  @OneToMany((type) => FeedCommentLike, (like) => like.feedComment)
+  @OneToMany((type) => FeedCommentLike, (like) => like.feedComment, {
+    onDelete: 'CASCADE',
+  })
   likes: FeedCommentLike[];
 
   @ManyToOne(() => FindFeedEntity, (feed) => feed.comments)

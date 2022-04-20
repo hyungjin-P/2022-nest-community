@@ -213,6 +213,23 @@ export class FeedCommentService {
     return await this.feedCommentRepository.save(feedCommentRows);
   }
 
+  async removeFeedComment(feedCommentId: string): Promise<void> {
+    const feedComment: FeedComment = await this.feedCommentRepository.findOne({
+      id: feedCommentId,
+    });
+
+    if (feedComment) {
+      const feedCommentChildren: FeedComment[] =
+        await this.feedCommentRepository.find({ parentId: feedComment.id });
+
+      if (feedCommentChildren.length > 0) {
+        await this.feedCommentRepository.remove(feedCommentChildren);
+      }
+
+      await this.feedCommentRepository.remove(feedComment);
+    }
+  }
+
   /**
    * 피드내 모든 댓글 삭제
    * @param feedId

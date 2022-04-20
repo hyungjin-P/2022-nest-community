@@ -16,6 +16,7 @@ import { FeedComment } from './feed-comment.entity';
 import { FeedCommentMentionService } from './comment-mention/comment-mention.service';
 import { FeedCommentMention } from './comment-mention/comment-mention.entity';
 import { FeedCommentLikeService } from './commnet-like/comment-like.service';
+import { AddCommentLikeDto } from './dto/add-comment-like.dto';
 
 @ApiTags('피드 댓글')
 @Controller('/feed/comment')
@@ -112,6 +113,17 @@ export class FeedCommentController {
     return await this.feedCommentService.deleteFeedComment(feedCommentId);
   }
 
+  @Delete('/remove')
+  @ApiOperation({
+    summary: '피드 댓글 물리적 삭제',
+    description: '피드 댓글 물리적 삭제',
+  })
+  async removeFeedComment(
+    @Query('feedCommentId') feedCommentId: string,
+  ): Promise<void> {
+    return await this.feedCommentService.removeFeedComment(feedCommentId);
+  }
+
   @Post('/addMention')
   @ApiOperation({
     summary: '피드 댓글 언급 추가',
@@ -143,6 +155,20 @@ export class FeedCommentController {
     @Query('userId') userId: string,
   ): Promise<number> {
     return await this.feedCommentLikeService.createLike(feedCommentId, userId);
+  }
+
+  @Post('/addLikeAndGetComment')
+  @ApiOperation({
+    summary: '댓글 좋아요 추가',
+    description: '댓글 좋아요 추가 및 해당 데이터 리턴',
+  })
+  async createCommentLikeAndReturnThisValue(
+    @Body() addCommentLikeDto: AddCommentLikeDto,
+  ): Promise<any> {
+    return await this.feedCommentLikeService.createLikeAndReturnComment(
+      addCommentLikeDto.feedCommentId,
+      addCommentLikeDto.userId,
+    );
   }
 
   @Delete('/deleteLike')
