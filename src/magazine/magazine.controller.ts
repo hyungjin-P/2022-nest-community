@@ -72,7 +72,7 @@ export class MagazineController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('userId') userId: string,
   ): Promise<Pagination<any>> {
-    return await this.magazineService.findByPageOverBookmark(
+    return await this.magazineBookmarkService.getMagazineOverBookmark(
       { page, limit, route: '/magazine/findPagesOverBookmark' },
       userId,
     );

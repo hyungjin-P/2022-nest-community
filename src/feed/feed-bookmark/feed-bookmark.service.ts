@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { FeedBookmarkRepository } from './feed-bookmark.repository';
 import { FeedBookmarkDto } from '../dto/feed-bookmark.dto';
 import { use } from 'passport';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { FeedBookmark } from './feed-bookmark.entity';
 
 @Injectable()
 export class FeedBookmarkService {
@@ -43,5 +45,32 @@ export class FeedBookmarkService {
    */
   async deleteAllBookmarkOfFeed(feedId: string) {
     return await this.feedBookmarkRepository.delete({ feedId });
+  }
+
+  async getFeedListOverBookmark(options: IPaginationOptions, userId: string) {
+    const searchOptions: any = {
+      relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
+      where: {
+        userId: userId,
+      },
+    };
+
+    const bookmarkCount = await this.feedBookmarkRepository.count({
+      userId: userId,
+    });
+
+    const feedBookmarkPage = await paginate<FeedBookmark>(
+      this.feedBookmarkRepository,
+      options,
+      searchOptions,
+    );
+
+    feedBookmarkPage.meta.totalCount = bookmarkCount;
+
+    for (const feedBookmark of feedBookmarkPage.items) {
+      feedBookmark.feed.isBookmark = true;
+    }
+
+    return feedBookmarkPage;
   }
 }

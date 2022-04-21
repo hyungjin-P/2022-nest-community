@@ -26,8 +26,6 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
-import { User } from '../user/user.entity';
-import { FeedComment } from './feed-comment/feed-comment.entity';
 
 @Injectable()
 export class FeedService {
@@ -348,6 +346,48 @@ export class FeedService {
     return feed;
   }
 
+  /**
+   * 피드 상세 하단 피드 목록 조회
+   * 현재 게시글보다 오래된 게시물만 조회
+   * @param options
+   * @param feedId
+   */
+  async findByPageUnderDate(options: IPaginationOptions, feedId: string) {
+    const feed = await this.feedRepository.findOne({ id: feedId });
+
+    const searchOptions: any = {
+      relations: ['writer', 'writer.picture', 'tags'],
+      where: (qb) => {
+        qb.where({
+          state: 'feed_state_posting',
+        }).andWhere('uploaded_at < :uploadedAt', {
+          uploadedAt: feed.uploadedAt,
+        });
+      },
+    };
+
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
+      options,
+      searchOptions,
+    );
+
+    if (feedPage.items.length > 0) {
+      for (const feed of feedPage.items) {
+        // 사진 수
+        feed.pictureCount = await this.feedPictureRepository.count({
+          feedId: feed.id,
+        });
+        // 좋아요 수
+        feed.likeCount = await this.feedLikeService.getCount(feed.id);
+        // 댓글 수
+        feed.commentCount = await this.feedCommentService.getCount(feed.id);
+      }
+    }
+
+    return feedPage;
+  }
+
   /*
    * 피드생성 - 작업 중 중단
    * 기존 피드 있을 시, 해당 정보 리턴 해야함
@@ -407,7 +447,9 @@ export class FeedService {
 
     if (feedModifyDto.posting) {
       feedRows.state = 'feed_state_posting';
+      feedRows.uploadedAt = new Date();
     }
+
     return await this.feedRepository.save(feedRows);
   }
 

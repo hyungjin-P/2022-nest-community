@@ -97,10 +97,14 @@ export class FeedController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('userId') userId: string,
   ): Promise<Pagination<any>> {
-    return await this.feedService.findByPageOverBookmark(
+    return await this.feedBookmarkService.getFeedListOverBookmark(
       { page, limit, route: '/feed/findPagesOverBookmark' },
       userId,
     );
+    /*return await this.feedService.findByPageOverBookmark(
+      { page, limit, route: '/feed/findPagesOverBookmark' },
+      userId,
+    );*/
   }
 
   @Get('/findById')

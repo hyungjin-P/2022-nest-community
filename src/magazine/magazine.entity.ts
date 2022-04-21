@@ -10,12 +10,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../user/user.entity';
 import { MagazineBodyEn } from './magazine-body-en/magazine-body-en.entity';
 import { MagazineBodyKo } from './magazine-body-ko/magazine-body-ko.entity';
 import { PublicUserProFile } from '../user/public/public.user.entity';
 import { MagazineTagEntity } from './magazine-tag/magazine-tag.entity';
-import { type } from 'os';
+import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
 
 @Entity('magazine', {
   orderBy: {
@@ -76,4 +75,10 @@ export class Magazine {
 
   @OneToMany((type) => MagazineTagEntity, (tag) => tag.magazine)
   tags: MagazineTagEntity[];
+
+  @OneToMany(
+    () => MagazineBookmarkEntity,
+    (magazineBookmark) => magazineBookmark.magazine,
+  )
+  bookmarks: MagazineBookmarkEntity[];
 }

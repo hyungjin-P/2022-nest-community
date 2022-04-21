@@ -18,7 +18,7 @@ import { User } from '../user/user.entity';
 
 @Entity('feed', {
   orderBy: {
-    createdAt: 'DESC',
+    uploadedAt: 'DESC',
   },
 })
 export class Feed {
@@ -54,6 +54,9 @@ export class Feed {
 
   @OneToMany((type) => FeedLike, (feedLike) => feedLike.feed)
   likeUsers?: FeedLike[];
+
+  @Column()
+  uploadedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

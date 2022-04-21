@@ -86,6 +86,30 @@ export class PublicFeedController {
     return await this.feedService.findByFeedId(feedId);
   }
 
+  @Get('/public/feed/findPagesUnderDate')
+  @ApiOperation({
+    summary: '피드 상세 하단 피드페이지 형식 조회',
+    description: '피드 상세 하단 피드페이지 형식 조회',
+  })
+  @ApiCreatedResponse({
+    description: '피드 상세 하단 피드목록을 페이지 형식으로 조회한다.',
+    type: CodeItem,
+  })
+  async findPublicFeedPagesUnderDate(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('feedId') feedId: string,
+  ) {
+    return await this.feedService.findByPageUnderDate(
+      {
+        page,
+        limit,
+        route: '/public/feed/findPagesUnderDate',
+      },
+      feedId,
+    );
+  }
+
   @Get('/public/feed/like/findPages')
   @ApiOperation({
     summary: '피드 좋아요 조회',
@@ -172,7 +196,7 @@ export class PublicFeedController {
     return await this.feedService.findAllFeedWithRelationsForUser(userId);
   }
 
-  @Get('/public/findTagList')
+  @Get('/public/feed/findTagList')
   @ApiOperation({
     summary: '피드 태그로 검색',
     description: '피드 태그로 검색',
@@ -181,6 +205,7 @@ export class PublicFeedController {
     description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
   })
   async findTagList(@Query('name') name: string) {
+    console.log(name);
     return await this.feedTagService.getTagList(name);
   }
 
