@@ -62,4 +62,21 @@ export class MagazineRepository extends Repository<Magazine> {
 
     return await paginate<Magazine>(queryBuilder, options);
   }
+
+  async getTopList(): Promise<Magazine[]> {
+    return await getRepository(Magazine)
+      .createQueryBuilder('magazine')
+      .leftJoinAndSelect('magazine.en', 'en')
+      .leftJoinAndSelect('magazine.ko', 'ko')
+      .leftJoinAndSelect('magazine.writer', 'user')
+      .leftJoinAndSelect('user.picture', 'userPicture')
+      .leftJoinAndSelect('magazine.tags', 'tags')
+      .where('magazine.state = :state', { state: 'magazine_state_posting' })
+      .andWhere('magazine.top_view_number is not null')
+      .orderBy({
+        'magazine.top_view_number': 'ASC',
+        'tags.created_at': 'DESC',
+      })
+      .getMany();
+  }
 }

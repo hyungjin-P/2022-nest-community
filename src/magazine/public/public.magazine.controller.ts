@@ -15,6 +15,19 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 export class PublicMagazineController {
   constructor(private magazineService: MagazineService) {}
 
+  @Get('/public/magazine/findTopMagazineList')
+  @ApiOperation({
+    summary: '매거진 상단 뷰어 조회',
+    description: '매거진 상단 뷰어 조회',
+  })
+  @ApiCreatedResponse({
+    description: '비로그인 상태의 매거진 상단 뷰어를 조회한다.',
+    type: CodeItem,
+  })
+  async findTopMagazineList() {
+    return await this.magazineService.getTopMagazineList();
+  }
+
   @Get('/public/magazine/findPages')
   @ApiOperation({
     summary: '매거진 페이지 조회',

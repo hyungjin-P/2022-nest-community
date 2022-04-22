@@ -32,6 +32,19 @@ export class MagazineController {
     private readonly magazineBookmarkService: MagazineBookmarkService,
   ) {}
 
+  @Get('/findTopMagazineList')
+  @ApiOperation({
+    summary: '매거진 상단 뷰어 조회',
+    description: '매거진 상단 뷰어 조회',
+  })
+  @ApiCreatedResponse({
+    description: '로그인 상태의 매거진 상단 뷰어를 조회한다.',
+    type: CodeItem,
+  })
+  async findTopMagazineList(@Query('userId') userId: string) {
+    return await this.magazineService.getTopMagazineList(userId);
+  }
+
   @Get('/findPages')
   @ApiOperation({
     summary: '매거진 페이지 조회',

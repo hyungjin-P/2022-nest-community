@@ -26,6 +26,30 @@ export class MagazineService {
     private magazineViewService: MagazineViewsService,
   ) {}
 
+  async getTopMagazineList(userId?: string) {
+    const magazineList: Magazine[] = await this.repository.getTopList();
+
+    if (magazineList.length > 0 && userId) {
+      const magazineIds: string[] = magazineList.map((r) => r.id);
+      const magazineBookmarks: MagazineBookmarkEntity[] =
+        await this.magazineBookmarkRepository.findMagazineBookmarkOfUser(
+          magazineIds,
+          userId,
+        );
+
+      for (const magazine of magazineList) {
+        if (magazineBookmarks.length > 0) {
+          const isBookmark = magazineBookmarks.filter(
+            (magazineBookmark) => magazineBookmark.magazineId === magazine.id,
+          ).length;
+          magazine.isBookmark = isBookmark > 0;
+        }
+      }
+    }
+
+    return magazineList;
+  }
+
   async findByPage(
     options: IPaginationOptions,
     category: string,
@@ -112,9 +136,9 @@ export class MagazineService {
         );
 
       for (const magazine of magazinePage.items) {
-        magazine.viewCount = await this.magazineViewService.getCount(
+        /*magazine.viewCount = await this.magazineViewService.getCount(
           magazine.id,
-        );
+        );*/
 
         if (magazineBookmarks.length > 0) {
           const isBookmark = magazineBookmarks.filter(

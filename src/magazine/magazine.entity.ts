@@ -45,6 +45,9 @@ export class Magazine {
   @Column()
   picture: string;
 
+  @Column()
+  topViewNumber: number;
+
   @DeleteDateColumn()
   deletedAt: Date;
   @CreateDateColumn()
