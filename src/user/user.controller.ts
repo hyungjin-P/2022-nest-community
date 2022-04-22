@@ -49,7 +49,7 @@ export class UserController {
   }
 
   @Get('/findById')
-  @ApiBearerAuth('accessToken')
+  // @ApiBearerAuth('accessToken')
   @ApiOperation({
     summary: '사용자 id(key)로 조회',
     description: '사용자 id(key)로 조회',
@@ -138,8 +138,7 @@ export class UserController {
     user.emailVerificationCodeExpiresin = new Date(codeExpressIn);
     user.color = this.commonUtil.randomColor();
 
-    // 유저 생성
-    const createdUser = await this.userService.create(user);
+    await this.userService.create(user);
 
     return await this.emailService.sendVerificationCodeMail(
       language,

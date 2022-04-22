@@ -40,7 +40,9 @@ export class UserService {
    * @param id (key)
    */
   async findById(id: string): Promise<User> {
-    const user: User = await this.userRepository.findOne(id);
+    const user: User = await this.userRepository.findOne({ id });
+
+    console.log('id : ', id);
 
     if (!user) {
       throw new HttpException(
@@ -55,6 +57,8 @@ export class UserService {
         500,
       );
     }
+
+    delete user.password;
 
     // 프로필 사진, 배경 사진
     const userPictureAndBackground: any =
