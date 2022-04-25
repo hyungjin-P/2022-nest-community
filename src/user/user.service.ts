@@ -41,9 +41,6 @@ export class UserService {
    */
   async findById(id: string): Promise<User> {
     const user: User = await this.userRepository.findOne({ id });
-
-    console.log('id : ', id);
-
     if (!user) {
       throw new HttpException(
         { code: 'failure', message: '사용자가 없습니다.' },
