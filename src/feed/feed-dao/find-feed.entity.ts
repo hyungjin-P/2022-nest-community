@@ -2,20 +2,22 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity, JoinColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
-  OneToMany, OneToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { FeedPicture } from '../feed-picture/feed-picture.entity';
 import { FeedTag } from '../feed-tag/feed-tag.entity';
 import { FeedLike } from '../feed-like/feed-like.entity';
 import { FeedComment } from '../feed-comment/feed-comment.entity';
 import { FeedBookmark } from '../feed-bookmark/feed-bookmark.entity';
 import { PublicUserProFile } from '../../user/public/public.user.entity';
-import { User } from "../../user/user.entity";
-import { UserPicture } from "../../user/user-picture/user-picture.entity";
+import { User } from '../../user/user.entity';
+import { UserPicture } from '../../user/user-picture/user-picture.entity';
 
 @Entity('feed')
 export class FindFeedEntity {
@@ -56,7 +58,7 @@ export class FindFeedEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @DeleteDateColumn()
+  @Column()
   deletedAt: Date;
 
   @UpdateDateColumn()

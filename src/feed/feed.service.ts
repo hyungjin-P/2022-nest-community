@@ -26,6 +26,7 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class FeedService {
@@ -54,6 +55,7 @@ export class FeedService {
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          deletedAt: IsNull(),
         });
       },
     };
@@ -94,6 +96,7 @@ export class FeedService {
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          deletedAt: IsNull(),
         });
       },
     };
@@ -162,6 +165,7 @@ export class FeedService {
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          deletedAt: IsNull(),
         }).andWhere('feed.userId IN (:followUserIds)', {
           followUserIds: followUserIds,
         });
@@ -236,6 +240,7 @@ export class FeedService {
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          deletedAt: IsNull(),
         }).andWhere('feed.id IN (:bookmarkFeedIds)', {
           bookmarkFeedIds: bookmarkFeedIds,
         });
@@ -360,6 +365,7 @@ export class FeedService {
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          deletedAt: IsNull(),
         }).andWhere('uploaded_at < :uploadedAt', {
           uploadedAt: feed.uploadedAt,
         });
@@ -594,10 +600,13 @@ export class FeedService {
   ): Promise<MypageFeedMainDto> {
     const feedList: Feed[] = await this.feedRepository
       .createQueryBuilder('feed')
-      .where('feed.user_id = :userId and feed.state = :state', {
-        userId,
-        state: 'feed_state_posting',
-      })
+      .where(
+        'feed.user_id = :userId and feed.state = :state and feed.deleted_at IS NULL',
+        {
+          userId,
+          state: 'feed_state_posting',
+        },
+      )
       .orderBy('feed.created_at', 'DESC')
       .limit(limit)
       .getMany();
@@ -611,7 +620,7 @@ export class FeedService {
     );
 
     const totalCount: number = await this.feedRepository.count({
-      where: { userId, state: 'feed_state_posting' },
+      where: { userId, state: 'feed_state_posting', deletedAt: IsNull() },
     });
 
     // 피드 메인에 출력되는 개수 외 카운트

@@ -53,11 +53,18 @@ export class FeedBookmarkService {
       relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
       where: {
         userId: userId,
+        feed: {
+          deletedAt: IsNull(),
+        },
       },
     };
 
-    let bookmarkCount: number = await this.feedBookmarkRepository.count({
-      userId: userId,
+    const bookmarkCount: number = await this.feedBookmarkRepository.count({
+      relations: ['feed'],
+      where: {
+        userId: userId,
+        feed: { deletedAt: IsNull() },
+      },
     });
 
     const feedBookmarkPage = await paginate<FeedBookmark>(
@@ -66,14 +73,8 @@ export class FeedBookmarkService {
       searchOptions,
     );
 
-    for (const [index, feedBookmark] of feedBookmarkPage.items.entries()) {
-      if (feedBookmark.feed) {
-        feedBookmark.feed.isBookmark = true;
-      } else {
-        // 피드의 deleted_at이 null 이 아닐 때 배열에서 삭제
-        bookmarkCount -= 1;
-        feedBookmarkPage.items.splice(index, 1);
-      }
+    for (const feedBookmark of feedBookmarkPage.items) {
+      feedBookmark.feed.isBookmark = true;
     }
 
     feedBookmarkPage.meta.totalCount = bookmarkCount;
