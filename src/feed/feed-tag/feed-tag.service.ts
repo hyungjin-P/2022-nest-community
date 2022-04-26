@@ -40,6 +40,13 @@ export class FeedTagService {
       searchOptions,
     );
 
+    for (const [index, feedTag] of feedTagPage.items.entries()) {
+      // 피드의 deleted_at이 null 이 아닐 때 배열에서 삭제
+      if (!feedTag.feed) {
+        feedTagPage.items.splice(index, 1);
+      }
+    }
+
     return feedTagPage;
   }
 }

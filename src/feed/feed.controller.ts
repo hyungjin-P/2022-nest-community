@@ -96,7 +96,7 @@ export class FeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('userId') userId: string,
-  ): Promise<Pagination<any>> {
+  ) {
     return await this.feedBookmarkService.getFeedListOverBookmark(
       { page, limit, route: '/feed/findPagesOverBookmark' },
       userId,

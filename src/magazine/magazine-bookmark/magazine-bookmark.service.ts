@@ -8,15 +8,21 @@ export class MagazineBookmarkService {
   constructor(private repository: MagazineBookmarkRepository) {}
 
   async createBookmark(magazineId: string, userId: string) {
-    return await this.repository.save({ magazineId, userId });
+    return await this.repository.save({
+      magazineId: magazineId,
+      userId: userId,
+    });
   }
 
   async deleteBookmark(magazineId: string, userId: string) {
-    return await this.repository.delete({ magazineId, userId });
+    return await this.repository.delete({
+      magazineId: magazineId,
+      userId: userId,
+    });
   }
 
   async deleteAllBookmark(userId: string) {
-    return await this.repository.delete({ userId });
+    return await this.repository.delete({ userId: userId });
   }
 
   async getMagazineOverBookmark(options: IPaginationOptions, userId: string) {

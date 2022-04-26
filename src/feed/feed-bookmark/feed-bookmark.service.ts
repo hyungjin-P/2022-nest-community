@@ -4,6 +4,7 @@ import { FeedBookmarkDto } from '../dto/feed-bookmark.dto';
 import { use } from 'passport';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { FeedBookmark } from './feed-bookmark.entity';
+import { FindConditions, IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class FeedBookmarkService {
@@ -48,14 +49,14 @@ export class FeedBookmarkService {
   }
 
   async getFeedListOverBookmark(options: IPaginationOptions, userId: string) {
-    const searchOptions: any = {
+    const searchOptions: FindConditions<any> = {
       relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
       where: {
         userId: userId,
       },
     };
 
-    const bookmarkCount = await this.feedBookmarkRepository.count({
+    let bookmarkCount: number = await this.feedBookmarkRepository.count({
       userId: userId,
     });
 
@@ -65,11 +66,17 @@ export class FeedBookmarkService {
       searchOptions,
     );
 
-    feedBookmarkPage.meta.totalCount = bookmarkCount;
-
-    for (const feedBookmark of feedBookmarkPage.items) {
-      feedBookmark.feed.isBookmark = true;
+    for (const [index, feedBookmark] of feedBookmarkPage.items.entries()) {
+      if (feedBookmark.feed) {
+        feedBookmark.feed.isBookmark = true;
+      } else {
+        // 피드의 deleted_at이 null 이 아닐 때 배열에서 삭제
+        bookmarkCount -= 1;
+        feedBookmarkPage.items.splice(index, 1);
+      }
     }
+
+    feedBookmarkPage.meta.totalCount = bookmarkCount;
 
     return feedBookmarkPage;
   }
