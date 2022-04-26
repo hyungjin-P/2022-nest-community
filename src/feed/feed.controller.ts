@@ -135,7 +135,7 @@ export class FeedController {
     return await this.feedService.createFeed(rewrite, userId);
   }
 
-  @Post('/modifyFeed')
+  @Post('/updateFeed')
   @ApiOperation({
     summary: '피드 수정',
     description: '피드 수정',
@@ -144,11 +144,21 @@ export class FeedController {
     description: '피드 1건 수정',
     type: CodeCategory,
   })
-  async modifyFeed(@Body() feedModifyDto: FeedModifyDto): Promise<Feed> {
-    return await this.feedService.modifyFeed(
+  async updateFeed(@Body() feedModifyDto: FeedModifyDto): Promise<Feed> {
+    return await this.feedService.updateFeed(
       feedModifyDto.feedId,
       feedModifyDto,
     );
+  }
+
+  @Post('/modifyFeed')
+  async modifyFeed(@Body() feed: Feed) {
+    return await this.feedService.modifyFeed(feed);
+  }
+
+  @Post('/modifyFeedPicture')
+  async modifyFeedPicture(@Body() feed: Feed) {
+    return await this.feedService.modifyFeedOnPictures(feed);
   }
 
   @Delete('/deleteFeed')

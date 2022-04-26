@@ -436,7 +436,7 @@ export class FeedService {
    * 피드 수정 - 작업 완료
    * 현재 웹 반응 => 피드 글쓰기 완료 시, 업데이트
    * */
-  async modifyFeed(id: string, feedModifyDto: FeedModifyDto): Promise<Feed> {
+  async updateFeed(id: string, feedModifyDto: FeedModifyDto): Promise<Feed> {
     const feedRows: Feed = await this.feedRepository.findOne({ id });
     if (feedModifyDto.content !== '') {
       feedRows.content = feedModifyDto.content;
@@ -451,6 +451,59 @@ export class FeedService {
     }
 
     return await this.feedRepository.save(feedRows);
+  }
+
+  /**
+   * 피드 수정 버튼으로 인한 이벤트
+   * @param feed
+   */
+  async modifyFeed(feed: Feed) {
+    const feedRow = await this.feedRepository.save({
+      id: feed.id,
+      content: feed.content,
+      picture: feed.picture,
+    });
+
+    feedRow.tags = await this.modifyFeedOnTags(feed);
+
+    feedRow.pictures = await this.modifyFeedOnPictures(feed);
+
+    return feedRow;
+  }
+
+  async modifyFeedOnTags(feed: Feed): Promise<FeedTag[]> {
+    await this.feedTagRepository.delete({ feedId: feed.id });
+    for (const tag of feed.tags) {
+      await this.feedTagRepository.save({ feedId: feed.id, name: tag.name });
+    }
+    const feedTagRows = await this.feedTagRepository.find({ feedId: feed.id });
+
+    return feedTagRows;
+  }
+
+  async modifyFeedOnPictures(feed: Feed): Promise<FeedPicture[]> {
+    const feedPictureRows = await this.feedPictureRepository.find({
+      feedId: feed.id,
+    });
+
+    if (feed.pictures.length < feedPictureRows.length) {
+      for (const [index, feedPicture] of feedPictureRows.entries()) {
+        const result = feed.pictures.findIndex(
+          (feedRow) => feedRow.id === feedPicture.id,
+        );
+
+        if (result < 0) {
+          await this.fileService.deleteFile({
+            tag: 'feed',
+            tagInId: feedPicture.feedId,
+            url: feedPicture.url,
+          });
+          feedPictureRows.slice(index, 1);
+        }
+      }
+    }
+
+    return feedPictureRows;
   }
 
   /*

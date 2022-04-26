@@ -20,6 +20,9 @@ export class FeedTagService {
   }
 
   async getTagList(name: string) {
+    // 공백 포함 검색 예시
+    // select * from magazine_tag where name_en REGEXP 'DARK[[:space:]]?KNIGHT'
+    // 공백 -> [[:space:]]?
     return await this.feedTagRepository.findTagList(name);
   }
 
