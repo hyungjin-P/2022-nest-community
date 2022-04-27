@@ -122,4 +122,8 @@ export class User extends BaseEntity {
 
   @OneToOne((type) => FeedLike, (feedlike) => feedlike.user)
   feedLike: FeedLike;
+
+  metaInfo: any;
+
+  isFollow: boolean;
 }

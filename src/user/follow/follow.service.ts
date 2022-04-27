@@ -63,7 +63,7 @@ export class FollowService {
   async findFollowingPage(
     userId: string,
     pageOptions: IPaginationOptions,
-  ): Promise<User[]> {
+  ): Promise<any> {
     const fromUserOptions: any = {
       where: {
         fromUser: userId,
@@ -84,9 +84,19 @@ export class FollowService {
       );
 
       fromUserList = [...(await this.userService.findUserIds(fromUserIds))];
+
+      for (const user of fromUserList) {
+        user.isFollow = await this.checkFollowUser(user.id, userId);
+      }
     }
 
-    return fromUserList;
+    return {
+      metaInfo: {
+        meta: fromUserPage.meta,
+        links: fromUserPage.links,
+      },
+      users: fromUserList,
+    };
   }
 
   /**
@@ -97,7 +107,7 @@ export class FollowService {
   async findFollowerPage(
     userId: string,
     pageOptions: IPaginationOptions,
-  ): Promise<User[]> {
+  ): Promise<any> {
     const fromUserOptions: any = {
       where: {
         toUser: userId,
@@ -118,8 +128,22 @@ export class FollowService {
       );
 
       toUserList = [...(await this.userService.findUserIds(fromUserIds))];
+
+      // 나를 좋아하는 유저를 내가 팔로우 했는지
+      for (const user of toUserList) {
+        user.isFollow = !!(await this.followRepository.findOne({
+          fromUser: userId,
+          toUser: user.id,
+        }));
+      }
     }
 
-    return toUserList;
+    return {
+      metaInfo: {
+        meta: fromUserPage.meta,
+        links: fromUserPage.links,
+      },
+      users: toUserList,
+    };
   }
 }
