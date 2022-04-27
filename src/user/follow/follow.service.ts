@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { FollowRepository } from './follow.repository';
 import { Follow } from './follow.entity';
+import { UserService } from '../user.service';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { User } from '../user.entity';
 
 @Injectable()
 export class FollowService {
-  constructor(private readonly followRepository: FollowRepository) {}
+  constructor(
+    private readonly followRepository: FollowRepository,
+    private userService: UserService,
+  ) {}
 
   async addFollow(fromUser: string, toUser: string): Promise<Follow> {
     return await this.followRepository.save({
@@ -39,13 +45,81 @@ export class FollowService {
 
   async countFollowerAndFollowingOfUser(userId: string): Promise<any> {
     const fromUserCount = await this.followRepository.count({
-      fromUser: userId,
+      toUser: userId,
     });
-    const toUserCount = await this.followRepository.count({ toUser: userId });
+    const toUserCount = await this.followRepository.count({ fromUser: userId });
 
     return {
       fromUserCount,
       toUserCount,
     };
+  }
+
+  /**
+   * 팔로잉 조회
+   * @param userId
+   * @param pageOptions
+   */
+  async findFollowingPage(
+    userId: string,
+    pageOptions: IPaginationOptions,
+  ): Promise<User[]> {
+    const fromUserOptions: any = {
+      where: {
+        fromUser: userId,
+      },
+    };
+
+    const fromUserPage = await paginate<Follow>(
+      this.followRepository,
+      pageOptions,
+      fromUserOptions,
+    );
+
+    let fromUserList: User[];
+
+    if (fromUserPage.items.length > 0) {
+      const fromUserIds: string[] = fromUserPage.items.map(
+        (fromUser) => fromUser.toUser,
+      );
+
+      fromUserList = [...(await this.userService.findUserIds(fromUserIds))];
+    }
+
+    return fromUserList;
+  }
+
+  /**
+   * 팔로워 조회
+   * @param userId
+   * @param pageOptions
+   */
+  async findFollowerPage(
+    userId: string,
+    pageOptions: IPaginationOptions,
+  ): Promise<User[]> {
+    const fromUserOptions: any = {
+      where: {
+        toUser: userId,
+      },
+    };
+
+    const fromUserPage = await paginate<Follow>(
+      this.followRepository,
+      pageOptions,
+      fromUserOptions,
+    );
+
+    let toUserList: User[];
+
+    if (fromUserPage.items.length > 0) {
+      const fromUserIds: string[] = fromUserPage.items.map(
+        (fromUser) => fromUser.fromUser,
+      );
+
+      toUserList = [...(await this.userService.findUserIds(fromUserIds))];
+    }
+
+    return toUserList;
   }
 }

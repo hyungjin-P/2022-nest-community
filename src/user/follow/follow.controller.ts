@@ -1,7 +1,16 @@
-import { Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Delete,
+  Get,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { FollowService } from './follow.service';
 import { Follow } from './follow.entity';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { User } from '../user.entity';
 
 @ApiTags('팔로우')
 @Controller('follow')
@@ -41,5 +50,44 @@ export class FollowController {
     @Query('userId') userId: string,
   ): Promise<any> {
     return await this.followService.countFollowerAndFollowingOfUser(userId);
+  }
+
+  @Get('/findFollowing')
+  @ApiOperation({
+    summary: '유저의 팔로잉 조회',
+    description: '유저의 팔로워 수 조회',
+  })
+  async findFollowingPage(
+    @Query('userId') userId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
+  ): Promise<User[]> {
+    const users: User[] = await this.followService.findFollowingPage(userId, {
+      page,
+      limit,
+      route: '/follow/findFollowing',
+    });
+
+    console.log('팔로잉 수 : ', users.length);
+    return users;
+  }
+
+  @Get('/findFollower')
+  @ApiOperation({
+    summary: '유저의 팔로워 조회',
+    description: '유저의 팔로워 수 조회',
+  })
+  async findFollowerPage(
+    @Query('userId') userId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
+  ): Promise<User[]> {
+    const users: User[] = await this.followService.findFollowerPage(userId, {
+      page,
+      limit,
+      route: '/follow/findFollower',
+    });
+    console.log('팔로워 수 : ', users.length);
+    return users;
   }
 }
