@@ -20,8 +20,9 @@ import { UserRegistrationDto } from './dto/user.registration.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserProfileDto } from './dto/user.profile.dto';
 import { UserPasswordChangeDto } from './dto/user.password-change.dto';
-import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
+
 import { CryptoService } from '../services/crypto/crypto.service';
+import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
 import { UserPasswordChangeTokenDto } from './dto/user.password-change-token.dto';
 import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto';
 
