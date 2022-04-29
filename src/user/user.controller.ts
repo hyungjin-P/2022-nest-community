@@ -12,12 +12,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CommonUtil } from '../utiles/common.util';
 import { EmailService } from '../services/email/email.service';
 import moment from 'moment-timezone';
@@ -25,6 +20,10 @@ import { UserRegistrationDto } from './dto/user.registration.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserProfileDto } from './dto/user.profile.dto';
 import { UserPasswordChangeDto } from './dto/user.password-change.dto';
+import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
+import { CryptoService } from '../services/crypto/crypto.service';
+import { UserPasswordChangeTokenDto } from './dto/user.password-change-token.dto';
+import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -33,6 +32,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly commonUtil: CommonUtil,
     private readonly emailService: EmailService,
+    private readonly cryptoService: CryptoService,
   ) {}
 
   @Get('/getAll')
@@ -125,7 +125,7 @@ export class UserController {
 
     // 인증코드 생성
     const code: number = this.commonUtil.getRandomInt(100000, 1000000);
-    const codeExpressIn = moment()
+    const codeExpiresIn = moment()
       .add(3, 'minutes')
       .format('YYYY-MM-DD HH:mm:ss');
 
@@ -135,7 +135,7 @@ export class UserController {
     user.providedId = emailAddress;
     user.email = emailAddress;
     user.emailVerificationCode = code;
-    user.emailVerificationCodeExpiresin = new Date(codeExpressIn);
+    user.emailVerificationCodeExpiresin = new Date(codeExpiresIn);
     user.color = this.commonUtil.randomColor();
 
     await this.userService.create(user);
@@ -302,5 +302,124 @@ export class UserController {
     @Body() userPasswordChangeDto: UserPasswordChangeDto,
   ): Promise<void> {
     await this.userService.changeUserPassword(userPasswordChangeDto);
+  }
+
+  @Post('/resetPasswordLinkMail')
+  @ApiOperation({
+    summary: '비밀번호 변경 메일 보내기',
+    description: '비밀번호 변경 메일 보내기',
+  })
+  async sendPasswordResetMail(
+    @Body() userResetPasswordMailDto: UserResetPasswordMailDto,
+  ): Promise<void> {
+    const user: User = await this.userService.findOneByProvidedIdOfUser(
+      userResetPasswordMailDto.email,
+    );
+
+    const expiresIn = moment().add(3, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+
+    const cryptoObj: any = {
+      userId: user.id,
+      email: userResetPasswordMailDto,
+      expiresIn,
+      now: Date.now(),
+    };
+
+    const cryptoText: string = this.cryptoService.encrypt(cryptoObj);
+
+    console.log('암호화 txt : ', cryptoText);
+
+    const decryptObj: any = this.cryptoService.decrypt(cryptoText);
+
+    console.log('복호화 : ', decryptObj);
+
+    await this.emailService.sendResetPasswordLinkMail(
+      userResetPasswordMailDto.lang,
+      userResetPasswordMailDto.email,
+      cryptoText,
+    );
+  }
+
+  @Post('/passwordChangeEmailVerified')
+  @ApiOperation({
+    summary: '비밀번호 변경 메일 확인',
+    description: '비밀번호 변경 메일 확인',
+  })
+  async passwordChangeEmailVerified(
+    @Body() userPasswordChangeTokenDto: UserPasswordChangeTokenDto,
+  ): Promise<void> {
+    const token = userPasswordChangeTokenDto.token.replace(/\s/g, '+');
+    const decryptObj: any = this.cryptoService.decrypt(token);
+
+    const user: User = await this.userService.findById(decryptObj.userId);
+
+    if (!user) {
+      throw new HttpException(
+        {
+          code: 'user-not-found',
+          message: '유효하지 않은 링크 입니다.',
+        },
+        500,
+      );
+    }
+
+    // 만료시간 지났는 지
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+    const expiresIn = moment(decryptObj.expiresIn).format(
+      'YYYY-MM-DD HH:mm:ss',
+    );
+    const diff = moment(expiresIn).diff(now, 'seconds');
+
+    if (diff < 0) {
+      throw new HttpException(
+        { code: 'time-later', message: '만료된 링크 입니다.' },
+        500,
+      );
+    }
+  }
+
+  @Post('/passwordChangeWithVerificationCheckOk')
+  @ApiOperation({
+    summary: '비밀번호 변경 (검증 ok)',
+    description: '비밀번호 변경',
+  })
+  async passwordChangeWithVerificationCheckOk(
+    @Body() userPasswordChangeEmailDto: UserPasswordChangeEmailDto,
+  ): Promise<User> {
+    const token = userPasswordChangeEmailDto.token.replace(/\s/g, '+');
+    const decryptObj: any = this.cryptoService.decrypt(token);
+
+    const user: User = await this.userService.findById(decryptObj.userId);
+
+    if (!user) {
+      throw new HttpException(
+        {
+          code: 'user-not-found',
+          message: '유효하지 않은 링크 입니다.',
+        },
+        500,
+      );
+    }
+
+    // 만료시간 지났는 지
+    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+    const expiresIn = moment(decryptObj.expiresIn).format(
+      'YYYY-MM-DD HH:mm:ss',
+    );
+    const diff = moment(expiresIn).diff(now, 'seconds');
+
+    if (diff < 0) {
+      throw new HttpException(
+        { code: 'time-later', message: '만료된 링크 입니다.' },
+        500,
+      );
+    }
+
+    await this.userService.changeUserPasswordEmailVerified(
+      user.id,
+      userPasswordChangeEmailDto.password,
+    );
+
+    return await this.userService.findById(user.id);
   }
 }

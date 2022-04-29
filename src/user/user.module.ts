@@ -11,6 +11,7 @@ import { UserBackgroundModule } from './user-background/user-background.module';
 import { UserPictureRepository } from './user-picture/user-picture.repository';
 import { UserBackgroundRepository } from './user-background/user-background.repository';
 import { UserBackgroundService } from './user-background/user-background.service';
+import { CryptoService } from '../services/crypto/crypto.service';
 
 @Module({
   imports: [
@@ -24,7 +25,13 @@ import { UserBackgroundService } from './user-background/user-background.service
     UserBackgroundModule,
   ],
   controllers: [UserController],
-  providers: [UserService, CommonUtil, EmailService, UserBackgroundService],
+  providers: [
+    UserService,
+    CommonUtil,
+    EmailService,
+    UserBackgroundService,
+    CryptoService,
+  ],
   exports: [UserService],
 })
 export class UserModule {}

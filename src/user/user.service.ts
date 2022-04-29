@@ -141,7 +141,129 @@ export class UserService {
   /**
    * 유저 페이지 조회
    * @param options: IPaginationOptions => require to limit and page
-   * Ex) let options = { limit: 5, page: 1 }
+   * Ex) let o
+   *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   * ptions = { limit: 5, page: 1 }
    */
   async getUserPage(options: IPaginationOptions): Promise<Pagination<User>> {
     const queryBuilder = await this.userRepository
@@ -260,6 +382,33 @@ export class UserService {
   }
 
   /**
+   * 유저 비밀번호 변경
+   * @return password
+   * @param userId
+   * @param newPassword
+   * */
+  async changeUserPasswordEmailVerified(
+    userId: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user: User = await this.userRepository.findOne({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new HttpException(
+        { code: 'failure', message: '해당 사용자가 존재하지 않습니다.' },
+        500,
+      );
+    }
+
+    const salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await this.userRepository.save(user);
+  }
+
+  /**
    * 유저 서비스 이용약관 수정
    * @param modifyInfo
    */
@@ -301,5 +450,30 @@ export class UserService {
     }
 
     return users;
+  }
+
+  /**
+   * 이메일 회원가입 유저 providedId로 조회
+   * @param email
+   */
+  async findOneByProvidedIdOfUser(email: string): Promise<User> {
+    const findOptions = {
+      where: {
+        providedId: email,
+        emailVerified: true,
+        provider: 'keeping.link',
+      },
+    };
+
+    const user: User = await this.userRepository.findOne(findOptions);
+
+    if (!user) {
+      throw new HttpException(
+        { code: 'failure', message: '회원가입된 회원이 없습니다.' },
+        500,
+      );
+    }
+
+    return user;
   }
 }
