@@ -72,7 +72,7 @@ export class EmailService {
     const view = fs.readFileSync(viewPath, 'utf-8');
     const link = `${this.configService.get(
       'DOMAIN_WEB_ADDRESS',
-    )}/auth/reset-password?token=${token}`;
+    )}/auth/reset-password/${token}`;
     const html = ejs.render(view, { to: emailAddress, link });
 
     let subjectData = '';

@@ -11,10 +11,10 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   // username: String(process.env.DATABASE_USERNAME),
   // password: String(process.env.DATABASE_PASSWORD),
   // host: String(process.env.DATAB   ASE_HOST),
+  timezone: 'Z',
   port: 3306,
   database: 'REDACTED_DB_NAME',
   username: 'REDACTED_DB_USERNAME',
   password: 'REDACTED_DB_PASSWORD',
   host: 'REDACTED_RDS_HOST',
-  timezone: 'Z',
 };

@@ -25,6 +25,7 @@ import { CryptoService } from '../services/crypto/crypto.service';
 import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
 import { UserPasswordChangeTokenDto } from './dto/user.password-change-token.dto';
 import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto';
+import * as CryptoJS from "crypto-js";
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -328,16 +329,12 @@ export class UserController {
 
     const cryptoText: string = this.cryptoService.encrypt(cryptoObj);
 
-    console.log('암호화 txt : ', cryptoText);
-
-    const decryptObj: any = this.cryptoService.decrypt(cryptoText);
-
-    console.log('복호화 : ', decryptObj);
+    const encodeText = this.cryptoService.encodeBase64(cryptoText);
 
     await this.emailService.sendResetPasswordLinkMail(
       userResetPasswordMailDto.lang,
       userResetPasswordMailDto.email,
-      cryptoText,
+      encodeText,
     );
   }
 
@@ -350,7 +347,10 @@ export class UserController {
     @Body() userPasswordChangeTokenDto: UserPasswordChangeTokenDto,
   ): Promise<void> {
     const token = userPasswordChangeTokenDto.token.replace(/\s/g, '+');
-    const decryptObj: any = this.cryptoService.decrypt(token);
+
+    const decodeText = this.cryptoService.decodeBase64(token);
+
+    const decryptObj: any = this.cryptoService.decrypt(decodeText);
 
     const user: User = await this.userService.findById(decryptObj.userId);
 
@@ -388,7 +388,10 @@ export class UserController {
     @Body() userPasswordChangeEmailDto: UserPasswordChangeEmailDto,
   ): Promise<User> {
     const token = userPasswordChangeEmailDto.token.replace(/\s/g, '+');
-    const decryptObj: any = this.cryptoService.decrypt(token);
+
+    const decodeText = this.cryptoService.decodeBase64(token);
+
+    const decryptObj: any = this.cryptoService.decrypt(decodeText);
 
     const user: User = await this.userService.findById(decryptObj.userId);
 

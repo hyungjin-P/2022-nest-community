@@ -19,8 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "deploy": "serverless deploy -v --aws-profile FLEXIBLE",
-    "deploy:force": "serverless deploy -v --force --aws-profile FLEXIBLE",
+    "deploy": "npm run build && serverless deploy -v --aws-profile FLEXIBLE",
+    "deploy:force": "npm run build && serverless deploy -v --force --aws-profile FLEXIBLE",
     "serverless-offline": "npx serverless offline"
   },
   "dependencies": {
