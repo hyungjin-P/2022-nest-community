@@ -205,7 +205,6 @@ export class PublicFeedController {
     description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
   })
   async findTagList(@Query('name') name: string) {
-    console.log(name);
     return await this.feedTagService.getTagList(name);
   }
 

@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { FeedBookmarkRepository } from './feed-bookmark.repository';
 import { FeedBookmarkDto } from '../dto/feed-bookmark.dto';
-import { use } from 'passport';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { FeedBookmark } from './feed-bookmark.entity';
-import { FindConditions, IsNull, Not } from 'typeorm';
+import { FindConditions, IsNull } from 'typeorm';
 
 @Injectable()
 export class FeedBookmarkService {

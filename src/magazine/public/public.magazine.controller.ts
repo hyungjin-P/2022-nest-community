@@ -9,11 +9,15 @@ import {
 import { MagazineService } from '../magazine.service';
 import { CodeItem } from '../../codes/code-item/code-item.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { MagazineTagService } from '../magazine-tag/magazine-tag.service';
 
 @ApiTags('매거진(공개)')
 @Controller()
 export class PublicMagazineController {
-  constructor(private magazineService: MagazineService) {}
+  constructor(
+    private magazineService: MagazineService,
+    private magazineTagService: MagazineTagService,
+  ) {}
 
   @Get('/public/magazine/findTopMagazineList')
   @ApiOperation({
@@ -50,5 +54,17 @@ export class PublicMagazineController {
       },
       category,
     );
+  }
+
+  @Get('/public/magazine/findTagList')
+  @ApiOperation({
+    summary: '피드 태그로 검색',
+    description: '피드 태그로 검색',
+  })
+  @ApiCreatedResponse({
+    description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
+  })
+  async findTagList(@Query('name') name: string) {
+    return await this.magazineTagService.getTagList(name);
   }
 }

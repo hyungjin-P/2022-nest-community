@@ -15,14 +15,14 @@ export class FeedTagRepository extends Repository<FeedTag> {
   }
 
   // SELECT name, count(name)
-  // from feed_tag where name like '%마블%'
+  // from magazine_tag where name_en REGEXP 'DARK[[:space:]]?KNIGHT'
   // group by name
   async findTagList(name: string) {
     return await getRepository(FeedTag)
       .createQueryBuilder('feed_tag')
       .select('feed_tag.name AS name')
       .addSelect('COUNT(*) AS tagCount')
-      .where('feed_tag.name like :name', { name: '%' + name + '%' })
+      .where("REPLACE(feed_tag.name, ' ', '') REGEXP :name", { name: name })
       .groupBy('feed_tag.name')
       .getRawMany();
   }

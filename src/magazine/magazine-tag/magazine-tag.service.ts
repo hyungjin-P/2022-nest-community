@@ -16,4 +16,12 @@ export class MagazineTagService {
   async deleteTag(magazineId: string, tagId: string) {
     return await this.repository.delete({ magazineId: magazineId, id: tagId });
   }
+
+  async getTagList(name: string) {
+    // 공백 포함 검색 예시
+    // select * from magazine_tag where name_en REGEXP 'DARK[[:space:]]?KNIGHT'
+    // 공백 -> [[:space:]]?
+    name = name.replace(' ', '[[:space:]]?');
+    return await this.repository.findTagList(name);
+  }
 }
