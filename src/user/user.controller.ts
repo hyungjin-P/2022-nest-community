@@ -25,7 +25,6 @@ import { CryptoService } from '../services/crypto/crypto.service';
 import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
 import { UserPasswordChangeTokenDto } from './dto/user.password-change-token.dto';
 import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto';
-import * as CryptoJS from "crypto-js";
 
 @ApiTags('사용자 정보')
 @Controller('user')

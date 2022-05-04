@@ -54,8 +54,6 @@ export class AuthService {
    * @param kakaoUserInfo
    */
   async signUpKakao(kakaoUserInfo: KakaoUserInfoDto): Promise<User> {
-    console.log('kakao user data : ', kakaoUserInfo);
-
     if (!kakaoUserInfo.id) {
       throw new HttpException(
         { code: 'failure ', message: '잘못된 요청입니다.' },
@@ -70,8 +68,6 @@ export class AuthService {
       provider,
       providedId,
     });
-
-    console.log('users : ', users);
 
     if (users.length > 0) {
       throw new HttpException(
@@ -102,6 +98,8 @@ export class AuthService {
     await this.userPictureRepository.save(userPicture);
 
     newUser.picture = [userPicture];
+
+    newUser.signUpType = 'kakao';
 
     return newUser;
   }
@@ -252,6 +250,8 @@ export class AuthService {
       );
 
       newUser = { ...newUser, ...tokens };
+
+      newUser.signUpType = 'naver';
 
       return newUser;
     } else {
@@ -406,8 +406,8 @@ export class AuthService {
     });
 
     if (!user) {
-      return await this.signUpGoogle(googleUser);
       // 회원가입
+      return await this.signUpGoogle(googleUser);
     } else {
       const tokens: any = await this.createTokens(user.providedId, user.id);
       const images: any = await this.getUserPictureAndBackground(user.id);
@@ -459,6 +459,8 @@ export class AuthService {
     const tokens = await this.createTokens(user.providedId, user.id);
 
     user = { ...user, ...tokens };
+
+    user.signUpType = 'google';
 
     return user;
   }

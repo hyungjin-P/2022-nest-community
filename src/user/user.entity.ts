@@ -12,7 +12,6 @@ import { UserBackground } from './user-background/user-background.entity';
 import { UserPicture } from './user-picture/user-picture.entity';
 import { FeedLike } from '../feed/feed-like/feed-like.entity';
 import { Feed } from '../feed/feed.entity';
-import { Follow } from './follow/follow.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -117,13 +116,15 @@ export class User extends BaseEntity {
 
   customToken: string;
 
-  @OneToOne((type) => Feed, (feed) => feed.writer)
+  @OneToOne(() => Feed, (feed) => feed.writer)
   feed: Feed;
 
-  @OneToOne((type) => FeedLike, (feedlike) => feedlike.user)
+  @OneToOne(() => FeedLike, (feedlike) => feedlike.user)
   feedLike: FeedLike;
 
   metaInfo: any;
 
   isFollow: boolean;
+
+  signUpType: string;
 }
