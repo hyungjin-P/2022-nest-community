@@ -135,7 +135,16 @@ export class UserService {
       );
     }
 
-    return await this.userRepository.registrationUser(userRegistrationDto);
+    const user: User = await this.userRepository.registrationUser(
+      userRegistrationDto,
+    );
+
+    const userPictureAndBackground: any =
+      await this.getUserPictureAndBackground(user.id);
+    user.picture = userPictureAndBackground.picture;
+    user.background = userPictureAndBackground.background;
+
+    return user;
   }
 
   /**
