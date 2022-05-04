@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MagazineTagRepository } from './magazine-tag.repository';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+import { MagazineTagEntity } from './magazine-tag.entity';
 
 @Injectable()
 export class MagazineTagService {
@@ -23,5 +29,37 @@ export class MagazineTagService {
     // 공백 -> [[:space:]]?
     name = name.replace(' ', '[[:space:]]?');
     return await this.repository.findTagList(name);
+  }
+
+  async getMagazineListOverTag(
+    options: IPaginationOptions,
+    name: string,
+  ): Promise<Pagination<MagazineTagEntity>> {
+    const searchOptions: any = {
+      relations: [
+        'magazine',
+        'magazine.en',
+        'magazine.ko',
+        'magazine.writer',
+        'magazine.writer.picture',
+        'magazine.tags',
+      ],
+      where: (qb) => {
+        qb.where({
+          name: name,
+          magazine: {
+            state: 'magazine_state_posting',
+          },
+        });
+      },
+    };
+
+    const magazineTagPage = await paginate<MagazineTagEntity>(
+      this.repository,
+      options,
+      searchOptions,
+    );
+
+    return magazineTagPage;
   }
 }

@@ -8,7 +8,11 @@ import {
 } from 'typeorm';
 import { Feed } from '../feed.entity';
 
-@Entity('feed_picture')
+@Entity('feed_picture', {
+  orderBy: {
+    createdAt: 'DESC',
+  },
+})
 export class FeedPicture {
   @PrimaryGeneratedColumn('uuid')
   id: string;

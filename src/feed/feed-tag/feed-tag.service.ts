@@ -3,6 +3,7 @@ import { FeedTag } from './feed-tag.entity';
 import { FeedTagRepository } from './feed-tag.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class FeedTagService {
@@ -32,6 +33,10 @@ export class FeedTagService {
       relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
       where: {
         name: name,
+        feed: {
+          state: 'feed_state_posting',
+          deletedAt: IsNull(),
+        },
       },
     };
 
@@ -40,13 +45,6 @@ export class FeedTagService {
       options,
       searchOptions,
     );
-
-    for (const [index, feedTag] of feedTagPage.items.entries()) {
-      // 피드의 deleted_at이 null 이 아닐 때 배열에서 삭제
-      if (!feedTag.feed) {
-        feedTagPage.items.splice(index, 1);
-      }
-    }
 
     return feedTagPage;
   }

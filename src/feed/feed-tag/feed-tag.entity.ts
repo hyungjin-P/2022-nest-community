@@ -8,7 +8,11 @@ import {
 import { IsString } from 'class-validator';
 import { Feed } from '../feed.entity';
 
-@Entity()
+@Entity('feed_tag', {
+  orderBy: {
+    createdAt: 'DESC',
+  },
+})
 export class FeedTag {
   @PrimaryGeneratedColumn('uuid')
   @IsString()

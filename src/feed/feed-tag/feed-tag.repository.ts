@@ -20,9 +20,11 @@ export class FeedTagRepository extends Repository<FeedTag> {
   async findTagList(name: string) {
     return await getRepository(FeedTag)
       .createQueryBuilder('feed_tag')
+      .leftJoinAndSelect('feed_tag.feed', 'feed')
       .select('feed_tag.name AS name')
       .addSelect('COUNT(*) AS tagCount')
       .where("REPLACE(feed_tag.name, ' ', '') REGEXP :name", { name: name })
+      .andWhere('feed.deleted_at IS NULL')
       .groupBy('feed_tag.name')
       .getRawMany();
   }
