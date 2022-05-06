@@ -48,6 +48,7 @@ export class FeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedService.findByPageWithUserBehavior(
       {
@@ -56,6 +57,7 @@ export class FeedController {
         route: '/feed/findPages',
       },
       userId,
+      pageDate,
     );
   }
 

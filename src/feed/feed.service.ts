@@ -26,7 +26,7 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
-import { IsNull } from 'typeorm';
+import { IsNull, LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class FeedService {
@@ -49,12 +49,16 @@ export class FeedService {
    * 공개 피드 페이지 형식 조회
    * @param options { page, limit }
    */
-  async findByPage(options: IPaginationOptions): Promise<Pagination<any>> {
+  async findByPage(
+    options: IPaginationOptions,
+    pageDate: Date,
+  ): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['writer', 'writer.picture', 'tags'],
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          uploadedAt: LessThanOrEqual(pageDate),
           deletedAt: IsNull(),
         });
       },
@@ -90,12 +94,14 @@ export class FeedService {
   async findByPageWithUserBehavior(
     options: IPaginationOptions,
     userId: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['writer', 'writer.picture', 'tags'],
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
+          uploadedAt: LessThanOrEqual(pageDate),
           deletedAt: IsNull(),
         });
       },

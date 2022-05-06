@@ -43,12 +43,16 @@ export class PublicFeedController {
   async findByPublicFeedPages(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
-    return await this.feedService.findByPage({
-      page,
-      limit,
-      route: '/public/feed/findPages',
-    });
+    return await this.feedService.findByPage(
+      {
+        page,
+        limit,
+        route: '/public/feed/findPages',
+      },
+      pageDate,
+    );
   }
 
   @Get('/public/authFeed')
@@ -65,12 +69,12 @@ export class PublicFeedController {
   async authFeed(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ): Promise<Pagination<Feed>> {
-    return await this.feedService.findByPage({
+  ) {
+    /*return await this.feedService.findByPage({
       page,
       limit,
       route: '/public/authFeed',
-    });
+    });*/
   }
 
   @Get('/public/feed/findById')
