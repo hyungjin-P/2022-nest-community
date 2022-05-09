@@ -44,6 +44,7 @@ export class FeedCommentRepository extends Repository<FeedComment> {
       .where('feed_comment.parent_id = :feedCommentId', {
         feedCommentId,
       })
+      .andWhere('feed_comment.created_at <= :pageDate')
       .orderBy('feed_comment.created_at', 'DESC');
 
     return await paginate(queryBuilder, options);

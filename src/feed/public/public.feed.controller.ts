@@ -127,6 +127,7 @@ export class PublicFeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('feedId') feedId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedService.findByLikePage(
       {
@@ -135,6 +136,7 @@ export class PublicFeedController {
         route: '/public/feed/like/findPages',
       },
       feedId,
+      pageDate,
     );
   }
 
@@ -151,6 +153,7 @@ export class PublicFeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('feedId') feedId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedCommentService.findByPage(
       {
@@ -159,6 +162,7 @@ export class PublicFeedController {
         route: '/public/feed/comment/findPages',
       },
       feedId,
+      pageDate,
     );
   }
 
@@ -175,6 +179,7 @@ export class PublicFeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('feedCommentId') feedCommentId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedCommentService.findSubByPage(
       {
@@ -183,6 +188,7 @@ export class PublicFeedController {
         route: '/public/feed/comment/sub/findPages',
       },
       feedCommentId,
+      pageDate,
     );
   }
 
@@ -225,10 +231,12 @@ export class PublicFeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('name') name: string,
+    @Query('pageDate') pageDate: Date,
   ) {
     return await this.feedTagService.getFeedListOverTag(
       { page: page, limit: limit, route: '/public/feed/findPagesOverTag' },
       name,
+      pageDate,
     );
   }
 }

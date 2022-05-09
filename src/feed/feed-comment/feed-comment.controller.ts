@@ -41,6 +41,7 @@ export class FeedCommentController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('feedId') feedId: string,
     @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedCommentService.findByPageWithUserBehavior(
       {
@@ -50,6 +51,7 @@ export class FeedCommentController {
       },
       feedId,
       userId,
+      pageDate,
     );
   }
 
@@ -67,6 +69,7 @@ export class FeedCommentController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('feedCommentId') feedCommentId: string,
     @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedCommentService.findSubByPageWithUserBehavior(
       {
@@ -76,6 +79,7 @@ export class FeedCommentController {
       },
       feedCommentId,
       userId,
+      pageDate,
     );
   }
 

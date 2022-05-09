@@ -46,6 +46,7 @@ export class PublicMagazineController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('category') category: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.magazineService.findByPage(
       {
@@ -54,13 +55,14 @@ export class PublicMagazineController {
         route: '/public/magazine/findPages',
       },
       category,
+      pageDate,
     );
   }
 
   @Get('/public/magazine/findTagList')
   @ApiOperation({
-    summary: '피드 태그로 검색',
-    description: '피드 태그로 검색',
+    summary: '태그로 검색',
+    description: '태그로 검색',
   })
   @ApiCreatedResponse({
     description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
@@ -82,10 +84,12 @@ export class PublicMagazineController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('name') name: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<MagazineTagEntity>> {
     return await this.magazineTagService.getMagazineListOverTag(
       { page: page, limit: limit, route: '/public/feed/findPagesOverTag' },
       name,
+      pageDate,
     );
   }
 }

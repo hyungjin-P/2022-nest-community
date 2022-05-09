@@ -48,6 +48,7 @@ export class FeedService {
   /**
    * 공개 피드 페이지 형식 조회
    * @param options { page, limit }
+   * @param pageDate
    */
   async findByPage(
     options: IPaginationOptions,
@@ -90,6 +91,7 @@ export class FeedService {
    * 피드 (로그인)
    * @param options { page, limit }
    * @param userId
+   * @param pageDate
    */
   async findByPageWithUserBehavior(
     options: IPaginationOptions,
@@ -158,6 +160,7 @@ export class FeedService {
   async findByPageOverFollow(
     options: IPaginationOptions,
     userId: string,
+    pageDate: Date,
   ): Promise<Pagination<Feed>> {
     // 팔로우한 인원 조회
     const followUsers = await this.followService.getFollowUsers(userId);
@@ -172,6 +175,7 @@ export class FeedService {
         qb.where({
           state: 'feed_state_posting',
           deletedAt: IsNull(),
+          uploadedAt: LessThanOrEqual(pageDate),
         }).andWhere('feed.userId IN (:followUserIds)', {
           followUserIds: followUserIds,
         });
@@ -531,12 +535,14 @@ export class FeedService {
   async findByLikePage(
     options: IPaginationOptions,
     feedId: string,
+    pageDate: Date,
   ): Promise<Pagination<FeedLike>> {
     const searchOptions: any = {
       relations: ['user', 'user.picture'],
       where: (qb) => {
         qb.where({
           feedId: feedId,
+          createdAt: LessThanOrEqual(pageDate),
         });
       },
     };
@@ -560,13 +566,13 @@ export class FeedService {
     options: IPaginationOptions,
     feedId: string,
     userId: string,
+    pageDate: Date,
   ): Promise<Pagination<FeedLike>> {
     const searchOptions: any = {
       relations: ['user', 'user.picture'],
-      where: (qb) => {
-        qb.where({
-          feedId: feedId,
-        });
+      where: {
+        feedId: feedId,
+        createdAt: LessThanOrEqual(pageDate),
       },
     };
 
@@ -785,6 +791,7 @@ export class FeedService {
   async findFeedDetailPage(
     pageOptions: IPaginationOptions,
     userId: string,
+    pageDate: Date,
   ): Promise<Pagination<FindFeedEntity>> {
     const searchOptions: any = {
       relations: [
@@ -795,7 +802,11 @@ export class FeedService {
         'bookmarks',
         'writer',
       ],
-      where: { userId, state: 'feed_state_posting' },
+      where: {
+        userId: userId,
+        state: 'feed_state_posting',
+        uploadedAt: LessThanOrEqual(pageDate),
+      },
     };
 
     const feedPage = await paginate<FindFeedEntity>(

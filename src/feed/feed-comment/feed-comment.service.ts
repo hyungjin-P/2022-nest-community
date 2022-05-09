@@ -12,6 +12,7 @@ import { FeedCommentLike } from './commnet-like/commnet-like.entity';
 import { FeedCommentLikeService } from './commnet-like/comment-like.service';
 import { FeedCommentMentionRepository } from './comment-mention/comment-mention.repository';
 import { UserService } from '../../user/user.service';
+import { LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class FeedCommentService {
@@ -37,6 +38,7 @@ export class FeedCommentService {
   async findByPage(
     options: IPaginationOptions,
     feedId: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       join: {
@@ -52,6 +54,7 @@ export class FeedCommentService {
       where: (qb) => {
         qb.where({
           feedId: feedId,
+          createdAt: LessThanOrEqual(pageDate),
         }).andWhere('feed_comment.parentId IS null');
       },
     };
@@ -76,12 +79,27 @@ export class FeedCommentService {
   async findSubByPage(
     options: IPaginationOptions,
     feedCommentId: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
-    const subCommentPage: Pagination<any> =
-      await this.feedCommentRepository.findSubCommentPage(
-        options,
-        feedCommentId,
-      );
+    const searchOptions: any = {
+      relations: [
+        'writer',
+        'writer.picture',
+        'mentions',
+        'mentions.mentionUser',
+        'mentions.mentionUser.picture',
+      ],
+      where: {
+        parentId: feedCommentId,
+        createdAt: LessThanOrEqual(pageDate),
+      },
+    };
+
+    const subCommentPage = await paginate<FeedComment>(
+      this.feedCommentRepository,
+      options,
+      searchOptions,
+    );
 
     if (subCommentPage.items.length > 0) {
       for (const comment of subCommentPage.items) {
@@ -98,6 +116,7 @@ export class FeedCommentService {
     options: IPaginationOptions,
     feedId: string,
     userId: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       join: {
@@ -113,6 +132,7 @@ export class FeedCommentService {
       where: (qb) => {
         qb.where({
           feedId: feedId,
+          createdAt: LessThanOrEqual(pageDate),
         }).andWhere('feed_comment.parentId IS null');
       },
     };
@@ -155,12 +175,27 @@ export class FeedCommentService {
     options: IPaginationOptions,
     feedCommentId: string,
     userId: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
-    const subCommentPage: Pagination<any> =
-      await this.feedCommentRepository.findSubCommentPage(
-        options,
-        feedCommentId,
-      );
+    const searchOptions: any = {
+      relations: [
+        'writer',
+        'writer.picture',
+        'mentions',
+        'mentions.mentionUser',
+        'mentions.mentionUser.picture',
+      ],
+      where: {
+        parentId: feedCommentId,
+        createdAt: LessThanOrEqual(pageDate),
+      },
+    };
+
+    const subCommentPage = await paginate<FeedComment>(
+      this.feedCommentRepository,
+      options,
+      searchOptions,
+    );
 
     // 댓글 좋아요 불러와야 함.
     if (subCommentPage.items.length > 0) {

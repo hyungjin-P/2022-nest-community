@@ -58,7 +58,8 @@ export class MagazineController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('category') category: string,
-    @Query('userId') userId?: string,
+    @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.magazineService.findByPageWithUserBehavior(
       {
@@ -68,6 +69,7 @@ export class MagazineController {
       },
       category,
       userId,
+      pageDate,
     );
   }
 

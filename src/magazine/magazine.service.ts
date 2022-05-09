@@ -13,6 +13,7 @@ import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmar
 import { MagazineBodyKoRepository } from './magazine-body-ko/magazine-body-ko.repository';
 import { MagazineBodyEnRepository } from './magazine-body-en/magazine-body-en.repository';
 import { MagazineViewsService } from './magazine-views/magazine-views.service';
+import { LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class MagazineService {
@@ -53,12 +54,14 @@ export class MagazineService {
   async findByPage(
     options: IPaginationOptions,
     category: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
       where: (qb) => {
         qb.where({
           state: 'magazine_state_posting',
+          createdAt: LessThanOrEqual(pageDate),
         });
       },
     };
@@ -99,13 +102,15 @@ export class MagazineService {
   async findByPageWithUserBehavior(
     options: IPaginationOptions,
     category: string,
-    userId?: string,
+    userId: string,
+    pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
       where: (qb) => {
         qb.where({
           state: 'magazine_state_posting',
+          createdAt: LessThanOrEqual(pageDate),
         });
       },
     };

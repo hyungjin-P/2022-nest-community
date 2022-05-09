@@ -3,7 +3,7 @@ import { FeedTag } from './feed-tag.entity';
 import { FeedTagRepository } from './feed-tag.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
-import { IsNull } from 'typeorm';
+import { IsNull, LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class FeedTagService {
@@ -28,7 +28,11 @@ export class FeedTagService {
     return await this.feedTagRepository.findTagList(name);
   }
 
-  async getFeedListOverTag(options: IPaginationOptions, name: string) {
+  async getFeedListOverTag(
+    options: IPaginationOptions,
+    name: string,
+    pageDate: Date,
+  ) {
     const searchOptions: any = {
       relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
       where: {
@@ -36,6 +40,7 @@ export class FeedTagService {
         feed: {
           state: 'feed_state_posting',
           deletedAt: IsNull(),
+          createdAt: LessThanOrEqual(pageDate),
         },
       },
     };

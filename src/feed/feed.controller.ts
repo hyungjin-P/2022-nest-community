@@ -74,6 +74,7 @@ export class FeedController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedService.findByPageOverFollow(
       {
@@ -82,6 +83,7 @@ export class FeedController {
         route: '/feed/findPagesOverFollow',
       },
       userId,
+      pageDate,
     );
   }
 
@@ -214,6 +216,7 @@ export class FeedController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('feedId') feedId: string,
     @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<any>> {
     return await this.feedService.findByLikePageWithUserBehavior(
       {
@@ -223,6 +226,7 @@ export class FeedController {
       },
       feedId,
       userId,
+      pageDate,
     );
   }
 
@@ -315,6 +319,7 @@ export class FeedController {
     @Query('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<FindFeedEntity>> {
     const feedDetailPage: Pagination<FindFeedEntity> =
       await this.feedService.findFeedDetailPage(
@@ -324,6 +329,7 @@ export class FeedController {
           route: '/feed/findMypageFeedDetail',
         },
         userId,
+        pageDate,
       );
     return feedDetailPage;
   }
@@ -339,10 +345,12 @@ export class FeedController {
     @Query('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<FindFeedEntity>> {
     return await this.feedService.findFeedDetailPage(
       { page, limit, route: '/feed/findMypageFeedDetail' },
       userId,
+      pageDate,
     );
   }
 

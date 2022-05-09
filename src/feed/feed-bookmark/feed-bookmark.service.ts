@@ -3,7 +3,7 @@ import { FeedBookmarkRepository } from './feed-bookmark.repository';
 import { FeedBookmarkDto } from '../dto/feed-bookmark.dto';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { FeedBookmark } from './feed-bookmark.entity';
-import { FindConditions, IsNull } from 'typeorm';
+import { FindConditions, IsNull, LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class FeedBookmarkService {

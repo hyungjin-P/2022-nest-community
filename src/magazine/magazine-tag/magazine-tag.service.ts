@@ -7,6 +7,7 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { MagazineTagEntity } from './magazine-tag.entity';
+import { LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class MagazineTagService {
@@ -34,6 +35,7 @@ export class MagazineTagService {
   async getMagazineListOverTag(
     options: IPaginationOptions,
     name: string,
+    pageDate: Date,
   ): Promise<Pagination<MagazineTagEntity>> {
     const searchOptions: any = {
       relations: [
@@ -49,6 +51,7 @@ export class MagazineTagService {
           name: name,
           magazine: {
             state: 'magazine_state_posting',
+            createdAt: LessThanOrEqual(pageDate),
           },
         });
       },
