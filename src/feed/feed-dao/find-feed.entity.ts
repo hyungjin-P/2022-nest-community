@@ -55,6 +55,9 @@ export class FindFeedEntity {
   @JoinColumn({ name: 'user_id' })
   writer: PublicUserProFile;
 
+  @Column()
+  uploadedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
