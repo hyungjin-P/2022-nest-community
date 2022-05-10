@@ -26,8 +26,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { providedId },
     });
 
-    console.log('validate user : ', user);
-
     if (!user) {
       throw new UnauthorizedException();
     }

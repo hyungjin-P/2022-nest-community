@@ -116,7 +116,6 @@ export class MagazineController {
     @Body() magazine: MagazineModifyDto,
     @Query('magazineId') magazineId: string,
   ) {
-    console.log(magazine);
     return await this.magazineService.modify(magazineId, magazine);
   }
 

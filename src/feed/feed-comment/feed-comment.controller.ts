@@ -136,7 +136,6 @@ export class FeedCommentController {
   async createCommentMention(
     @Body() mention: FeedCommentMention,
   ): Promise<FeedCommentMention> {
-    console.log('mention : ', mention);
     return await this.feedCommentMentionService.addMention(mention);
   }
 

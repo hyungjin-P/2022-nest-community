@@ -68,7 +68,6 @@ export class FollowController {
       route: '/follow/findFollowing',
     });
 
-    console.log('팔로잉 수 : ', users.length);
     return users;
   }
 
@@ -87,7 +86,6 @@ export class FollowController {
       limit,
       route: '/follow/findFollower',
     });
-    console.log('팔로워 수 : ', users.length);
     return users;
   }
 }

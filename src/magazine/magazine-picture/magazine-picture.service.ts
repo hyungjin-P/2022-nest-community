@@ -21,8 +21,7 @@ export class MagazinePictureService {
 
       magazinePictures.push(magazinePicture);
     }
-    console.log(magazinePictures);
-    this.magazinePictureRepository.save(magazinePictures);
+    await this.magazinePictureRepository.save(magazinePictures);
   }
 
   async deleteMagazinePicture(magazineId: string, url: string) {

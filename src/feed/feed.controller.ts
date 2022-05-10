@@ -325,7 +325,6 @@ export class FeedController {
     let feedDetailPage: Pagination<FindFeedEntity>;
 
     if (!otherUserId) {
-      console.log('본 유저 피드');
       feedDetailPage = await this.feedService.findFeedDetailPage(
         {
           page,
@@ -336,8 +335,6 @@ export class FeedController {
         pageDate,
       );
     } else {
-      console.log('타인 피드');
-
       feedDetailPage = await this.feedService.findFeedOtherUserPage(
         {
           page,
