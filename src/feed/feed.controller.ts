@@ -317,12 +317,16 @@ export class FeedController {
   })
   async findMyPageFeedDetail(
     @Query('userId') userId: string,
+    @Query('otherUserId', new DefaultValuePipe(null)) otherUserId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<FindFeedEntity>> {
-    const feedDetailPage: Pagination<FindFeedEntity> =
-      await this.feedService.findFeedDetailPage(
+    let feedDetailPage: Pagination<FindFeedEntity>;
+
+    if (!otherUserId) {
+      console.log('본 유저 피드');
+      feedDetailPage = await this.feedService.findFeedDetailPage(
         {
           page,
           limit,
@@ -331,6 +335,20 @@ export class FeedController {
         userId,
         pageDate,
       );
+    } else {
+      console.log('타인 피드');
+
+      feedDetailPage = await this.feedService.findFeedOtherUserPage(
+        {
+          page,
+          limit,
+          route: '/feed/findMypageFeedDetail',
+        },
+        userId,
+        otherUserId,
+      );
+    }
+
     return feedDetailPage;
   }
 

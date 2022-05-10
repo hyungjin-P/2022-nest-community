@@ -787,6 +787,7 @@ export class FeedService {
    * 피드상세 페이지
    * @param pageOptions
    * @param userId
+   * @param pageDate
    */
   async findFeedDetailPage(
     pageOptions: IPaginationOptions,
@@ -822,6 +823,66 @@ export class FeedService {
         feedDetail.isBookmark =
           feedDetail.bookmarks.filter((bookmark) => bookmark.userId === userId)
             .length > 0;
+        feedDetail.pictureCount = feedDetail.pictures.length;
+        feedDetail.likeCount = feedDetail.likes.length;
+        feedDetail.commentCount = feedDetail.comments.length;
+
+        const exposureUserIds: string[] = [];
+
+        if (feedDetail.likes?.length > 0) {
+          feedDetail.likes.some((feedLike, index) => {
+            exposureUserIds.push(feedLike.userId);
+            return index === 2;
+          });
+
+          if (exposureUserIds.length > 0) {
+            feedDetail.exposureUser = await this.userService.findUserIds(
+              exposureUserIds,
+            );
+          }
+        }
+
+        feedDetail.writer.picture = await this.userService.getUserPictures(
+          feedDetail.writer.id,
+        );
+      }
+    }
+
+    return feedPage;
+  }
+
+  async findFeedOtherUserPage(
+    pageOptions: IPaginationOptions,
+    userId: string,
+    otherUserId: string,
+  ): Promise<Pagination<FindFeedEntity>> {
+    const searchOptions: any = {
+      relations: [
+        'pictures',
+        'likes',
+        'tags',
+        'comments',
+        'bookmarks',
+        'writer',
+      ],
+      where: { userId, state: 'feed_state_posting' },
+    };
+
+    const feedPage = await paginate<FindFeedEntity>(
+      this.findFeedRepository,
+      pageOptions,
+      searchOptions,
+    );
+
+    if (feedPage.items.length > 0) {
+      for (const feedDetail of feedPage.items) {
+        feedDetail.isLike =
+          feedDetail.likes.filter((like) => like.userId === otherUserId)
+            .length > 0;
+        feedDetail.isBookmark =
+          feedDetail.bookmarks.filter(
+            (bookmark) => bookmark.userId === otherUserId,
+          ).length > 0;
         feedDetail.pictureCount = feedDetail.pictures.length;
         feedDetail.likeCount = feedDetail.likes.length;
         feedDetail.commentCount = feedDetail.comments.length;
