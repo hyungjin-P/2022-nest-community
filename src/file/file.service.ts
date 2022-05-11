@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { FileRepository } from './file.repository';
@@ -98,7 +98,10 @@ export class FileService {
 
         uploadFiles.push(uploadFile);
       } catch (e) {
-        throw new HttpException({ error: e, code: 'failure', message: '파일 저장에 실패했습니다.'}, 500);
+        throw new HttpException(
+          { error: e, code: 'failure', message: '파일 저장에 실패했습니다.' },
+          500,
+        );
       }
     }
 

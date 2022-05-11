@@ -504,11 +504,13 @@ export class FeedService {
 
     if (feed.pictures.length < feedPictureRows.length) {
       for (const [index, feedPicture] of feedPictureRows.entries()) {
-        const result = feed.pictures.findIndex(
-          (feedRow) => feedRow.id === feedPicture.id,
-        );
-
-        if (result < 0) {
+        let sameCount = 0;
+        for (const getFeedPicture of feed.pictures) {
+          if (feedPicture.url === getFeedPicture.url) {
+            sameCount += 1;
+          }
+        }
+        if (sameCount === 0) {
           await this.fileService.deleteFile({
             tag: 'feed',
             tagInId: feedPicture.feedId,
