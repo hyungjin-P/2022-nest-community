@@ -563,6 +563,7 @@ export class FeedService {
    * @param options
    * @param feedId
    * @param userId
+   * @param pageDate
    */
   async findByLikePageWithUserBehavior(
     options: IPaginationOptions,
@@ -808,7 +809,10 @@ export class FeedService {
       where: {
         userId: userId,
         state: 'feed_state_posting',
-        uploadedAt: LessThanOrEqual(pageDate),
+        createdAt: LessThanOrEqual(pageDate),
+      },
+      order: {
+        createdAt: 'DESC',
       },
     };
 

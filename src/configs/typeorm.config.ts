@@ -9,14 +9,7 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   timezone: 'Z',
   port: 3306,
   database: 'REDACTED_DB_NAME',
-
-  /* product */
   username: 'REDACTED_DB_USERNAME',
   password: 'REDACTED_DB_PASSWORD',
   host: 'REDACTED_RDS_HOST',
-
-  /* develop */
-  // username: 'root',
-  // password: 'root',
-  // host: 'localhost',
 };

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { typeORMConfig } from './configs/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CodeCategoryModule } from './codes/code-category/code-category.module';
 import { CodesModule } from './codes/codes.module';
@@ -11,8 +10,10 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
 import { MagazineModule } from './magazine/magazine.module';
+import { TypeOrmConfigService } from './configs/type-orm-config.service';
 
 const stage = 'development';
+
 // const stage = 'production';
 
 @Module({
@@ -21,7 +22,9 @@ const stage = 'development';
       isGlobal: true,
       envFilePath: `${process.cwd()}/config/.env.${stage}`,
     }),
-    TypeOrmModule.forRoot(typeORMConfig),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+    }),
     UserModule,
     FeedModule,
     FileModule,
