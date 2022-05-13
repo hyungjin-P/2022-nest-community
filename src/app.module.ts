@@ -10,11 +10,11 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
 import { MagazineModule } from './magazine/magazine.module';
-import { TypeOrmConfigService } from './configs/type-orm-config.service';
+// import { TypeOrmConfigService } from './configs/type-orm-config.service';
+import { typeORMConfig } from './configs/typeorm.config';
 
-const stage = 'development';
-
-// const stage = 'production';
+// const stage = 'development';
+const stage = 'production';
 
 @Module({
   imports: [
@@ -22,9 +22,10 @@ const stage = 'development';
       isGlobal: true,
       envFilePath: `${process.cwd()}/config/.env.${stage}`,
     }),
-    TypeOrmModule.forRootAsync({
-      useClass: TypeOrmConfigService,
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   useClass: TypeOrmConfigService,
+    // }),
+    TypeOrmModule.forRoot(typeORMConfig),
     UserModule,
     FeedModule,
     FileModule,
