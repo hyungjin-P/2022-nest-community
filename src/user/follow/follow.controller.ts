@@ -58,15 +58,20 @@ export class FollowController {
     description: '유저의 팔로워 수 조회',
   })
   async findFollowingPage(
+    @Query('loginUserId') loginUserId: string,
     @Query('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
   ): Promise<User[]> {
-    const users: User[] = await this.followService.findFollowingPage(userId, {
-      page,
-      limit,
-      route: '/follow/findFollowing',
-    });
+    const users: User[] = await this.followService.findFollowingPage(
+      loginUserId,
+      userId,
+      {
+        page,
+        limit,
+        route: '/follow/findFollowing',
+      },
+    );
 
     return users;
   }
@@ -77,15 +82,20 @@ export class FollowController {
     description: '유저의 팔로워 수 조회',
   })
   async findFollowerPage(
+    @Query('loginUserId') loginUserId: string,
     @Query('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
   ): Promise<User[]> {
-    const users: User[] = await this.followService.findFollowerPage(userId, {
-      page,
-      limit,
-      route: '/follow/findFollower',
-    });
+    const users: User[] = await this.followService.findFollowerPage(
+      loginUserId,
+      userId,
+      {
+        page,
+        limit,
+        route: '/follow/findFollower',
+      },
+    );
     return users;
   }
 }

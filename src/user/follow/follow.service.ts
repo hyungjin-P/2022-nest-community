@@ -57,10 +57,12 @@ export class FollowService {
 
   /**
    * 팔로잉 조회
+   * @param loginUserId
    * @param userId
    * @param pageOptions
    */
   async findFollowingPage(
+    loginUserId: string,
     userId: string,
     pageOptions: IPaginationOptions,
   ): Promise<any> {
@@ -86,7 +88,7 @@ export class FollowService {
       fromUserList = [...(await this.userService.findUserIds(fromUserIds))];
 
       for (const user of fromUserList) {
-        user.isFollow = await this.checkFollowUser(user.id, userId);
+        user.isFollow = await this.checkFollowUser(user.id, loginUserId);
       }
     }
 
@@ -101,10 +103,12 @@ export class FollowService {
 
   /**
    * 팔로워 조회
+   * @param loginUserId
    * @param userId
    * @param pageOptions
    */
   async findFollowerPage(
+    loginUserId: string,
     userId: string,
     pageOptions: IPaginationOptions,
   ): Promise<any> {
@@ -132,7 +136,7 @@ export class FollowService {
       // 나를 좋아하는 유저를 내가 팔로우 했는지
       for (const user of toUserList) {
         user.isFollow = !!(await this.followRepository.findOne({
-          fromUser: userId,
+          fromUser: loginUserId,
           toUser: user.id,
         }));
       }
