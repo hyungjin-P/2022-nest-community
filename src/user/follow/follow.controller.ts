@@ -63,6 +63,7 @@ export class FollowController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
   ): Promise<User[]> {
+    // 05/25 로그인 유저 정보 삽입
     const users: User[] = await this.followService.findFollowingPage(
       loginUserId,
       userId,
@@ -87,6 +88,7 @@ export class FollowController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
   ): Promise<User[]> {
+    // 05/25 로그인 유저정보 삽입
     const users: User[] = await this.followService.findFollowerPage(
       loginUserId,
       userId,

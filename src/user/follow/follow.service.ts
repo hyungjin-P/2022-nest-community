@@ -57,6 +57,7 @@ export class FollowService {
 
   /**
    * 팔로잉 조회
+   * 05/25 - 로그인 유저정보 삽입
    * @param loginUserId
    * @param userId
    * @param pageOptions
@@ -103,6 +104,7 @@ export class FollowService {
 
   /**
    * 팔로워 조회
+   * 05/25 - 로그인 유저 정보 삽입
    * @param loginUserId
    * @param userId
    * @param pageOptions
