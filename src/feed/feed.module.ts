@@ -62,8 +62,6 @@ import { FindFeedRepository } from './feed-dao/find-feed.repository';
     FollowService,
     UserService,
   ],
-  exports: [
-    FeedService,
-  ],
+  exports: [FeedService],
 })
 export class FeedModule {}

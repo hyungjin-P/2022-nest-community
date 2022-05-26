@@ -55,6 +55,25 @@ export class PublicFeedController {
     );
   }
 
+  @Get('/public/feed/findPageAll')
+  @ApiOperation({
+    summary: '관리자 피드 페이지 조회',
+    description: '관리자 피드 페이지 조회',
+  })
+  @ApiCreatedResponse({
+    description: '관리자 페이지 피드 페이지 조회',
+  })
+  async findByPublicFeedPageAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<Pagination<any>> {
+    return await this.feedService.findByPageAll({
+      page,
+      limit,
+      route: '/public/feed/findPageAll',
+    });
+  }
+
   @Get('/public/authFeed')
   @UseGuards(LocalAuthGuard)
   @ApiOperation({

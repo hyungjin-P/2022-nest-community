@@ -26,7 +26,8 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
-import { IsNull, LessThanOrEqual } from 'typeorm';
+import { IsNull, LessThanOrEqual, Like, ILike } from 'typeorm';
+import { FeedFilteringDto } from './dto/feed.filtering.dto';
 
 @Injectable()
 export class FeedService {
@@ -83,6 +84,29 @@ export class FeedService {
         feed.commentCount = await this.feedCommentService.getCount(feed.id);
       }
     }
+
+    return feedPage;
+  }
+
+  /**
+   * 관리자 피드 페이지 조회
+   * @param options { page, limit }
+   */
+  async findByPageAll(options: IPaginationOptions): Promise<Pagination<any>> {
+    const searchOptions: any = {
+      relations: ['writer', 'writer.picture', 'tags', 'pictures', 'likeUsers'],
+      where: (qb) => {
+        qb.where({
+          state: 'feed_state_posting',
+        });
+      },
+    };
+
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
+      options,
+      searchOptions,
+    );
 
     return feedPage;
   }
@@ -915,5 +939,55 @@ export class FeedService {
     }
 
     return feedPage;
+  }
+
+  /**
+   * 피드 필터링 검색
+   * @param feedFilteringDto
+   */
+  async findFilteredFeedPages(
+    feedFilteringDto: FeedFilteringDto,
+    pageOptions: IPaginationOptions,
+  ): Promise<Pagination<FindFeedEntity>> {
+    const searchOptions: any = {
+      relations: [
+        'pictures',
+        'likes',
+        'tags',
+        'comments',
+        'bookmarks',
+        'writer',
+      ],
+      where: {
+        state: 'feed_state_posting',
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    };
+
+    if (feedFilteringDto.content) {
+      searchOptions.where.content = ILike(`%${feedFilteringDto.content}%`);
+    }
+
+    if (feedFilteringDto.email) {
+      searchOptions.where.writer = {
+        ...searchOptions.where.writer,
+        email: ILike(`%${feedFilteringDto.email}%`),
+      };
+    }
+
+    if (feedFilteringDto.nickname) {
+      searchOptions.where.writer = {
+        ...searchOptions.where.writer,
+        nickname: ILike(`%${feedFilteringDto.nickname}%`),
+      };
+    }
+
+    return await paginate<FindFeedEntity>(
+      this.findFeedRepository,
+      pageOptions,
+      searchOptions,
+    );
   }
 }

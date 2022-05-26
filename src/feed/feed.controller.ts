@@ -24,6 +24,7 @@ import { FeedBookmarkDto } from './dto/feed-bookmark.dto';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
+import { FeedFilteringDto } from './dto/feed.filtering.dto';
 
 @ApiTags('피드')
 @Controller('feed')
@@ -379,5 +380,23 @@ export class FeedController {
   })
   async deleteRealFeed(@Query('feedId') feedId: string): Promise<void> {
     await this.feedService.deleteRealFeed(feedId);
+  }
+
+  @Post('/filteredFeedPages')
+  @ApiOperation({
+    summary: '피드 조회 (필터링)',
+    description: '피드를 필터링 하여 검색한다.',
+  })
+  @ApiCreatedResponse({
+    description: '피드 필터링 검색',
+  })
+  async filteredFeedPages(
+    @Body() feedFilteringDto: FeedFilteringDto,
+  ): Promise<void | Pagination<FindFeedEntity>> {
+    return await this.feedService.findFilteredFeedPages(feedFilteringDto, {
+      page: feedFilteringDto.page,
+      limit: feedFilteringDto.limit,
+      route: '/feed/findMypageFeedDetail',
+    });
   }
 }

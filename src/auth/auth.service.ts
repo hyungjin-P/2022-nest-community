@@ -244,6 +244,7 @@ export class AuthService {
 
         newUser.picture = [userPicture];
       }
+
       const tokens: any = await this.createTokens(
         newUser.providedId,
         newUser.id,

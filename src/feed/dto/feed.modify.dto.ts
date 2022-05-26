@@ -5,12 +5,15 @@ export class FeedModifyDto {
   @ApiProperty()
   @IsString()
   content: string;
+
   @ApiProperty()
   @IsString()
   picture: string;
+
   @ApiProperty()
   @IsBoolean()
   posting: boolean;
+
   @ApiProperty()
   @IsString()
   feedId: string;

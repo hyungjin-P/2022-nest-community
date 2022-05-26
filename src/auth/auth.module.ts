@@ -40,6 +40,6 @@ import { UserService } from '../user/user.service';
     FirebaseService,
     CommonUtil,
   ],
-  exports: [JwtStrategy, PassportModule],
+  exports: [JwtStrategy, PassportModule, AuthService],
 })
 export class AuthModule {}
