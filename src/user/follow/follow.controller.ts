@@ -100,4 +100,19 @@ export class FollowController {
     );
     return users;
   }
+
+  @Get('/isFollowed')
+  @ApiOperation({
+    summary: '유저의 팔로워 수 조회',
+    description: '유저의 팔로워 수 조회',
+  })
+  @ApiCreatedResponse({
+    description: '유저의 팔로워 수를 조회한다.',
+  })
+  async isFollowed(
+    @Query('fromUser') fromUser: string,
+    @Query('toUser') toUser: string,
+  ): Promise<boolean> {
+    return await this.followService.isFollowed(fromUser, toUser);
+  }
 }

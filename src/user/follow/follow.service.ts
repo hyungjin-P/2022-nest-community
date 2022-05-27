@@ -4,6 +4,7 @@ import { Follow } from './follow.entity';
 import { UserService } from '../user.service';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { User } from '../user.entity';
+import { promises } from 'dns';
 
 @Injectable()
 export class FollowService {
@@ -151,5 +152,11 @@ export class FollowService {
       },
       users: toUserList,
     };
+  }
+
+  async isFollowed(fromUser: string, toUser: string): Promise<boolean> {
+    const isFollow = await this.followRepository.find({ fromUser, toUser });
+
+    return isFollow.length > 0;
   }
 }
