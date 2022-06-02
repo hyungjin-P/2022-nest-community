@@ -16,6 +16,9 @@ import { UserProfileDto } from './dto/user.profile.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserPasswordChangeDto } from './dto/user.password-change.dto';
 import { UserModifyServiceTermDto } from '../auth/dto/user-modify-service-term.dto';
+import { UserFilteringDto } from '../admin/dto/user-filtering.dto';
+import { AdminUser } from '../admin/admin-user/admin-user.entity';
+import { ILike } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -150,129 +153,7 @@ export class UserService {
   /**
    * 유저 페이지 조회
    * @param options: IPaginationOptions => require to limit and page
-   * Ex) let o
-   *
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   * ptions = { limit: 5, page: 1 }
+   * Ex) let options = { limit: 5, page: 1 }
    */
   async getUserPage(options: IPaginationOptions): Promise<Pagination<User>> {
     const queryBuilder = await this.userRepository
@@ -484,5 +365,45 @@ export class UserService {
     }
 
     return user;
+  }
+
+  /**
+   * 회원 정보 필터링해서 조회
+   * @param userFilteringDto
+   * @param pageOptions
+   */
+  async findUserFilteringPages(
+    userFilteringDto: UserFilteringDto,
+    pageOptions: IPaginationOptions,
+  ): Promise<Pagination<User>> {
+    const searchOptions: any = {
+      relations: ['userPicture', 'userBackground'],
+      where: {
+        emailVerified: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    };
+
+    if (userFilteringDto.nickname) {
+      searchOptions.where = {
+        ...searchOptions.where,
+        nickname: ILike(`%${userFilteringDto.nickname}%`),
+      };
+    }
+
+    if (userFilteringDto.email) {
+      searchOptions.where = {
+        ...searchOptions.where,
+        email: ILike(`%${userFilteringDto.email}%`),
+      };
+    }
+
+    return await paginate<User>(
+      this.userRepository,
+      pageOptions,
+      searchOptions,
+    );
   }
 }

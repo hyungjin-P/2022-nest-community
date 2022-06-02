@@ -4,10 +4,17 @@ import { CodeAuthorityRepository } from './code-authority/code-authority.reposit
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
 import { AuthService } from '../auth/auth.service';
-import { UserEmailSignInDto } from '../auth/dto/user-email-sign-in.dto';
 import { AdminUser } from './admin-user/admin-user.entity';
 import { CodeAuthority } from './code-authority/code-authority.entity';
 import { AdminSignInDto } from './dto/admin-signIn.dto';
+import { UserFilteringDto } from './dto/user-filtering.dto';
+import { ILike } from 'typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+import { FindFeedEntity } from '../feed/feed-dao/find-feed.entity';
 
 @Injectable()
 export class AdminService {
@@ -57,5 +64,43 @@ export class AdminService {
     adminUser.codeAuthority = authority;
 
     return adminUser;
+  }
+
+  async findAdminUserPages(
+    userFilteringDto: UserFilteringDto,
+    pageOptions: IPaginationOptions,
+  ): Promise<Pagination<AdminUser>> {
+    const searchOptions: any = {
+      relations: ['user', 'codeAuthority'],
+      where: {
+        user: {
+          emailVerified: true,
+        },
+      },
+      order: {
+        user: {
+          createdAt: 'DESC',
+        },
+      },
+    };
+
+    if (userFilteringDto.nickname) {
+      searchOptions.where.user.nickaname = ILike(
+        `%${userFilteringDto.nickname}%`,
+      );
+    }
+
+    if (userFilteringDto.email) {
+      searchOptions.where.user = {
+        ...searchOptions.where.user,
+        email: ILike(`%${userFilteringDto.email}%`),
+      };
+    }
+
+    return await paginate<AdminUser>(
+      this.adminUserRepository,
+      pageOptions,
+      searchOptions,
+    );
   }
 }

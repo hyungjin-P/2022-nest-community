@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../user/user.entity';
@@ -30,7 +31,9 @@ export class AdminUser {
   @CreateDateColumn()
   createAt: Date;
 
+  @ManyToOne(() => User, (user) => user.adminUser)
   user: User;
 
+  @ManyToOne(() => CodeAuthority, (codeAuthority) => codeAuthority.adminUser)
   codeAuthority: CodeAuthority;
 }

@@ -4,6 +4,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,6 +14,7 @@ import { UserBackground } from './user-background/user-background.entity';
 import { UserPicture } from './user-picture/user-picture.entity';
 import { FeedLike } from '../feed/feed-like/feed-like.entity';
 import { Feed } from '../feed/feed.entity';
+import { AdminUser } from '../admin/admin-user/admin-user.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -119,7 +122,7 @@ export class User extends BaseEntity {
   @OneToOne(() => Feed, (feed) => feed.writer)
   feed: Feed;
 
-  @OneToOne(() => FeedLike, (feedlike) => feedlike.user)
+  @OneToOne(() => FeedLike, (feedLike) => feedLike.user)
   feedLike: FeedLike;
 
   metaInfo: any;
@@ -127,4 +130,13 @@ export class User extends BaseEntity {
   isFollow: boolean;
 
   signUpType: string;
+
+  @OneToMany(() => AdminUser, (adminUser) => adminUser.user)
+  adminUser: AdminUser;
+
+  @OneToMany(() => UserPicture, (userPicture) => userPicture.user)
+  userPicture: UserPicture;
+
+  @OneToMany(() => UserBackground, (userBackground) => userBackground.user)
+  userBackground: UserBackground;
 }

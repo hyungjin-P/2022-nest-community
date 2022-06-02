@@ -25,6 +25,7 @@ import { CryptoService } from '../services/crypto/crypto.service';
 import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
 import { UserPasswordChangeTokenDto } from './dto/user.password-change-token.dto';
 import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto';
+import { UserFilteringDto } from '../admin/dto/user-filtering.dto';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -424,5 +425,23 @@ export class UserController {
     );
 
     return await this.userService.findById(user.id);
+  }
+
+  @Post('/findUserFilteringPages')
+  @ApiOperation({
+    summary: '사용자 필터링 조회',
+    description: '사용자 필터링 조회',
+  })
+  @ApiCreatedResponse({
+    description: '사용자를 필터링해서 조회한다.',
+  })
+  async findUserFilteringPage(
+    @Body() userFilteringDto: UserFilteringDto,
+  ): Promise<Pagination<User>> {
+    return await this.userService.findUserFilteringPages(userFilteringDto, {
+      page: userFilteringDto.page,
+      limit: userFilteringDto.limit,
+      route: '/admin/findPages',
+    });
   }
 }
