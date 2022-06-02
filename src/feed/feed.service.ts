@@ -26,7 +26,7 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
-import { IsNull, LessThanOrEqual, Like, ILike } from 'typeorm';
+import { ILike, IsNull, LessThanOrEqual } from 'typeorm';
 import { FeedFilteringDto } from './dto/feed.filtering.dto';
 
 @Injectable()
@@ -57,12 +57,13 @@ export class FeedService {
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['writer', 'writer.picture', 'tags'],
-      where: (qb) => {
-        qb.where({
-          state: 'feed_state_posting',
-          uploadedAt: LessThanOrEqual(pageDate),
-          deletedAt: IsNull(),
-        });
+      where: {
+        state: 'feed_state_posting',
+        sortedAt: LessThanOrEqual(pageDate),
+        deletedAt: IsNull(),
+      },
+      order: {
+        sortedAt: 'DESC',
       },
     };
 
@@ -95,10 +96,11 @@ export class FeedService {
   async findByPageAll(options: IPaginationOptions): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['writer', 'writer.picture', 'tags', 'pictures', 'likeUsers'],
-      where: (qb) => {
-        qb.where({
-          state: 'feed_state_posting',
-        });
+      where: {
+        state: 'feed_state_posting',
+      },
+      order: {
+        sortedAt: 'DESC',
       },
     };
 
@@ -124,12 +126,13 @@ export class FeedService {
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
       relations: ['writer', 'writer.picture', 'tags'],
-      where: (qb) => {
-        qb.where({
-          state: 'feed_state_posting',
-          uploadedAt: LessThanOrEqual(pageDate),
-          deletedAt: IsNull(),
-        });
+      where: {
+        state: 'feed_state_posting',
+        sortedAt: LessThanOrEqual(pageDate),
+        deletedAt: IsNull(),
+      },
+      order: {
+        sortedAt: 'DESC',
       },
     };
 
@@ -488,6 +491,7 @@ export class FeedService {
     if (feedModifyDto.posting) {
       feedRows.state = 'feed_state_posting';
       feedRows.uploadedAt = new Date();
+      feedRows.sortedAt = new Date();
     }
 
     return await this.feedRepository.save(feedRows);

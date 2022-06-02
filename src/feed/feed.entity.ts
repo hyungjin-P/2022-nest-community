@@ -67,6 +67,9 @@ export class Feed {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column()
+  sortedAt: Date;
+
   rewrite: boolean;
 
   pictureCount?: number;
