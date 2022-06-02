@@ -131,6 +131,13 @@ export class AuthService {
     if (!user) {
       return await this.signUpKakao(kakaoProfile);
     } else {
+      if (user.deletedAt) {
+        throw new HttpException(
+          { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+          500,
+        );
+      }
+
       const tokens: any = await this.createTokens(user.providedId, user.id);
       const images: any = await this.getUserPictureAndBackground(user.id);
 
@@ -256,6 +263,13 @@ export class AuthService {
 
       return newUser;
     } else {
+      if (user.deletedAt) {
+        throw new HttpException(
+          { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+          500,
+        );
+      }
+
       const userPictureAndBack: any = await this.getUserPictureAndBackground(
         user.id,
       );
@@ -287,6 +301,13 @@ export class AuthService {
           code: 'failure',
           message: '사용자가 존재하지 않습니다.',
         },
+        500,
+      );
+    }
+
+    if (user.deletedAt) {
+      throw new HttpException(
+        { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
         500,
       );
     }
@@ -410,6 +431,13 @@ export class AuthService {
       // 회원가입
       return await this.signUpGoogle(googleUser);
     } else {
+      if (user.deletedAt) {
+        throw new HttpException(
+          { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+          500,
+        );
+      }
+
       const tokens: any = await this.createTokens(user.providedId, user.id);
       const images: any = await this.getUserPictureAndBackground(user.id);
 

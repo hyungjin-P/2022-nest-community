@@ -100,7 +100,8 @@ export class User extends BaseEntity {
   @Column()
   agreementMarketing: boolean;
 
-  @DeleteDateColumn()
+  // deleted_at을 확인하기 위해 기존 DeleteDateColumn() => Column()으로 변경
+  @Column()
   deletedAt: Date;
 
   @CreateDateColumn()

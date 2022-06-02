@@ -53,7 +53,7 @@ export class UserService {
 
     if (user.deletedAt) {
       throw new HttpException(
-        { code: 'failure', message: '탈퇴한 회원 입니다.' },
+        { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
         500,
       );
     }
@@ -97,6 +97,14 @@ export class UserService {
    */
   async delete(id: string): Promise<void> {
     await this.userRepository.delete(id);
+  }
+
+  /**
+   * 유저 삭제(soft delete)
+   * @param id
+   */
+  async softDelete(id: string) {
+    return await this.userRepository.save({ id: id, deletedAt: new Date() });
   }
 
   /**

@@ -4,13 +4,14 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn, JoinTable,
+  JoinColumn,
+  JoinTable,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { FeedCommentMention } from './comment-mention/comment-mention.entity';
 import { PublicUserProFile } from '../../user/public/public.user.entity';
