@@ -17,8 +17,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserPasswordChangeDto } from './dto/user.password-change.dto';
 import { UserModifyServiceTermDto } from '../auth/dto/user-modify-service-term.dto';
 import { UserFilteringDto } from '../admin/dto/user-filtering.dto';
-import { AdminUser } from '../admin/admin-user/admin-user.entity';
-import { ILike } from 'typeorm';
+import { Between, ILike } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -380,11 +379,19 @@ export class UserService {
       relations: ['userPicture', 'userBackground'],
       where: {
         emailVerified: true,
-      },
-      order: {
-        createdAt: 'DESC',
+        agreementAge: userFilteringDto.agreementAge,
+        agreementPrivacy: userFilteringDto.agreementPrivacy,
+        agreementServiceTerms: userFilteringDto.agreementServiceTerms,
+        agreementMarketing: userFilteringDto.agreementMarketing,
       },
     };
+
+    if (userFilteringDto.email) {
+      searchOptions.where = {
+        ...searchOptions.where,
+        email: ILike(`%${userFilteringDto.email}%`),
+      };
+    }
 
     if (userFilteringDto.nickname) {
       searchOptions.where = {
@@ -393,10 +400,26 @@ export class UserService {
       };
     }
 
-    if (userFilteringDto.email) {
+    if (userFilteringDto.name) {
       searchOptions.where = {
         ...searchOptions.where,
-        email: ILike(`%${userFilteringDto.email}%`),
+        name: ILike(`%${userFilteringDto.name}%`),
+      };
+    }
+
+    if (userFilteringDto.sortedColumn && userFilteringDto.sortedDirection) {
+      searchOptions.order = {};
+      searchOptions.order[userFilteringDto.sortedColumn] =
+        userFilteringDto.sortedDirection;
+    } else {
+      searchOptions.order = {};
+      searchOptions.order.createdAt = 'DESC';
+    }
+
+    if (userFilteringDto.isIncludeDate) {
+      searchOptions.where = {
+        ...searchOptions.where,
+        createdAt: Between(userFilteringDto.from, userFilteringDto.to),
       };
     }
 
