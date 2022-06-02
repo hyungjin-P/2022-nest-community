@@ -12,6 +12,8 @@ import { UserPictureRepository } from './user-picture/user-picture.repository';
 import { UserBackgroundRepository } from './user-background/user-background.repository';
 import { UserBackgroundService } from './user-background/user-background.service';
 import { CryptoService } from '../services/crypto/crypto.service';
+import { UserWithdrawalTemporaryService } from './user-withdrawal-temporary/user-withdrawal-temporary.service';
+import { UserWithdrawalTemporaryRepository } from './user-withdrawal-temporary/user-withdrawal-temporary.repository';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { CryptoService } from '../services/crypto/crypto.service';
       UserRepository,
       UserPictureRepository,
       UserBackgroundRepository,
+      UserWithdrawalTemporaryRepository,
     ]),
     FollowModule,
     UserPictureModule,
@@ -31,6 +34,7 @@ import { CryptoService } from '../services/crypto/crypto.service';
     EmailService,
     UserBackgroundService,
     CryptoService,
+    UserWithdrawalTemporaryService,
   ],
   exports: [UserService],
 })

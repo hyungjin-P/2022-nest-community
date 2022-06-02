@@ -26,12 +26,15 @@ import { UserResetPasswordMailDto } from './dto/user.reset-password-mail.dto';
 import { UserPasswordChangeTokenDto } from './dto/user.password-change-token.dto';
 import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto';
 import { UserFilteringDto } from '../admin/dto/user-filtering.dto';
+import { UserWithdrawalTemporaryService } from './user-withdrawal-temporary/user-withdrawal-temporary.service';
+import { UserWithdrawalTemporary } from './user-withdrawal-temporary/user-withdrawal-temporary.entity';
 
 @ApiTags('사용자 정보')
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
+    private readonly userWithdrawalTemporaryService: UserWithdrawalTemporaryService,
     private readonly commonUtil: CommonUtil,
     private readonly emailService: EmailService,
     private readonly cryptoService: CryptoService,
@@ -443,5 +446,36 @@ export class UserController {
       limit: userFilteringDto.limit,
       route: '/admin/findPages',
     });
+  }
+
+  @Post('/withdrawalTemporary')
+  @ApiOperation({
+    summary: '사용자 삭제 신청',
+    description: '사용자 삭제 신청',
+  })
+  @ApiCreatedResponse({
+    description: '사용자가 삭제를 요청한다.',
+  })
+  async withdrawalTemporary(
+    @Body() userWithdrawalDto: UserWithdrawalTemporary,
+  ) {
+    await this.userWithdrawalTemporaryService.saveInfo(
+      userWithdrawalDto.userId,
+      userWithdrawalDto.reason,
+    );
+    return await this.userService.softDelete(userWithdrawalDto.userId);
+  }
+
+  @Post('/withdrawalCancel')
+  @ApiOperation({
+    summary: '사용자 삭제 신청 취소',
+    description: '사용자 삭제 신청 취소',
+  })
+  @ApiCreatedResponse({
+    description: '사용자가 삭제취소를 요청한다.',
+  })
+  async withdrawalCancel(@Query('userId') userId: string) {
+    await this.userWithdrawalTemporaryService.delete(userId);
+    return await this.userService.softDeleteCancel(userId);
   }
 }
