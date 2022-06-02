@@ -12,4 +12,8 @@ export class UserWithdrawalTemporaryService {
   async saveInfo(userId: string, reason: string) {
     return await this.repository.save({ userId, reason });
   }
+
+  async delete(userId: string) {
+    return await this.repository.delete({ userId: userId });
+  }
 }

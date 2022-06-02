@@ -465,4 +465,17 @@ export class UserController {
     );
     return await this.userService.softDelete(userWithdrawalDto.userId);
   }
+
+  @Post('/withdrawalCancel')
+  @ApiOperation({
+    summary: '사용자 삭제 신청 취소',
+    description: '사용자 삭제 신청 취소',
+  })
+  @ApiCreatedResponse({
+    description: '사용자가 삭제취소를 요청한다.',
+  })
+  async withdrawalCancel(@Query('userId') userId: string) {
+    await this.userWithdrawalTemporaryService.delete(userId);
+    return await this.userService.softDeleteCancel(userId);
+  }
 }

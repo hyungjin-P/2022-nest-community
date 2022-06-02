@@ -133,7 +133,7 @@ export class AuthService {
     } else {
       if (user.deletedAt) {
         throw new HttpException(
-          { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+          { code: 'failure:deleted', message: user.id },
           500,
         );
       }
@@ -265,7 +265,7 @@ export class AuthService {
     } else {
       if (user.deletedAt) {
         throw new HttpException(
-          { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+          { code: 'failure:deleted', message: user.id },
           500,
         );
       }
@@ -307,7 +307,7 @@ export class AuthService {
 
     if (user.deletedAt) {
       throw new HttpException(
-        { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+        { code: 'failure:deleted', message: user.id },
         500,
       );
     }
@@ -433,7 +433,7 @@ export class AuthService {
     } else {
       if (user.deletedAt) {
         throw new HttpException(
-          { code: 'failure:deleted', message: '탈퇴한 회원 입니다.' },
+          { code: 'failure:deleted', message: user.id },
           500,
         );
       }
