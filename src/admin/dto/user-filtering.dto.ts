@@ -44,6 +44,10 @@ export class UserFilteringDto {
 
   @ApiProperty()
   @IsBoolean()
+  isIncludeAgreement: boolean;
+
+  @ApiProperty()
+  @IsBoolean()
   agreementAge: boolean;
 
   @ApiProperty()

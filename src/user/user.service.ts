@@ -387,12 +387,18 @@ export class UserService {
       relations: ['userPicture', 'userBackground'],
       where: {
         emailVerified: true,
+      },
+    };
+
+    if (userFilteringDto.isIncludeAgreement) {
+      searchOptions.where = {
+        ...searchOptions.where,
         agreementAge: userFilteringDto.agreementAge,
         agreementPrivacy: userFilteringDto.agreementPrivacy,
         agreementServiceTerms: userFilteringDto.agreementServiceTerms,
         agreementMarketing: userFilteringDto.agreementMarketing,
-      },
-    };
+      };
+    }
 
     if (userFilteringDto.email) {
       searchOptions.where = {
