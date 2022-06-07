@@ -20,6 +20,9 @@ export class MagazineTagEntity {
   magazineId: string;
 
   @Column()
+  tagId: string;
+
+  @Column()
   nameKo: string;
 
   @Column()

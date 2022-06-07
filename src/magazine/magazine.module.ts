@@ -12,7 +12,6 @@ import { MagazinePictureRepository } from './magazine-picture/magazine_picture.r
 import { MagazineTagRepository } from './magazine-tag/magazine-tag.repository';
 import { MagazineRepository } from './magazine.repository';
 import { MagazineBookmarkService } from './magazine-bookmark/magazine-bookmark.service';
-import { MagazineBookmarkEntity } from './magazine-bookmark/magazine-bookmark.entity';
 import { MagazineBookmarkRepository } from './magazine-bookmark/magazine-bookmark.repository';
 import { PublicMagazineController } from './public/public.magazine.controller';
 import { MagazineBodyEnService } from './magazine-body-en/magazine-body-en.service';
