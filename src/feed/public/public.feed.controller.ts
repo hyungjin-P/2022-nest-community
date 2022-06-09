@@ -225,18 +225,6 @@ export class PublicFeedController {
     return await this.feedService.findAllFeedWithRelationsForUser(userId);
   }
 
-  @Get('/public/feed/findTagList')
-  @ApiOperation({
-    summary: '피드 태그로 검색',
-    description: '피드 태그로 검색',
-  })
-  @ApiCreatedResponse({
-    description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
-  })
-  async findTagList(@Query('name') name: string) {
-    return await this.feedTagService.getTagList(name);
-  }
-
   @Get('/public/feed/findPagesOverTag')
   @ApiOperation({
     summary: '선택된 태그로 피드 페이지 조회',

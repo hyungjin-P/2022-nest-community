@@ -16,25 +16,20 @@ export class MagazineTagService {
     private repository: MagazineTagRepository,
   ) {}
 
-  async createTag(magazineId: string, nameKo: string, nameEn: string) {
-    return await this.repository.save({ magazineId, nameKo, nameEn });
+  async addTag(magazineId: string, tagId: string) {
+    return await this.repository.save({ magazineId, tagId });
   }
 
   async deleteTag(magazineId: string, tagId: string) {
-    return await this.repository.delete({ magazineId: magazineId, id: tagId });
-  }
-
-  async getTagList(name: string) {
-    // 공백 포함 검색 예시
-    // select * from magazine_tag where name_en REGEXP 'DARK[[:space:]]?KNIGHT'
-    // 공백 -> [[:space:]]?
-    name = name.replace(' ', '[[:space:]]?');
-    return await this.repository.findTagList(name);
+    return await this.repository.delete({
+      magazineId: magazineId,
+      tagId: tagId,
+    });
   }
 
   async getMagazineListOverTag(
     options: IPaginationOptions,
-    name: string,
+    tagId: string,
     pageDate: Date,
   ): Promise<Pagination<MagazineTagEntity>> {
     const searchOptions: any = {
@@ -45,10 +40,11 @@ export class MagazineTagService {
         'magazine.writer',
         'magazine.writer.picture',
         'magazine.tags',
+        'magazine.tags.tagInfo',
       ],
       where: (qb) => {
         qb.where({
-          name: name,
+          tagId: tagId,
           magazine: {
             state: 'magazine_state_posting',
             createdAt: LessThanOrEqual(pageDate),
@@ -64,5 +60,10 @@ export class MagazineTagService {
     );
 
     return magazineTagPage;
+  }
+
+  /* 태그가 사용된 갯수 가져오기 */
+  async getTagCount(tagId: string) {
+    return await this.repository.count({ tagId: tagId });
   }
 }

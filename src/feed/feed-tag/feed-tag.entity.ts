@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { IsString } from 'class-validator';
 import { Feed } from '../feed.entity';
+import { TagItem } from '../../tag/tag-item/tag-item.entity';
 
 @Entity('feed_tag', {
   orderBy: {
@@ -22,6 +25,9 @@ export class FeedTag {
   feedId: string;
 
   @Column()
+  tagId: string;
+
+  @Column()
   name: string;
 
   @ManyToOne((type) => Feed, (feed) => feed.tags, {
@@ -35,5 +41,7 @@ export class FeedTag {
   })
   createdAt: Date;
 
-  tagCount: number;
+  @OneToOne((type) => TagItem, (tag) => tag.feedTag)
+  @JoinColumn({ name: 'tag_id' })
+  tagInfo: TagItem;
 }

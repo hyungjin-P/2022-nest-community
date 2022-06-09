@@ -56,7 +56,7 @@ export class FeedService {
     pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
-      relations: ['writer', 'writer.picture', 'tags'],
+      relations: ['writer', 'writer.picture', 'tags', 'tags.tagInfo'],
       where: {
         state: 'feed_state_posting',
         sortedAt: LessThanOrEqual(pageDate),
@@ -95,7 +95,14 @@ export class FeedService {
    */
   async findByPageAll(options: IPaginationOptions): Promise<Pagination<any>> {
     const searchOptions: any = {
-      relations: ['writer', 'writer.picture', 'tags', 'pictures', 'likeUsers'],
+      relations: [
+        'writer',
+        'writer.picture',
+        'tags',
+        'tags.tagInfo',
+        'pictures',
+        'likeUsers',
+      ],
       where: {
         state: 'feed_state_posting',
       },
@@ -125,7 +132,7 @@ export class FeedService {
     pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
-      relations: ['writer', 'writer.picture', 'tags'],
+      relations: ['writer', 'writer.picture', 'tags', 'tags.tagInfo'],
       where: {
         state: 'feed_state_posting',
         sortedAt: LessThanOrEqual(pageDate),
@@ -197,7 +204,13 @@ export class FeedService {
       join: {
         alias: 'feed',
       },
-      relations: ['pictures', 'writer', 'writer.picture', 'tags'],
+      relations: [
+        'pictures',
+        'writer',
+        'writer.picture',
+        'tags',
+        'tags.tagInfo',
+      ],
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
@@ -273,7 +286,7 @@ export class FeedService {
       join: {
         alias: 'feed',
       },
-      relations: ['writer', 'writer.picture', 'tags'],
+      relations: ['writer', 'writer.picture', 'tags', 'tags.tagInfo'],
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
@@ -398,7 +411,7 @@ export class FeedService {
     const feed = await this.feedRepository.findOne({ id: feedId });
 
     const searchOptions: any = {
-      relations: ['writer', 'writer.picture', 'tags'],
+      relations: ['writer', 'writer.picture', 'tags', 'tags.tagInfo'],
       where: (qb) => {
         qb.where({
           state: 'feed_state_posting',
@@ -441,7 +454,7 @@ export class FeedService {
         userId: userId,
         state: 'feed_state_pending',
       },
-      { relations: ['pictures', 'tags'] },
+      { relations: ['pictures', 'tags', 'tags.tagInfo'] },
     );
 
     // 피드 재생성 여부 확인
@@ -468,7 +481,7 @@ export class FeedService {
       feedRows = await this.feedRepository.save({ userId: userId });
       feedRows = await this.feedRepository.findOne(
         { id: feedRows.id },
-        { relations: ['pictures', 'tags'] },
+        { relations: ['pictures', 'tags', 'tags.tagInfo'] },
       );
     }
 
@@ -795,6 +808,7 @@ export class FeedService {
         'pictures',
         'likes',
         'tags',
+        'tags.tagInfo',
         'comments',
         'bookmarks',
         'writer',
@@ -830,6 +844,7 @@ export class FeedService {
         'pictures',
         'likes',
         'tags',
+        'tags.tagInfo',
         'comments',
         'bookmarks',
         'writer',
@@ -895,6 +910,7 @@ export class FeedService {
         'pictures',
         'likes',
         'tags',
+        'tags.tagInfo',
         'comments',
         'bookmarks',
         'writer',
@@ -958,6 +974,7 @@ export class FeedService {
         'pictures',
         'likes',
         'tags',
+        'tags.tagInfo',
         'comments',
         'bookmarks',
         'writer',

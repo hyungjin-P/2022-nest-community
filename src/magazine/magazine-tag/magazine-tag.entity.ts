@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Magazine } from '../magazine.entity';
+import { TagItem } from '../../tag/tag-item/tag-item.entity';
 
 @Entity('magazine_tag', {
   orderBy: {
@@ -33,4 +36,8 @@ export class MagazineTagEntity {
 
   @ManyToOne((type) => Magazine, (magazine) => magazine.tags)
   magazine: Magazine;
+
+  @OneToOne((type) => TagItem, (tag) => tag.magazineTag)
+  @JoinColumn({ name: 'tag_id' })
+  tagInfo: TagItem;
 }

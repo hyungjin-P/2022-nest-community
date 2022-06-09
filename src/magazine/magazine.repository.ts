@@ -71,6 +71,7 @@ export class MagazineRepository extends Repository<Magazine> {
       .leftJoinAndSelect('magazine.writer', 'user')
       .leftJoinAndSelect('user.picture', 'userPicture')
       .leftJoinAndSelect('magazine.tags', 'tags')
+      .leftJoinAndSelect('tags.tagInfo', 'tagInfo')
       .where('magazine.state = :state', { state: 'magazine_state_posting' })
       .andWhere('magazine.top_view_number is not null')
       .orderBy({

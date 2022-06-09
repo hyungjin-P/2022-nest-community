@@ -34,6 +34,7 @@ export class MagazineBookmarkService {
         'magazine.writer',
         'magazine.writer.picture',
         'magazine.tags',
+        'magazine.tags.tagInfo',
       ],
       where: {
         userId: userId,

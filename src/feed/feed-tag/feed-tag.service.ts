@@ -12,20 +12,26 @@ export class FeedTagService {
     private feedTagRepository: FeedTagRepository,
   ) {}
 
-  async createFeedTag(feedId: string, name: string): Promise<FeedTag> {
+  async addFeedTag(feedId: string, tagId: string): Promise<FeedTag> {
+    // tag id or tag name
+    return await this.feedTagRepository.save({ feedId: feedId, tagId: tagId });
+  }
+  async deleteFeedTag(feedId: string, tagId: string) {
+    return await this.feedTagRepository.delete({
+      feedId: feedId,
+      tagId: tagId,
+    });
+  }
+
+  /* 태그 업데이트시 삭제, 그전까지 사용. */
+  async addFeedTagNameOnly(feedId: string, name: string) {
     return await this.feedTagRepository.save({ feedId: feedId, name: name });
   }
-
-  async deleteFeedTag(feedId: string, tagId: string) {
-    return await this.feedTagRepository.delete({ feedId: feedId, id: tagId });
-  }
-
-  async getTagList(name: string) {
-    // 공백 포함 검색 예시
-    // select * from magazine_tag where name_en REGEXP 'DARK[[:space:]]?KNIGHT'
-    // 공백 -> [[:space:]]?
-    name = name.replace(' ', '[[:space:]]?');
-    return await this.feedTagRepository.findTagList(name);
+  async deleteFeedTagNameOnly(feedId: string, tagId: string) {
+    return await this.feedTagRepository.delete({
+      feedId: feedId,
+      id: tagId,
+    });
   }
 
   async getFeedListOverTag(
@@ -34,7 +40,13 @@ export class FeedTagService {
     pageDate: Date,
   ) {
     const searchOptions: any = {
-      relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
+      relations: [
+        'feed',
+        'feed.writer',
+        'feed.writer.picture',
+        'feed.tags',
+        'feed.tags.tagInfo',
+      ],
       where: {
         name: name,
         feed: {
@@ -52,5 +64,10 @@ export class FeedTagService {
     );
 
     return feedTagPage;
+  }
+
+  /* 태그가 사용된 갯수 가져오기 */
+  async getTagCount(tagId: string) {
+    return await this.feedTagRepository.count({ tagId: tagId });
   }
 }

@@ -137,12 +137,11 @@ export class MagazineController {
     summary: '매거진 태그 추가',
     description: '매거진 태그 추가',
   })
-  async createMagazineTag(
+  async addMagazineTag(
     @Query('magazineId') magazineId: string,
-    @Query('nameKo') nameKo: string,
-    @Query('nameEn') nameEn: string,
+    @Query('tagId') tagId: string,
   ): Promise<MagazineTagEntity> {
-    return await this.magazineTagService.createTag(magazineId, nameKo, nameEn);
+    return await this.magazineTagService.addTag(magazineId, tagId);
   }
 
   @Delete('/deleteTag')

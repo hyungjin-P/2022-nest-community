@@ -57,7 +57,14 @@ export class MagazineService {
     pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
-      relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
+      relations: [
+        'en',
+        'ko',
+        'writer',
+        'writer.picture',
+        'tags',
+        'tags.tagInfo',
+      ],
       where: (qb) => {
         qb.where({
           state: 'magazine_state_posting',
@@ -106,7 +113,14 @@ export class MagazineService {
     pageDate: Date,
   ): Promise<Pagination<any>> {
     const searchOptions: any = {
-      relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
+      relations: [
+        'en',
+        'ko',
+        'writer',
+        'writer.picture',
+        'tags',
+        'tags.tagInfo',
+      ],
       where: (qb) => {
         qb.where({
           state: 'magazine_state_posting',
@@ -216,7 +230,14 @@ export class MagazineService {
       join: {
         alias: 'magazine',
       },
-      relations: ['en', 'ko', 'writer', 'writer.picture', 'tags'],
+      relations: [
+        'en',
+        'ko',
+        'writer',
+        'writer.picture',
+        'tags',
+        'tags.tagInfo',
+      ],
       where: (qb) => {
         qb.where({
           state: 'magazine_state_posting',

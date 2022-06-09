@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { MagazineTagEntity } from '../../magazine/magazine-tag/magazine-tag.entity';
+import { FeedTag } from '../../feed/feed-tag/feed-tag.entity';
 
 @Entity('tag_item')
 export class TagItem {
@@ -10,4 +12,13 @@ export class TagItem {
 
   @Column()
   nameEn: string;
+
+  feedCount: number;
+  magazineCount: number;
+
+  @OneToOne((type) => MagazineTagEntity, (magazineTag) => magazineTag.tagInfo)
+  magazineTag: MagazineTagEntity;
+
+  @OneToOne((type) => FeedTag, (feedTag) => feedTag.tagInfo)
+  feedTag: MagazineTagEntity;
 }

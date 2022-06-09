@@ -63,6 +63,7 @@ export class FeedRepository extends Repository<Feed> {
       .leftJoinAndSelect('user.picture', 'userPicture')
       .leftJoinAndSelect('feed.pictures', 'feedPicture')
       .leftJoinAndSelect('feed.tags', 'feedTag')
+      .leftJoinAndSelect('feedTag.tagInfo', 'tagInfo')
       // .leftJoinAndSelect('feed.likeUsers', 'likeUsers')
       // .leftJoinAndSelect('likeUsers.user', 'likeUser')
       // .leftJoinAndSelect('likeUser.picture', 'likeUserPicture')

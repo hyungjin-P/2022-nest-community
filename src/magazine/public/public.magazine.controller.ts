@@ -59,18 +59,6 @@ export class PublicMagazineController {
     );
   }
 
-  @Get('/public/magazine/findTagList')
-  @ApiOperation({
-    summary: '태그로 검색',
-    description: '태그로 검색',
-  })
-  @ApiCreatedResponse({
-    description: '태그 검색시, 적힌 글자에 따른 비슷한 태그 리스트를 가져온다.',
-  })
-  async findTagList(@Query('name') name: string) {
-    return await this.magazineTagService.getTagList(name);
-  }
-
   @Get('/public/magazine/findPagesOverTag')
   @ApiOperation({
     summary: '선택된 태그로 매거진 페이지 조회',
@@ -83,12 +71,12 @@ export class PublicMagazineController {
   async findFeedPagesOverTag(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('name') name: string,
+    @Query('tagId') tagId: string,
     @Query('pageDate') pageDate: Date,
   ): Promise<Pagination<MagazineTagEntity>> {
     return await this.magazineTagService.getMagazineListOverTag(
       { page: page, limit: limit, route: '/public/feed/findPagesOverTag' },
-      name,
+      tagId,
       pageDate,
     );
   }

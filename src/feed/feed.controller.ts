@@ -185,9 +185,9 @@ export class FeedController {
   })
   async createFeedTag(
     @Query('feedId') feedId: string,
-    @Query('name') name: string,
+    @Query('tagId') tagId: string,
   ): Promise<FeedTag> {
-    return await this.feedTagService.createFeedTag(feedId, name);
+    return await this.feedTagService.addFeedTag(feedId, tagId);
   }
 
   @Delete('/deleteFeedTag')
@@ -200,6 +200,31 @@ export class FeedController {
     @Query('tagId') tagId: string,
   ) {
     return await this.feedTagService.deleteFeedTag(feedId, tagId);
+  }
+
+  /* 태그 업데이트 이후 삭제, 기존 태그 추가, 삭제 이벤트 */
+  @Post('/addFeedTagNameOnly')
+  @ApiOperation({
+    summary: '피드 태그 추가',
+    description: '피드 태그 추가',
+  })
+  async createFeedTagNameOnly(
+    @Query('feedId') feedId: string,
+    @Query('name') name: string,
+  ): Promise<FeedTag> {
+    return await this.feedTagService.addFeedTagNameOnly(feedId, name);
+  }
+
+  @Delete('/deleteFeedTagNameOnly')
+  @ApiOperation({
+    summary: '피드 태그 삭제',
+    description: '피드 태그 삭제',
+  })
+  async deleteFeedTagNameOnly(
+    @Query('feedId') feedId: string,
+    @Query('tagId') tagId: string,
+  ) {
+    return await this.feedTagService.deleteFeedTagNameOnly(feedId, tagId);
   }
 
   @Get('/like/findPages')
