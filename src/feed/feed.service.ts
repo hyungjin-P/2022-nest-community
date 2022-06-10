@@ -647,32 +647,31 @@ export class FeedService {
 
   /**
    * 마이페이지 피드 메인 조회
+   * @param options
    * @param userId
-   * @param limit
+   * @param pageDate
    */
   async findMyPageFeedList(
+    options: IPaginationOptions,
     userId: string,
-    limit: number,
-  ): Promise<MypageFeedMainDto> {
-    const feedList: Feed[] = await this.feedRepository
-      .createQueryBuilder('feed')
-      .where(
-        'feed.user_id = :userId and feed.state = :state and feed.deleted_at IS NULL',
-        {
-          userId,
-          state: 'feed_state_posting',
-        },
-      )
-      .orderBy('feed.created_at', 'DESC')
-      .limit(limit)
-      .getMany();
+    pageDate: Date,
+  ): Promise<Pagination<Feed>> {
+    const searchOptions: any = {
+      where: {
+        userId: userId,
+        state: 'feed_state_posting',
+        sortedAt: LessThanOrEqual(pageDate),
+        deletedAt: IsNull(),
+      },
+      order: {
+        sortedAt: 'DESC',
+      },
+    };
 
-    const result: MypageFeedMainDto = new MypageFeedMainDto();
-
-    // 결과
-    result.feedList = await this.findFeedTagAndCommentAndLikeAndBookmark(
-      feedList,
-      userId,
+    const feedPage = await paginate<Feed>(
+      this.feedRepository,
+      options,
+      searchOptions,
     );
 
     const totalCount: number = await this.feedRepository.count({
@@ -680,13 +679,13 @@ export class FeedService {
     });
 
     // 피드 메인에 출력되는 개수 외 카운트
-    if (feedList.length >= limit) {
-      result.otherCount = totalCount - feedList.length;
+    if (feedPage.items.length >= options.limit) {
+      feedPage.meta.otherCount = totalCount - feedPage.items.length;
     }
 
-    result.totalCount = totalCount;
+    feedPage.meta.totalCount = totalCount;
 
-    return result;
+    return feedPage;
   }
 
   /**

@@ -317,10 +317,20 @@ export class FeedController {
     description: '마이페이지내 피드 메인에 표시되는 피드를 조회한다.',
   })
   async findMyPageFeed(
-    @Query('userId') userId: string,
+    @Query('page') page: number,
     @Query('limit') limit: number,
-  ): Promise<MypageFeedMainDto> {
-    return await this.feedService.findMyPageFeedList(userId, limit);
+    @Query('userId') userId: string,
+    @Query('pageDate') pageDate: Date,
+  ): Promise<Pagination<Feed>> {
+    return await this.feedService.findMyPageFeedList(
+      {
+        page,
+        limit,
+        route: '/feed/findMypageFeed',
+      },
+      userId,
+      pageDate,
+    );
   }
 
   @Delete('/deleteAllBookmarkByUserId')
