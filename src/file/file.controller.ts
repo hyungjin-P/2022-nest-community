@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Post,
   Query,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileUploadDto } from './dto/file.upload.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { FileDeleteDto } from './dto/file.delete.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('파일')
 @Controller('file')
@@ -59,5 +62,14 @@ export class FileController {
     fileInfo.tag = 'user-background';
     fileInfo.url = fileUrl;
     await this.fileService.deleteFile(fileInfo);
+  }
+
+  @Post('/imageUpload')
+  @UseInterceptors(FileInterceptor('image_file'))
+  async ckeditorImageUploader(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<any> {
+    console.log('fileInfo => ', file);
+    return file;
   }
 }

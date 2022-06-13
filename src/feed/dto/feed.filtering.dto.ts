@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 
 export class FeedFilteringDto {
   @ApiProperty()
@@ -21,4 +21,24 @@ export class FeedFilteringDto {
   @ApiProperty()
   @IsString()
   email: string;
+
+  @ApiProperty()
+  @IsString()
+  isIncludeDate: boolean;
+
+  @ApiProperty()
+  @IsDate()
+  from: Date;
+
+  @ApiProperty()
+  @IsDate()
+  to: Date;
+
+  @ApiProperty()
+  @IsString()
+  sortedColumn: string;
+
+  @ApiProperty()
+  @IsString()
+  sortedDirection: string;
 }

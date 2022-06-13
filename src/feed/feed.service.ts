@@ -26,7 +26,7 @@ import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
-import { ILike, IsNull, LessThanOrEqual } from 'typeorm';
+import { Between, ILike, IsNull, LessThanOrEqual } from 'typeorm';
 import { FeedFilteringDto } from './dto/feed.filtering.dto';
 
 @Injectable()
@@ -963,6 +963,7 @@ export class FeedService {
   /**
    * 피드 필터링 검색
    * @param feedFilteringDto
+   * @param pageOptions
    */
   async findFilteredFeedPages(
     feedFilteringDto: FeedFilteringDto,
@@ -1001,6 +1002,13 @@ export class FeedService {
       searchOptions.where.writer = {
         ...searchOptions.where.writer,
         nickname: ILike(`%${feedFilteringDto.nickname}%`),
+      };
+    }
+
+    if (feedFilteringDto.isIncludeDate) {
+      searchOptions.where = {
+        ...searchOptions.where,
+        createdAt: Between(feedFilteringDto.from, feedFilteringDto.to),
       };
     }
 
