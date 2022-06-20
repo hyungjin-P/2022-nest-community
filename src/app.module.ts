@@ -13,7 +13,7 @@ import { MagazineModule } from './magazine/magazine.module';
 // import { TypeOrmConfigService } from './configs/type-orm-config.service';
 import { typeORMConfig } from './configs/typeorm.config';
 import { AdminModule } from './admin/admin.module';
-import { TagModule } from './tag/tag.module';
+import { TopicModule } from './topic/topic.module';
 
 const stage = 'development';
 // const stage = 'production';
@@ -36,7 +36,7 @@ const stage = 'development';
     AuthModule,
     MagazineModule,
     AdminModule,
-    TagModule,
+    TopicModule,
   ],
   controllers: [AppController],
   providers: [AppService],

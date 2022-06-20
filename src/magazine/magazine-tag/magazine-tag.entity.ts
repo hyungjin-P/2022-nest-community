@@ -2,13 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Magazine } from '../magazine.entity';
-import { TagItem } from '../../tag/tag-item/tag-item.entity';
 
 @Entity('magazine_tag', {
   orderBy: {

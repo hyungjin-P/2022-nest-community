@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { IsString } from 'class-validator';
 import { Feed } from '../feed.entity';
-import { TagItem } from '../../tag/tag-item/tag-item.entity';
 
 @Entity('feed_tag', {
   orderBy: {

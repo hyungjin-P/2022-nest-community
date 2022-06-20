@@ -28,6 +28,8 @@ import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { UserPictureRepository } from '../user/user-picture/user-picture.repository';
 import { FindFeedRepository } from './feed-dao/find-feed.repository';
+import { FeedTopicService } from './feed-topic/feed-topic.service';
+import { FeedTopicRepository } from './feed-topic/feed-topic.repository';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { FindFeedRepository } from './feed-dao/find-feed.repository';
       FeedLikeRepository,
       FeedPictureRepository,
       FeedTagRepository,
+      FeedTopicRepository,
       FollowRepository,
       FindFeedRepository,
       UserRepository,
@@ -61,6 +64,7 @@ import { FindFeedRepository } from './feed-dao/find-feed.repository';
     FeedTagService,
     FollowService,
     UserService,
+    FeedTopicService,
   ],
   exports: [FeedService],
 })
