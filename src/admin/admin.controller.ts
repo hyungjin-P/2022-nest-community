@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Post,
@@ -91,5 +92,17 @@ export class AdminController {
     }
 
     return await this.adminService.saveAdminUser(adminUser);
+  }
+
+  @Delete('/deleteAdminUser')
+  @ApiOperation({
+    summary: '키핑 운영자 추가/수정',
+    description: '키핑 운영자 추가/수정',
+  })
+  @ApiCreatedResponse({
+    description: '키핑 운영자 추가/수정',
+  })
+  async deleteAdminUser(@Query('id') id: string): Promise<void> {
+    await this.adminService.deleteAdminUse(id);
   }
 }

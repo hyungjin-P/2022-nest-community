@@ -139,6 +139,19 @@ export class AdminService {
    * @param adminUser
    */
   async saveAdminUser(adminUser: AdminUser): Promise<AdminUser> {
+    if (!adminUser.id) {
+      const adminUserCount: number = await this.adminUserRepository.count({
+        where: { userId: adminUser.userId },
+      });
+
+      if (adminUserCount > 0) {
+        throw new HttpException(
+          { code: 'failure', message: '이미 연동된 사용자가 존재합니다.' },
+          500,
+        );
+      }
+    }
+
     const savedAdminUser: AdminUser = await this.adminUserRepository.save(
       adminUser,
     );
@@ -147,5 +160,24 @@ export class AdminService {
       relations: ['user', 'codeAuthority'],
       where: { id: savedAdminUser.id },
     });
+  }
+
+  /**
+   * 관리자 연동 해제
+   * @param id
+   */
+  async deleteAdminUse(id: string): Promise<void> {
+    const removeTargetUser: AdminUser = await this.adminUserRepository.findOne({
+      where: { id },
+    });
+
+    if (!removeTargetUser) {
+      throw new HttpException(
+        { code: 'failure', message: '연동 해제할 사용자가 존재하지 않습니다.' },
+        500,
+      );
+    }
+
+    await this.adminUserRepository.remove(removeTargetUser);
   }
 }
