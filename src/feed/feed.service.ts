@@ -970,15 +970,7 @@ export class FeedService {
     pageOptions: IPaginationOptions,
   ): Promise<Pagination<FindFeedEntity>> {
     const searchOptions: any = {
-      relations: [
-        'pictures',
-        'likes',
-        'tags',
-        'tags.tagInfo',
-        'comments',
-        'bookmarks',
-        'writer',
-      ],
+      relations: ['pictures', 'likes', 'comments', 'bookmarks', 'writer'],
       where: {
         state: 'feed_state_posting',
       },

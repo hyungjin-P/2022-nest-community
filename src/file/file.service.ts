@@ -181,4 +181,51 @@ export class FileService {
     await this.fileTagRepository.delete(tag.id);
     await this.fileRepository.delete({ url: file.url });
   }
+
+  /**
+   * 에디터 파일 업로드
+   **/
+  async editorFileUpload(file: Express.Multer.File): Promise<string> {
+    AWS.config.update({
+      accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
+      region: this.configService.get('AWS_SES_REGION'),
+    });
+    const s3 = new AWS.S3();
+
+    const domainName = `public.keeping.link`;
+
+    const path = '/editor/temp';
+
+    // 작성 중, 작성 완료 구분
+    const fileName = uuidv4();
+    let key = `${path}/${fileName}`;
+
+    key = key.replace(/\/\//gi, '/');
+    key = key.slice(1, key.length);
+
+    const param = {
+      Bucket: domainName,
+      Body: file.buffer,
+      Key: key,
+    };
+
+    const resultUrl = `https://${domainName}/${key}`;
+
+    try {
+      // s3에 저장
+      const stored = await s3.upload(param).promise();
+      console.log('stored file : ', stored);
+    } catch (e) {
+      throw new HttpException(
+        {
+          error: e,
+          code: 'failure',
+          message: '파일 저장에 실패했습니다.',
+        },
+        500,
+      );
+    }
+    return resultUrl;
+  }
 }

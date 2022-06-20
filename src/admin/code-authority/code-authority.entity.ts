@@ -1,9 +1,9 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { AdminUser } from "../admin-user/admin-user.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AdminUser } from '../admin-user/admin-user.entity';
 
-@Entity("code_authority")
+@Entity('code_authority')
 export class CodeAuthority {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()

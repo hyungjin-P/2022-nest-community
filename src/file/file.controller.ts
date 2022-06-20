@@ -70,6 +70,16 @@ export class FileController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<any> {
     console.log('fileInfo => ', file);
-    return file;
+    return {
+      url: await this.fileService.editorFileUpload(file),
+    };
+  }
+
+  @Post('importEditorImageFile')
+  @UseInterceptors(FileInterceptor('image_file'))
+  async importEditorImageFile(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+    console.log('editor file upload');
   }
 }

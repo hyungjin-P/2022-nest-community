@@ -14,7 +14,6 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { FindFeedEntity } from '../feed/feed-dao/find-feed.entity';
 
 @Injectable()
 export class AdminService {
@@ -25,14 +24,33 @@ export class AdminService {
     private readonly authService: AuthService,
   ) {}
 
-  async getUser(): Promise<User> {
-    const user: User = await this.userService.findById(
-      '5f40cd14-19fb-4bf3-9b44-6c5721eea902',
-    );
+  /**
+   * 관리자 1건 조회
+   * @param adminId
+   */
+  async getUser(adminId: string): Promise<AdminUser> {
+    const adminUser: AdminUser = await this.adminUserRepository.findOne({
+      relations: ['user', 'codeAuthority'],
+      where: { id: adminId },
+    });
 
-    return user;
+    if (!adminUser) {
+      throw new HttpException(
+        {
+          code: 'failure',
+          message: '조회결과가 없습니다.',
+        },
+        500,
+      );
+    }
+
+    return adminUser;
   }
 
+  /**
+   * 관리자 로그인
+   * @param adminSignInDto
+   */
   async signIn(adminSignInDto: AdminSignInDto): Promise<AdminUser> {
     const userInfo: User = await this.authService.signIn({
       providedId: adminSignInDto.email,
@@ -66,6 +84,11 @@ export class AdminService {
     return adminUser;
   }
 
+  /**
+   * 관리자 목록 조회
+   * @param userFilteringDto
+   * @param pageOptions
+   */
   async findAdminUserPages(
     userFilteringDto: UserFilteringDto,
     pageOptions: IPaginationOptions,
@@ -102,5 +125,27 @@ export class AdminService {
       pageOptions,
       searchOptions,
     );
+  }
+
+  /**
+   * 모든 권한 조회
+   */
+  async findAllCodeAuthority(): Promise<CodeAuthority[]> {
+    return await this.codeAuthorityRepository.find();
+  }
+
+  /**
+   * 운영자 추가/수정
+   * @param adminUser
+   */
+  async saveAdminUser(adminUser: AdminUser): Promise<AdminUser> {
+    const savedAdminUser: AdminUser = await this.adminUserRepository.save(
+      adminUser,
+    );
+
+    return await this.adminUserRepository.findOne({
+      relations: ['user', 'codeAuthority'],
+      where: { id: savedAdminUser.id },
+    });
   }
 }

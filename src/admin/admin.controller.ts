@@ -1,19 +1,25 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
-import { User } from '../user/user.entity';
 import { AdminUser } from './admin-user/admin-user.entity';
 import { AdminSignInDto } from './dto/admin-signIn.dto';
-import { FeedFilteringDto } from '../feed/dto/feed.filtering.dto';
 import { UserFilteringDto } from './dto/user-filtering.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { CodeAuthority } from './code-authority/code-authority.entity';
 
 @ApiTags('관리자')
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get('/getUser')
+  @Get('/getAdminUser')
   @ApiOperation({
     summary: '관리자 조회',
     description: '관리자 조회',
@@ -21,8 +27,8 @@ export class AdminController {
   @ApiCreatedResponse({
     description: '관리자의 정보를 1건 조회한다.',
   })
-  async getAdminUser(): Promise<User> {
-    return await this.adminService.getUser();
+  async getAdminUser(@Query('adminId') adminId: string): Promise<AdminUser> {
+    return await this.adminService.getUser(adminId);
   }
 
   @Post('/signIn')
@@ -54,5 +60,36 @@ export class AdminController {
       limit: userFilteringDto.limit,
       route: '/admin/findPages',
     });
+  }
+
+  @Get('/findAllCodeAuthority')
+  @ApiOperation({
+    summary: '권한 코드 조회',
+    description: '권한 코드 조회',
+  })
+  @ApiCreatedResponse({
+    description: '권한 코드를 조회한다.',
+  })
+  async findAllCodeAuthority(): Promise<CodeAuthority[]> {
+    return this.adminService.findAllCodeAuthority();
+  }
+
+  @Post('/saveAdminUser')
+  @ApiOperation({
+    summary: '키핑 운영자 추가/수정',
+    description: '키핑 운영자 추가/수정',
+  })
+  @ApiCreatedResponse({
+    description: '키핑 운영자 추가/수정',
+  })
+  async saveAdminUser(@Body() adminUser: AdminUser): Promise<AdminUser> {
+    if (!adminUser) {
+      throw new HttpException(
+        { code: 'failure', message: '잘못된 요청 입니다.' },
+        500,
+      );
+    }
+
+    return await this.adminService.saveAdminUser(adminUser);
   }
 }
