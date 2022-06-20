@@ -139,9 +139,10 @@ export class MagazineController {
   })
   async addMagazineTag(
     @Query('magazineId') magazineId: string,
-    @Query('tagId') tagId: string,
+    @Query('nameKo') nameKo: string,
+    @Query('nameEn') nameEn: string,
   ): Promise<MagazineTagEntity> {
-    return await this.magazineTagService.addTag(magazineId, tagId);
+    return await this.magazineTagService.addTag(magazineId, nameKo, nameEn);
   }
 
   @Delete('/deleteTag')

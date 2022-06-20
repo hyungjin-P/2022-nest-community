@@ -25,9 +25,6 @@ export class FeedTag {
   feedId: string;
 
   @Column()
-  tagId: string;
-
-  @Column()
   name: string;
 
   @ManyToOne((type) => Feed, (feed) => feed.tags, {
@@ -40,8 +37,4 @@ export class FeedTag {
     default: () => 'CURRENT_TIMESTAMP()',
   })
   createdAt: Date;
-
-  @OneToOne((type) => TagItem, (tag) => tag.feedTag)
-  @JoinColumn({ name: 'tag_id' })
-  tagInfo: TagItem;
 }

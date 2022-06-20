@@ -49,13 +49,7 @@ export class FeedBookmarkService {
 
   async getFeedListOverBookmark(options: IPaginationOptions, userId: string) {
     const searchOptions: FindConditions<any> = {
-      relations: [
-        'feed',
-        'feed.writer',
-        'feed.writer.picture',
-        'feed.tags',
-        'feed.tags.tagInfo',
-      ],
+      relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
       where: {
         userId: userId,
         feed: {

@@ -185,9 +185,9 @@ export class FeedController {
   })
   async createFeedTag(
     @Query('feedId') feedId: string,
-    @Query('tagId') tagId: string,
+    @Query('name') name: string,
   ): Promise<FeedTag> {
-    return await this.feedTagService.addFeedTag(feedId, tagId);
+    return await this.feedTagService.addFeedTag(feedId, name);
   }
 
   @Delete('/deleteFeedTag')

@@ -15,10 +15,4 @@ export class TagItem {
 
   feedCount: number;
   magazineCount: number;
-
-  @OneToOne((type) => MagazineTagEntity, (magazineTag) => magazineTag.tagInfo)
-  magazineTag: MagazineTagEntity;
-
-  @OneToOne((type) => FeedTag, (feedTag) => feedTag.tagInfo)
-  feedTag: MagazineTagEntity;
 }

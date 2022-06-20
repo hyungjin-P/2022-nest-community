@@ -16,14 +16,14 @@ export class MagazineTagService {
     private repository: MagazineTagRepository,
   ) {}
 
-  async addTag(magazineId: string, tagId: string) {
-    return await this.repository.save({ magazineId, tagId });
+  async addTag(magazineId: string, nameKo: string, nameEn: string) {
+    return await this.repository.save({ magazineId, nameKo, nameEn });
   }
 
   async deleteTag(magazineId: string, tagId: string) {
     return await this.repository.delete({
       magazineId: magazineId,
-      tagId: tagId,
+      id: tagId,
     });
   }
 
@@ -40,7 +40,6 @@ export class MagazineTagService {
         'magazine.writer',
         'magazine.writer.picture',
         'magazine.tags',
-        'magazine.tags.tagInfo',
       ],
       where: (qb) => {
         qb.where({
@@ -64,6 +63,6 @@ export class MagazineTagService {
 
   /* 태그가 사용된 갯수 가져오기 */
   async getTagCount(tagId: string) {
-    return await this.repository.count({ tagId: tagId });
+    return await this.repository.count({ id: tagId });
   }
 }
