@@ -12,14 +12,14 @@ export class FeedTagService {
     private feedTagRepository: FeedTagRepository,
   ) {}
 
-  async addFeedTag(feedId: string, tagId: string): Promise<FeedTag> {
+  async addFeedTag(feedId: string, name: string): Promise<FeedTag> {
     // tag id or tag name
-    return await this.feedTagRepository.save({ feedId: feedId, tagId: tagId });
+    return await this.feedTagRepository.save({ feedId: feedId, name: name });
   }
   async deleteFeedTag(feedId: string, tagId: string) {
     return await this.feedTagRepository.delete({
       feedId: feedId,
-      tagId: tagId,
+      id: tagId,
     });
   }
 
@@ -62,6 +62,6 @@ export class FeedTagService {
 
   /* 태그가 사용된 갯수 가져오기 */
   async getTagCount(tagId: string) {
-    return await this.feedTagRepository.count({ tagId: tagId });
+    return await this.feedTagRepository.count({ id: tagId });
   }
 }

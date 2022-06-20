@@ -25,9 +25,6 @@ export class FeedTag {
   feedId: string;
 
   @Column()
-  tagId: string;
-
-  @Column()
   name: string;
 
   @ManyToOne((type) => Feed, (feed) => feed.tags, {
