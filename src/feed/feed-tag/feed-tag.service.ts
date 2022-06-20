@@ -40,13 +40,7 @@ export class FeedTagService {
     pageDate: Date,
   ) {
     const searchOptions: any = {
-      relations: [
-        'feed',
-        'feed.writer',
-        'feed.writer.picture',
-        'feed.tags',
-        'feed.tags.tagInfo',
-      ],
+      relations: ['feed', 'feed.writer', 'feed.writer.picture', 'feed.tags'],
       where: {
         name: name,
         feed: {

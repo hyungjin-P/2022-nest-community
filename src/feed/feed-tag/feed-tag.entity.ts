@@ -40,8 +40,4 @@ export class FeedTag {
     default: () => 'CURRENT_TIMESTAMP()',
   })
   createdAt: Date;
-
-  @OneToOne((type) => TagItem, (tag) => tag.feedTag)
-  @JoinColumn({ name: 'tag_id' })
-  tagInfo: TagItem;
 }

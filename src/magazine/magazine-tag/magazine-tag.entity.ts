@@ -36,8 +36,4 @@ export class MagazineTagEntity {
 
   @ManyToOne((type) => Magazine, (magazine) => magazine.tags)
   magazine: Magazine;
-
-  @OneToOne((type) => TagItem, (tag) => tag.magazineTag)
-  @JoinColumn({ name: 'tag_id' })
-  tagInfo: TagItem;
 }

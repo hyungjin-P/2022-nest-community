@@ -40,7 +40,6 @@ export class MagazineTagService {
         'magazine.writer',
         'magazine.writer.picture',
         'magazine.tags',
-        'magazine.tags.tagInfo',
       ],
       where: (qb) => {
         qb.where({
