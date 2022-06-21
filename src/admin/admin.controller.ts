@@ -14,6 +14,7 @@ import { AdminSignInDto } from './dto/admin-signIn.dto';
 import { UserFilteringDto } from './dto/user-filtering.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { CodeAuthority } from './code-authority/code-authority.entity';
+import { AdminMenu } from './admin-menus/admin-menu.entity';
 
 @ApiTags('관리자')
 @Controller('admin')
@@ -90,7 +91,6 @@ export class AdminController {
         500,
       );
     }
-
     return await this.adminService.saveAdminUser(adminUser);
   }
 
@@ -104,5 +104,17 @@ export class AdminController {
   })
   async deleteAdminUser(@Query('id') id: string): Promise<void> {
     await this.adminService.deleteAdminUse(id);
+  }
+
+  @Get('/findAllAdminMenus')
+  @ApiOperation({
+    summary: '관리자 메뉴 전체 조회',
+    description: '관리자 메뉴 전체 조회',
+  })
+  @ApiCreatedResponse({
+    description: '관리자 메뉴 전체 조회',
+  })
+  async findAllAdminMenus(): Promise<AdminMenu[]> {
+    return await this.adminService.findAllAdminMenus();
   }
 }

@@ -6,10 +6,19 @@ import { AdminUserRepository } from './admin-user/admin-user.repository';
 import { CodeAuthorityRepository } from './code-authority/code-authority.repository';
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { AdminMenuRepository } from './admin-menus/admin-menu-repository';
+import { AuthorityMenusRepository } from './authority-menus/authority-menus.repository';
+import { BbsBoardRepository } from './bbs-board/bbs-board.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminUserRepository, CodeAuthorityRepository]),
+    TypeOrmModule.forFeature([
+      AdminUserRepository,
+      CodeAuthorityRepository,
+      AdminMenuRepository,
+      AuthorityMenusRepository,
+      BbsBoardRepository,
+    ]),
     UserModule,
     AuthModule,
   ],

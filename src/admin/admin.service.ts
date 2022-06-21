@@ -14,12 +14,17 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { AuthorityMenusRepository } from './authority-menus/authority-menus.repository';
+import { AdminMenu } from './admin-menus/admin-menu.entity';
+import { AdminMenuRepository } from './admin-menus/admin-menu-repository';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly adminUserRepository: AdminUserRepository,
     private readonly codeAuthorityRepository: CodeAuthorityRepository,
+    private readonly authorityMenusRepository: AuthorityMenusRepository,
+    private readonly adminMenuRepository: AdminMenuRepository,
     private readonly userService: UserService,
     private readonly authService: AuthService,
   ) {}
@@ -179,5 +184,12 @@ export class AdminService {
     }
 
     await this.adminUserRepository.remove(removeTargetUser);
+  }
+
+  /**
+   * 관리자 메뉴 전체 조회
+   */
+  async findAllAdminMenus(): Promise<AdminMenu[]> {
+    return await this.adminMenuRepository.find();
   }
 }
