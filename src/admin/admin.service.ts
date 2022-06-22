@@ -17,6 +17,8 @@ import {
 import { AuthorityMenusRepository } from './authority-menus/authority-menus.repository';
 import { AdminMenu } from './admin-menus/admin-menu.entity';
 import { AdminMenuRepository } from './admin-menus/admin-menu-repository';
+import { AdminAccessLogRepository } from './admin-access-log/admin-access-log.repository';
+import { AuthorityMenus } from './authority-menus/authority-menus.entity';
 
 @Injectable()
 export class AdminService {
@@ -27,6 +29,7 @@ export class AdminService {
     private readonly adminMenuRepository: AdminMenuRepository,
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly AdminAccessLogRepository: AdminAccessLogRepository,
   ) {}
 
   /**
@@ -133,13 +136,6 @@ export class AdminService {
   }
 
   /**
-   * 모든 권한 조회
-   */
-  async findAllCodeAuthority(): Promise<CodeAuthority[]> {
-    return await this.codeAuthorityRepository.find();
-  }
-
-  /**
    * 운영자 추가/수정
    * @param adminUser
    */
@@ -187,9 +183,40 @@ export class AdminService {
   }
 
   /**
-   * 관리자 메뉴 전체 조회
+   * 모든 메뉴 조회
    */
   async findAllAdminMenus(): Promise<AdminMenu[]> {
     return await this.adminMenuRepository.find();
+  }
+
+  /**
+   * 모든 권한 조회
+   */
+  async findAllCodeAuthority(): Promise<CodeAuthority[]> {
+    return await this.codeAuthorityRepository.find();
+  }
+
+  /**
+   * 권한별 메뉴 조회
+   * @param authorityId
+   */
+  async findAllCodeAuthorityMenus(
+    authorityId: string,
+  ): Promise<AuthorityMenus[]> {
+    const authorityMenus: AuthorityMenus[] =
+      await this.authorityMenusRepository.find({
+        where: {
+          authorityId: authorityId,
+        },
+      });
+
+    if (!authorityMenus) {
+      throw new HttpException(
+        { message: '권한에 부여된 메뉴가 없습니다.', code: 'failure' },
+        500,
+      );
+    }
+
+    return authorityMenus;
   }
 }
