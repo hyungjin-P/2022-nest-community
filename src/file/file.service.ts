@@ -13,6 +13,7 @@ import { UserBackgroundService } from '../user/user-background/user-background.s
 import { UserPictureService } from '../user/user-picture/user-picture.service';
 import { MagazinePictureService } from '../magazine/magazine-picture/magazine-picture.service';
 import { MagazineRepository } from '../magazine/magazine.repository';
+import { FileAdminUploadDto } from './dto/file.admin-upload.dto';
 
 @Injectable()
 export class FileService {
@@ -227,5 +228,73 @@ export class FileService {
       );
     }
     return resultUrl;
+  }
+
+  async uploadFileOfAdmin(
+    files: Array<Express.Multer.File>,
+    filesInfo: FileAdminUploadDto,
+  ) {
+    AWS.config.update({
+      accessKeyId: this.configService.get('AWS_SES_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SES_SECRET_ACCESS_KEY'),
+      region: this.configService.get('AWS_SES_REGION'),
+    });
+    const s3 = new AWS.S3();
+
+    // 도메인 검사
+    const domainNames = ['public.keeping.link', 'storage.keeping.link'];
+    const domainName = filesInfo.domainName;
+
+    if (!domainNames.includes(domainName)) {
+      throw new Error('invalid domain_name');
+    }
+
+    // 경로 검사
+    const pathRegex = /^(\/[0-9a-zA-Z\-]+)*\/?$/;
+    const path = filesInfo.path;
+
+    if (pathRegex.test(path)) {
+    } else {
+      throw new Error('invalid path');
+    }
+
+    // RDS 저장 위한 공간배열
+    const uploadFiles = [];
+
+    // 다중 파일 저장을 위해 키값을 따로 지정
+    for (const file of files) {
+      const fileName = file.originalname.split('.')[0];
+      let key = `${path}/${fileName}`;
+      key = key.replace(/\/\//gi, '/');
+      key = key.slice(1, key.length);
+
+      const param = {
+        Bucket: domainName,
+        Body: file.buffer,
+        Key: key,
+      };
+
+      try {
+        //업로드
+        /*const stored = await s3.upload(param).promise();
+
+        // RDS 저장 - file
+        const uploadFile = new FileEntity();
+        uploadFile.url = `https://${domainName}/${stored.Key}`;
+        uploadFile.originalname = file.originalname;
+        uploadFile.size = file.size;
+        uploadFile.bucket = stored.Bucket;
+        uploadFile.key = stored.Key;
+        uploadFile.location = stored.Location;
+
+        uploadFiles.push(uploadFile);*/
+      } catch (e) {
+        throw new HttpException(
+          { error: e, code: 'failure', message: '파일 저장에 실패했습니다.' },
+          500,
+        );
+      }
+    }
+    return uploadFiles;
   }
 }

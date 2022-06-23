@@ -27,6 +27,10 @@ export class MagazineTagService {
     });
   }
 
+  async findTagList(name: string) {
+    return await this.repository.findTagList(name);
+  }
+
   async getMagazineListOverTag(
     options: IPaginationOptions,
     tagId: string,

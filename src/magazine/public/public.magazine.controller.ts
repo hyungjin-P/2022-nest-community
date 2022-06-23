@@ -59,6 +59,18 @@ export class PublicMagazineController {
     );
   }
 
+  @Get('/public/magazine/findTagList')
+  @ApiOperation({
+    summary: '매거진 태그 조회',
+    description: '매거진에 사용된 태그를 조회한다.',
+  })
+  @ApiCreatedResponse({
+    description: '매거진에 사용된 태그를 조회한다.',
+  })
+  async findFeedTagList(@Query('name') name: string) {
+    return await this.magazineTagService.findTagList(name);
+  }
+
   @Get('/public/magazine/findPagesOverTag')
   @ApiOperation({
     summary: '선택된 태그로 매거진 페이지 조회',

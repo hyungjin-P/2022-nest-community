@@ -20,7 +20,6 @@ import { FollowService } from '../user/follow/follow.service';
 import { Follow } from '../user/follow/follow.entity';
 import { FileService } from '../file/file.service';
 import { FileDeleteDto } from '../file/dto/file.delete.dto';
-import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
 import { FeedPicture } from './feed-picture/feed-picture.entity';
 import { UserService } from '../user/user.service';
 import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';

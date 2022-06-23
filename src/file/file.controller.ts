@@ -15,6 +15,7 @@ import { FileUploadDto } from './dto/file.upload.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { FileDeleteDto } from './dto/file.delete.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FileAdminUploadDto } from './dto/file.admin-upload.dto';
 
 @ApiTags('파일')
 @Controller('file')
@@ -81,5 +82,19 @@ export class FileController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
     console.log('editor file upload');
+  }
+
+  @Post('/admin/filesUpload')
+  @ApiOperation({
+    summary: '관리자용 파일 업로드',
+    description: '관리자용 파일 업로드',
+  })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files'))
+  async adminFileUpload(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() filesInfo: FileAdminUploadDto,
+  ) {
+    return this.fileService.uploadFileOfAdmin(files, filesInfo);
   }
 }

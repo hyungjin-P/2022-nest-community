@@ -24,6 +24,7 @@ import { FeedBookmarkService } from './feed-bookmark/feed-bookmark.service';
 import { MypageFeedMainDto } from './dto/mypage-feed-main.dto';
 import { FindFeedEntity } from './feed-dao/find-feed.entity';
 import { FeedFilteringDto } from './dto/feed.filtering.dto';
+import { FeedTopicService } from './feed-topic/feed-topic.service';
 
 @ApiTags('피드')
 @Controller('feed')
@@ -33,6 +34,7 @@ export class FeedController {
     private feedTagService: FeedTagService,
     private feedLikeService: FeedLikeService,
     private feedBookmarkService: FeedBookmarkService,
+    private feedTopicService: FeedTopicService,
   ) {}
 
   @Get('/findPages')
@@ -433,4 +435,34 @@ export class FeedController {
       route: '/feed/findMypageFeedDetail',
     });
   }
+
+  /* Topic Controller */
+  @Post('/addTopic')
+  @ApiOperation({
+    summary: '피드 주제 추가',
+    description: '피드에 주제를 추가한다',
+  })
+  @ApiCreatedResponse({
+    description: '피드 주제 추가',
+  })
+  async addTopic(
+    @Query('feedId') feedId: string,
+    @Query('topicId') topicId: string,
+  ) {
+    return await this.feedTopicService.addTopic(feedId, topicId);
+  }
+
+  @Delete('/deleteTopic')
+  @ApiOperation({
+    summary: '피드 주제 삭제',
+    description: '피드에 주제를 삭제한다',
+  })
+  @ApiCreatedResponse({
+    description: '피드 주제 삭제',
+  })
+  async deleteTopic(@Query('topicId') topicId: string) {
+    return await this.feedTopicService.deleteTopic(topicId);
+  }
+
+  //주제 필터링 검색
 }

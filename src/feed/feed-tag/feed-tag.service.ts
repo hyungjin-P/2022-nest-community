@@ -34,6 +34,10 @@ export class FeedTagService {
     });
   }
 
+  async findTagList(name: string) {
+    return await this.feedTagRepository.findTagList(name);
+  }
+
   async getFeedListOverTag(
     options: IPaginationOptions,
     name: string,

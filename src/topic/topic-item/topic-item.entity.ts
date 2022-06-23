@@ -13,6 +13,9 @@ export class TopicItem {
   @Column()
   nameEn: string;
 
+  @Column()
+  url: string;
+
   feedCount: number;
   magazineCount: number;
 
