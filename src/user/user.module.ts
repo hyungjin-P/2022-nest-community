@@ -14,6 +14,8 @@ import { UserBackgroundService } from './user-background/user-background.service
 import { CryptoService } from '../services/crypto/crypto.service';
 import { UserWithdrawalTemporaryService } from './user-withdrawal-temporary/user-withdrawal-temporary.service';
 import { UserWithdrawalTemporaryRepository } from './user-withdrawal-temporary/user-withdrawal-temporary.repository';
+import { UserSearchService } from './user-search/user-search.service';
+import { UserSearchRepository } from './user-search/user-search.repository';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { UserWithdrawalTemporaryRepository } from './user-withdrawal-temporary/u
       UserPictureRepository,
       UserBackgroundRepository,
       UserWithdrawalTemporaryRepository,
+      UserSearchRepository,
     ]),
     FollowModule,
     UserPictureModule,
@@ -35,6 +38,7 @@ import { UserWithdrawalTemporaryRepository } from './user-withdrawal-temporary/u
     UserBackgroundService,
     CryptoService,
     UserWithdrawalTemporaryService,
+    UserSearchService,
   ],
   exports: [UserService],
 })

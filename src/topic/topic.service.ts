@@ -19,7 +19,7 @@ export class TopicService {
     // select * from magazine_tag where name_en REGEXP 'DARK[[:space:]]?KNIGHT'
     // 공백 -> [[:space:]]?
     name = name.replace(' ', '[[:space:]]?');
-    const tagItems: TopicItem[] = await this.repository.find({
+    const topicItems: TopicItem[] = await this.repository.find({
       where: (qb) => {
         qb.where(
           "REPLACE(name_ko, ' ', '') REGEXP :name OR REPLACE(name_en, ' ', '') REGEXP :name",
@@ -28,7 +28,7 @@ export class TopicService {
       },
     });
 
-    return tagItems;
+    return topicItems;
   }
 
   /* 관리자 영역 생성, 수정, 삭제 */
