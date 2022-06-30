@@ -16,4 +16,8 @@ export class UserSearchService {
   async deleteSearchHistory(id: string) {
     return this.repository.softDelete({ id });
   }
+
+  async deleteSearchHistoryAll(userId: string) {
+    return this.repository.softDelete({ userId });
+  }
 }

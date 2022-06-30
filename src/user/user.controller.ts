@@ -28,6 +28,7 @@ import { UserPasswordChangeEmailDto } from './dto/user.password-change-email.dto
 import { UserFilteringDto } from '../admin/dto/user-filtering.dto';
 import { UserWithdrawalTemporaryService } from './user-withdrawal-temporary/user-withdrawal-temporary.service';
 import { UserWithdrawalTemporary } from './user-withdrawal-temporary/user-withdrawal-temporary.entity';
+import { UserSearchService } from './user-search/user-search.service';
 
 @ApiTags('사용자 정보')
 @Controller('user')
@@ -35,6 +36,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly userWithdrawalTemporaryService: UserWithdrawalTemporaryService,
+    private readonly userSearchService: UserSearchService,
     private readonly commonUtil: CommonUtil,
     private readonly emailService: EmailService,
     private readonly cryptoService: CryptoService,
@@ -477,5 +479,44 @@ export class UserController {
   async withdrawalCancel(@Query('userId') userId: string) {
     await this.userWithdrawalTemporaryService.delete(userId);
     return await this.userService.softDeleteCancel(userId);
+  }
+
+  @Post('/saveSearch')
+  @ApiOperation({
+    summary: '사용자 검색 기록 저장',
+    description: '사용자 검색 기록 저장',
+  })
+  @ApiCreatedResponse({
+    description: '사용자 검색 기록 저장',
+  })
+  async saveSearchHistory(
+    @Query('userId') userId: string,
+    @Query('text') text: string,
+  ) {
+    return this.userSearchService.saveSearchHistory(userId, text);
+  }
+
+  @Delete('/deleteSearch')
+  @ApiOperation({
+    summary: '사용자 검색기록 개별 삭제',
+    description: '사용자 검색기록 개별 삭제',
+  })
+  @ApiCreatedResponse({
+    description: '사용자가 검색기록 개별 삭제를 요청한다.',
+  })
+  async deleteSearchHistory(@Query('searchId') searchId: string) {
+    return this.userSearchService.deleteSearchHistory(searchId);
+  }
+
+  @Delete('/deleteSearchAll')
+  @ApiOperation({
+    summary: '사용자 검색기록 전체 삭제',
+    description: '사용자 검색기록 전체 삭제',
+  })
+  @ApiCreatedResponse({
+    description: '사용자가 검색기록 전체 삭제를 요청한다.',
+  })
+  async deleteSearchHistoryAll(@Query('userId') userId: string) {
+    return this.userSearchService.deleteSearchHistoryAll(userId);
   }
 }
