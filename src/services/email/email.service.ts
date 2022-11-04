@@ -21,15 +21,15 @@ export class EmailService {
     const SES = new AWS.SES({ apiVersion: '2010-12-01' });
 
     const stagePath = this.configService.get('AWS_SES_FILEPATH');
-    const viewPath = `${stagePath}/services/email/ejs/${language}_verification_code.ejs`;
+    const viewPath = `${stagePath}/services/email/hobbiousEjs/${language}_verification_code.ejs`;
     const view = fs.readFileSync(viewPath, 'utf-8');
     const html = ejs.render(view, { to: emailAddress, code: code + '' });
 
     let subjectData = '';
     if (language === 'ko') {
-      subjectData = `[KEEPING] 인증번호`;
+      subjectData = `[Hobbious] 인증번호`;
     } else {
-      subjectData = `[KEEPING] Verification Code`;
+      subjectData = `[Hobbious] Verification Code`;
     }
 
     const params = {
@@ -48,7 +48,7 @@ export class EmailService {
           Data: subjectData,
         },
       },
-      Source: `KEEPING <***@***.***>`,
+      Source: `Hobbious <***@***.***>`,
     };
 
     return await SES.sendEmail(params).promise();
@@ -68,19 +68,20 @@ export class EmailService {
     const SES = new AWS.SES({ apiVersion: '2010-12-01' });
 
     const stagePath = this.configService.get('AWS_SES_FILEPATH');
-    const viewPath = `${stagePath}/services/email/ejs/${language}_reset_password_link.ejs`;
+    const viewPath = `${stagePath}/services/email/hobbiousEjs/${language}_reset_password_link.ejs`;
     const view = fs.readFileSync(viewPath, 'utf-8');
-    const link = `${this.configService.get(
-      'DOMAIN_WEB_ADDRESS',
-    )}/auth/reset-password/${token}`;
+    // const link = `${this.configService.get(
+    //   'DOMAIN_WEB_ADDRESS',
+    // )}/auth/reset-password/${token}`;
+    const link = `https://hobbious.life/auth/reset-password/${token}`;
     const html = ejs.render(view, { to: emailAddress, link });
 
     let subjectData = '';
 
     if (language === 'ko') {
-      subjectData = 'Keeping 비밀번호 재설정';
+      subjectData = 'Hobbious 비밀번호 재설정';
     } else {
-      subjectData = 'Keeping Reset Password';
+      subjectData = 'Hobbious Reset Password';
     }
 
     const params = {
@@ -99,7 +100,7 @@ export class EmailService {
           Data: subjectData,
         },
       },
-      Source: `KEEPING <***@***.***>`,
+      Source: `Hobbious <***@***.***>`,
     };
 
     return await SES.sendEmail(params).promise();
