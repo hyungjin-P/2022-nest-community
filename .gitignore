@@ -47,3 +47,8 @@ jspm_packages
 env.templete
 env.dev
 env.prod
+
+# portfolio/mock: 비밀 파일 추적 해제 (더미는 config/.env.example, src/serviceAccountKey.example.json)
+/config/.env.*
+!/config/.env.example
+/src/serviceAccountKey.json
