@@ -51,3 +51,7 @@ env.prod
 /config/.env.*
 !/config/.env.example
 /src/serviceAccountKey.json
+
+# portfolio/mock: 목업 런타임 데이터(MySQL datadir·fake S3·메일)와 목업 빌드 출력
+/.mock/
+/dist-mock
