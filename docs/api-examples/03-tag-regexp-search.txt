@@ -1,0 +1,109 @@
+# 03 공백을 무시하는 태그·주제 검색 (MySQL REGEXP) — stage1 8절 근거 6
+# 컬럼에서 공백을 지우고 REGEXP 로 매칭, GROUP BY 로 태그별 사용 수를 붙인다(feed-tag.repository.ts:17-30, magazine-tag.repository.ts:6-20, topic.service.ts:17-32).
+# 주제 검색만 입력의 공백을 [[:space:]]? 로 바꾼다(첫 공백만, topic.service.ts:21). 피드·매거진 태그는 입력 쪽 공백을 지우지 않는다.
+# 한계(stage1 9절 4): 입력을 이스케이프 없이 REGEXP 에 넣어 "(" 같은 문자가 쿼리 오류(500)를 낸다. MySQL 전용 문법이다.
+# 실행: 2026-10-17T13:46:10.120Z · 목업 서버 http://localhost:3000 (npm run mock:db:seed 직후 01→04 순서)
+#
+# 요약
+#  03-a 피드 태그 "보드게임" → [{"name":"보드 게임","tagCount":"2"},{"name":"보드게임","tagCount":"1"}]
+#  03-b 매거진 태그 "다크나이트" → [{"nameEn":"Dark Knight","nameKo":"다크 나이트","tagCount":"1"}]
+#  03-c 매거진 태그 "darkknight" → ["다크 나이트"]
+#  03-d 주제 "홈베이킹" → ["홈 베이킹"]
+#  03-e 주제 "홈 베이킹" → ["홈 베이킹"]
+#  03-f 피드 태그 "보드 게임" → [] (입력 공백은 지우지 않아 매칭 0건)
+#  03-g 피드 태그 "보드(" → 500 {"statusCode":500,"message":"Internal server error"}
+
+### 03-a 피드 태그 "보드게임"
+GET http://localhost:3000/public/feed/findTagList?name=%EB%B3%B4%EB%93%9C%EA%B2%8C%EC%9E%84 HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "name": "보드 게임",
+    "tagCount": "2"
+  },
+  {
+    "name": "보드게임",
+    "tagCount": "1"
+  }
+]
+
+### 03-b 매거진 태그 "다크나이트" (ko/en OR)
+GET http://localhost:3000/public/magazine/findTagList?name=%EB%8B%A4%ED%81%AC%EB%82%98%EC%9D%B4%ED%8A%B8 HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "nameEn": "Dark Knight",
+    "nameKo": "다크 나이트",
+    "tagCount": "1"
+  }
+]
+
+### 03-c 매거진 태그 "darkknight" (대소문자 무시는 utf8mb4_0900_ai_ci 정렬 규칙)
+GET http://localhost:3000/public/magazine/findTagList?name=darkknight HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "nameEn": "Dark Knight",
+    "nameKo": "다크 나이트",
+    "tagCount": "1"
+  }
+]
+
+### 03-d 주제 "홈베이킹"
+GET http://localhost:3000/topic/findTagList?name=%ED%99%88%EB%B2%A0%EC%9D%B4%ED%82%B9 HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "id": "40000000-0000-4000-8000-000000000003",
+    "nameKo": "홈 베이킹",
+    "nameEn": "Home Baking",
+    "url": "http://localhost:3000/_mock/assets/img/feed/feed-07.svg"
+  }
+]
+
+### 03-e 주제 "홈 베이킹" (입력 공백 → [[:space:]]?)
+GET http://localhost:3000/topic/findTagList?name=%ED%99%88+%EB%B2%A0%EC%9D%B4%ED%82%B9 HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "id": "40000000-0000-4000-8000-000000000003",
+    "nameKo": "홈 베이킹",
+    "nameEn": "Home Baking",
+    "url": "http://localhost:3000/_mock/assets/img/feed/feed-07.svg"
+  }
+]
+
+### 03-f 관찰: 피드 태그 "보드 게임" (입력에 공백)
+GET http://localhost:3000/public/feed/findTagList?name=%EB%B3%B4%EB%93%9C+%EA%B2%8C%EC%9E%84 HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[]
+
+### 03-g 한계: 피드 태그 "보드(" (정규식 메타 문자 미이스케이프)
+GET http://localhost:3000/public/feed/findTagList?name=%EB%B3%B4%EB%93%9C%28 HTTP/1.1
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+
+{
+  "statusCode": 500,
+  "message": "Internal server error"
+}
+

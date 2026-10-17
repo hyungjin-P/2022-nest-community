@@ -1,0 +1,4637 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getIndex",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "루트"
+        ]
+      }
+    },
+    "/user/getAll": {
+      "get": {
+        "operationId": "UserController_getAll",
+        "summary": "사용자 정보 전체 조회",
+        "description": "사용자 정보 전체 조회",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "사용자 정보를 전체조회 한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/findById": {
+      "get": {
+        "operationId": "UserController_findById",
+        "summary": "사용자 id(key)로 조회",
+        "description": "사용자 id(key)로 조회",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용자를 id(key)로 1건 조회한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/modify": {
+      "post": {
+        "operationId": "UserController_modify",
+        "summary": "사용자 정보 수정",
+        "description": "사용자 정보 수정",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "사용자 정보를 수정한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/delete": {
+      "delete": {
+        "operationId": "UserController_delete",
+        "summary": "사용자 정보 삭제",
+        "description": "사용자 정보 삭제",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용자 정보를 삭제한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/hasProvidedIdAndDeleteAtIsNull": {
+      "get": {
+        "operationId": "UserController_hasProvidedIdAndDeleteAtIsNull",
+        "summary": "이메일 중복 확인",
+        "description": "이메일 중복 확인",
+        "parameters": [
+          {
+            "name": "providedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "회원가입시 등록된 이메일이 존재하는지 확인한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/sendVerifiedCodeMail": {
+      "get": {
+        "operationId": "UserController_sendVerificationCodeMail",
+        "summary": "회원가입 이메일 인증 코드 보내기",
+        "description": "회원가입 이메일 인증 코드 보내기",
+        "parameters": [
+          {
+            "name": "emailAddress",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "이메일로 회원가입 인증 코드를 보낸다"
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/checkVerificationCode": {
+      "get": {
+        "operationId": "UserController_checkVerificationCode",
+        "summary": "회원가입 인증 코드 확인",
+        "description": "회원가입 인증 코드 확인",
+        "parameters": [
+          {
+            "name": "providedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "verifiedCode",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "회원가입시 발송한 이메일 인증번호를 확인한다."
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/registration": {
+      "post": {
+        "operationId": "UserController_registration",
+        "summary": "이메일 회원가입",
+        "description": "이메일 회원가입",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "이메일로 회원가입 한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/findUserPage": {
+      "get": {
+        "operationId": "UserController_findUserPage",
+        "summary": "유저 목록 페이지 조회",
+        "description": "유저 목록 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "유저 목록을 페이지로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/duplicateUserNickname": {
+      "get": {
+        "operationId": "UserController_duplicateUserNickname",
+        "summary": "유저 닉네임 중복검사",
+        "description": "유저 닉네임 중복검사",
+        "parameters": [
+          {
+            "name": "nickName",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "유저 닉네임을 중복검사한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/modifyProfile": {
+      "patch": {
+        "operationId": "UserController_modifyUserProfile",
+        "summary": "유저 프로필 수정",
+        "description": "유저 프로필 수정",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "유저 프로필 (넥네임, 자기소개) 수정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/changePassword": {
+      "patch": {
+        "operationId": "UserController_changePassword",
+        "summary": "비밀번호 변경",
+        "description": "비밀번호 변경",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordChangeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "비밀번호 변경",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/resetPasswordLinkMail": {
+      "post": {
+        "operationId": "UserController_sendPasswordResetMail",
+        "summary": "비밀번호 변경 메일 보내기",
+        "description": "비밀번호 변경 메일 보내기",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResetPasswordMailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/passwordChangeEmailVerified": {
+      "post": {
+        "operationId": "UserController_passwordChangeEmailVerified",
+        "summary": "비밀번호 변경 메일 확인",
+        "description": "비밀번호 변경 메일 확인",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordChangeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/passwordChangeWithVerificationCheckOk": {
+      "post": {
+        "operationId": "UserController_passwordChangeWithVerificationCheckOk",
+        "summary": "비밀번호 변경 (검증 ok)",
+        "description": "비밀번호 변경",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPasswordChangeEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/findUserFilteringPages": {
+      "post": {
+        "operationId": "UserController_findUserFilteringPage",
+        "summary": "사용자 필터링 조회",
+        "description": "사용자 필터링 조회",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserFilteringDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "사용자를 필터링해서 조회한다."
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/withdrawalTemporary": {
+      "post": {
+        "operationId": "UserController_withdrawalTemporary",
+        "summary": "사용자 삭제 신청",
+        "description": "사용자 삭제 신청",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserWithdrawalTemporary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "사용자가 삭제를 요청한다."
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/withdrawalCancel": {
+      "post": {
+        "operationId": "UserController_withdrawalCancel",
+        "summary": "사용자 삭제 신청 취소",
+        "description": "사용자 삭제 신청 취소",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용자가 삭제취소를 요청한다."
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/saveSearch": {
+      "post": {
+        "operationId": "UserController_saveSearchHistory",
+        "summary": "사용자 검색 기록 저장",
+        "description": "사용자 검색 기록 저장",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "text",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용자 검색 기록 저장"
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/deleteSearch": {
+      "delete": {
+        "operationId": "UserController_deleteSearchHistory",
+        "summary": "사용자 검색기록 개별 삭제",
+        "description": "사용자 검색기록 개별 삭제",
+        "parameters": [
+          {
+            "name": "searchId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용자가 검색기록 개별 삭제를 요청한다."
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/user/deleteSearchAll": {
+      "delete": {
+        "operationId": "UserController_deleteSearchHistoryAll",
+        "summary": "사용자 검색기록 전체 삭제",
+        "description": "사용자 검색기록 전체 삭제",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용자가 검색기록 전체 삭제를 요청한다."
+          }
+        },
+        "tags": [
+          "사용자 정보"
+        ]
+      }
+    },
+    "/follow/addFollow": {
+      "post": {
+        "operationId": "FollowController_addFollow",
+        "parameters": [
+          {
+            "name": "fromUser",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toUser",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "팔로우"
+        ]
+      }
+    },
+    "/follow/removeFollow": {
+      "delete": {
+        "operationId": "FollowController_removeFollow",
+        "parameters": [
+          {
+            "name": "fromUser",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toUser",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "팔로우"
+        ]
+      }
+    },
+    "/follow/countFollow": {
+      "get": {
+        "operationId": "FollowController_countFollowerAndFollowing",
+        "summary": "유저의 팔로워 수 조회",
+        "description": "유저의 팔로워 수 조회",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "유저의 팔로워 수를 조회한다."
+          }
+        },
+        "tags": [
+          "팔로우"
+        ]
+      }
+    },
+    "/follow/findFollowing": {
+      "get": {
+        "operationId": "FollowController_findFollowingPage",
+        "summary": "유저의 팔로잉 조회",
+        "description": "유저의 팔로워 수 조회",
+        "parameters": [
+          {
+            "name": "loginUserId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "팔로우"
+        ]
+      }
+    },
+    "/follow/findFollower": {
+      "get": {
+        "operationId": "FollowController_findFollowerPage",
+        "summary": "유저의 팔로워 조회",
+        "description": "유저의 팔로워 수 조회",
+        "parameters": [
+          {
+            "name": "loginUserId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "팔로우"
+        ]
+      }
+    },
+    "/follow/isFollowed": {
+      "get": {
+        "operationId": "FollowController_isFollowed",
+        "summary": "유저의 팔로워 수 조회",
+        "description": "유저의 팔로워 수 조회",
+        "parameters": [
+          {
+            "name": "fromUser",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toUser",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "유저의 팔로워 수를 조회한다."
+          }
+        },
+        "tags": [
+          "팔로우"
+        ]
+      }
+    },
+    "/feed/findPages": {
+      "get": {
+        "operationId": "FeedController_findFeedPage",
+        "summary": "피드 페이지 조회",
+        "description": "피드 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 페이지를 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/findPagesOverFollow": {
+      "get": {
+        "operationId": "FeedController_findFeedPageOverFollow",
+        "summary": "피드 팔로우 페이지 조회",
+        "description": "피드 팔로우 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "팔로우 한 인원의 피드를 페이지 형식으로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/findPagesOverBookmark": {
+      "get": {
+        "operationId": "FeedController_findFeedPageOverBookmark",
+        "summary": "피드 북마크 페이지 조회",
+        "description": "피드 북마크 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "북마크한 피드를 페이지 형식으로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/findById": {
+      "get": {
+        "operationId": "FeedController_findByPublicFeedById",
+        "summary": "피드 1건 상세 조회",
+        "description": "피드 1건 상세 조회",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 1건을 상세조회 한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/createFeed": {
+      "post": {
+        "operationId": "FeedController_createFeed",
+        "summary": "피드 생성",
+        "description": "피드 생성",
+        "parameters": [
+          {
+            "name": "rewrite",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/updateFeed": {
+      "post": {
+        "operationId": "FeedController_updateFeed",
+        "summary": "피드 수정",
+        "description": "피드 수정",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedModifyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "피드 1건 수정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/modifyFeed": {
+      "post": {
+        "operationId": "FeedController_modifyFeed",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Feed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/modifyFeedPicture": {
+      "post": {
+        "operationId": "FeedController_modifyFeedPicture",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Feed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteFeed": {
+      "delete": {
+        "operationId": "FeedController_deleteFeed",
+        "summary": "피드 삭제",
+        "description": "피드 삭제",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 1건 삭제",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/addFeedTag": {
+      "post": {
+        "operationId": "FeedController_createFeedTag",
+        "summary": "피드 태그 추가",
+        "description": "피드 태그 추가",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteFeedTag": {
+      "delete": {
+        "operationId": "FeedController_deleteFeedTag",
+        "summary": "피드 태그 삭제",
+        "description": "피드 태그 삭제",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/addFeedTagNameOnly": {
+      "post": {
+        "operationId": "FeedController_createFeedTagNameOnly",
+        "summary": "피드 태그 추가",
+        "description": "피드 태그 추가",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteFeedTagNameOnly": {
+      "delete": {
+        "operationId": "FeedController_deleteFeedTagNameOnly",
+        "summary": "피드 태그 삭제",
+        "description": "피드 태그 삭제",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/like/findPages": {
+      "get": {
+        "operationId": "FeedController_findFeedLikePage",
+        "summary": "피드 좋아요 조회",
+        "description": "피드 좋아요 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 좋아요를 페이지 형식으로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/addLike": {
+      "post": {
+        "operationId": "FeedController_createFeedLike",
+        "summary": "피드 좋아요 추가",
+        "description": "피드 좋아요 추가",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedLikeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteLike": {
+      "delete": {
+        "operationId": "FeedController_deleteFeedLike",
+        "summary": "피드 좋아요 취소",
+        "description": "피드 좋아요 취소",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/addBookmark": {
+      "post": {
+        "operationId": "FeedController_addBookmark",
+        "summary": "피드 북마크 추가",
+        "description": "피드 북마크 추가",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedBookmarkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "북마크를 추가한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteBookmark": {
+      "delete": {
+        "operationId": "FeedController_deleteBookmark",
+        "summary": "피드 북마크 삭제",
+        "description": "피드 북마크 삭제",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "북마크를 삭제한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/findMypageFeed": {
+      "get": {
+        "operationId": "FeedController_findMyPageFeed",
+        "summary": "마이페이지 피드 메인 조회",
+        "description": "마이페이지 피드 메인 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "마이페이지내 피드 메인에 표시되는 피드를 조회한다."
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteAllBookmarkByUserId": {
+      "delete": {
+        "operationId": "FeedController_deleteFeedBookmarkAll",
+        "summary": "피드 북마크 전체삭제",
+        "description": "피드 북마크 전체삭제",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/findMypageFeedDetail": {
+      "get": {
+        "operationId": "FeedController_findMyPageFeedDetail",
+        "summary": "마이페이지 피드 상세 조회",
+        "description": "마이페이지 피드 상세 조회",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "otherUserId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "마이페이지내 피드 메인에 표시되는 피드를 조회한다."
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/findMypageFeedDetailTest": {
+      "get": {
+        "operationId": "FeedController_findMyPageFeedDetailTest",
+        "summary": "마이페이지 피드 상세 테스트",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "페이징 테스트 "
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/realDelete": {
+      "delete": {
+        "operationId": "FeedController_deleteRealFeed",
+        "summary": "피드 1건 삭제 (물리적)",
+        "description": "피드 1건 삭제 (물리적)",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 1건을 물리적으로 삭제한다."
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/filteredFeedPages": {
+      "post": {
+        "operationId": "FeedController_filteredFeedPages",
+        "summary": "피드 조회 (필터링)",
+        "description": "피드를 필터링 하여 검색한다.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedFilteringDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "피드 필터링 검색"
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/addTopic": {
+      "post": {
+        "operationId": "FeedController_addTopic",
+        "summary": "피드 주제 추가",
+        "description": "피드에 주제를 추가한다",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 주제 추가"
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/feed/deleteTopic": {
+      "delete": {
+        "operationId": "FeedController_deleteTopic",
+        "summary": "피드 주제 삭제",
+        "description": "피드에 주제를 삭제한다",
+        "parameters": [
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 주제 삭제"
+          }
+        },
+        "tags": [
+          "피드"
+        ]
+      }
+    },
+    "/public/feed/findPages": {
+      "get": {
+        "operationId": "PublicFeedController_findByPublicFeedPages",
+        "summary": "피드 페이지 조회",
+        "description": "피드 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 페이지를 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/findPageAll": {
+      "get": {
+        "operationId": "PublicFeedController_findByPublicFeedPageAll",
+        "summary": "관리자 피드 페이지 조회",
+        "description": "관리자 피드 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "관리자 페이지 피드 페이지 조회"
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/authFeed": {
+      "get": {
+        "operationId": "PublicFeedController_authFeed",
+        "summary": "피드 테스트",
+        "description": "피드 테스트",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 권한 테스트",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ],
+        "security": [
+          {
+            "accessToken": []
+          }
+        ]
+      }
+    },
+    "/public/feed/findById": {
+      "get": {
+        "operationId": "PublicFeedController_findByPublicFeedById",
+        "summary": "피드 1건 상세 조회",
+        "description": "피드 1건 상세 조회",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 1건을 상세조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/findPagesUnderDate": {
+      "get": {
+        "operationId": "PublicFeedController_findPublicFeedPagesUnderDate",
+        "summary": "피드 상세 하단 피드페이지 형식 조회",
+        "description": "피드 상세 하단 피드페이지 형식 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 상세 하단 피드목록을 페이지 형식으로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/like/findPages": {
+      "get": {
+        "operationId": "PublicFeedController_findFeedLikePage",
+        "summary": "피드 좋아요 조회",
+        "description": "피드 좋아요 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 좋아요를 페이지형식으로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/comment/findPages": {
+      "get": {
+        "operationId": "PublicFeedController_findFeedCommentPage",
+        "summary": "피드 댓글 조회",
+        "description": "피드 댓글 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "댓글을 페이지 별로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/comment/sub/findPages": {
+      "get": {
+        "operationId": "PublicFeedController_findFeedSubCommentPage",
+        "summary": "대댓글 조회",
+        "description": "피드 대댓글 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "대댓글을 페이지 별로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/findOneWithRelations": {
+      "get": {
+        "operationId": "PublicFeedController_findOneFeedWithRelations",
+        "summary": "피드 및 연관 테이블 조회",
+        "description": "피드 및 연관 테이블 조회",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드 및 연관 테이블을 조회한다."
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/findTagList": {
+      "get": {
+        "operationId": "PublicFeedController_findFeedTagList",
+        "summary": "피드 태그 조회",
+        "description": "피드에 사용된 태그를 조회한다.",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "피드에 사용된 태그를 조회한다."
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/public/feed/findPagesOverTag": {
+      "get": {
+        "operationId": "PublicFeedController_findFeedPagesOverTag",
+        "summary": "선택된 태그로 피드 페이지 조회",
+        "description": "선택된 태그로 피드 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "선택된 태그로 피드 페이지 조회",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드(공개)"
+        ]
+      }
+    },
+    "/feed/comment/findPages": {
+      "get": {
+        "operationId": "FeedCommentController_findFeedCommentPage",
+        "summary": "피드 댓글 조회",
+        "description": "피드 댓글 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "댓글을 페이지 별로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/sub/findPages": {
+      "get": {
+        "operationId": "FeedCommentController_findFeedSubCommentPage",
+        "summary": "대댓글 조회",
+        "description": "피드 대댓글 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "대댓글을 페이지 별로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/create": {
+      "post": {
+        "operationId": "FeedCommentController_createFeedComment",
+        "summary": "피드 댓글 생성",
+        "description": "피드 댓글 생성",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedComment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/modify": {
+      "post": {
+        "operationId": "FeedCommentController_modifyFeedComment",
+        "summary": "피드 댓글 수정",
+        "description": "피드 댓글 수정",
+        "parameters": [
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "text",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/delete": {
+      "delete": {
+        "operationId": "FeedCommentController_deleteFeedComment",
+        "summary": "피드 댓글 삭제",
+        "description": "피드 댓글 삭제",
+        "parameters": [
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/remove": {
+      "delete": {
+        "operationId": "FeedCommentController_removeFeedComment",
+        "summary": "피드 댓글 물리적 삭제",
+        "description": "피드 댓글 물리적 삭제",
+        "parameters": [
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/addMention": {
+      "post": {
+        "operationId": "FeedCommentController_createCommentMention",
+        "summary": "피드 댓글 언급 추가",
+        "description": "피드 댓글 언급 추가",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedCommentMention"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/deleteMention": {
+      "delete": {
+        "operationId": "FeedCommentController_deleteCommentMention",
+        "summary": "피드 댓글 언급 삭제",
+        "description": "피드 댓글 언급 삭제",
+        "parameters": [
+          {
+            "name": "mentionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/addLike": {
+      "post": {
+        "operationId": "FeedCommentController_createCommentLike",
+        "summary": "댓글 좋아요 추가",
+        "description": "댓글 좋아요 추가",
+        "parameters": [
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/addLikeAndGetComment": {
+      "post": {
+        "operationId": "FeedCommentController_createCommentLikeAndReturnThisValue",
+        "summary": "댓글 좋아요 추가",
+        "description": "댓글 좋아요 추가 및 해당 데이터 리턴",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCommentLikeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/deleteLike": {
+      "delete": {
+        "operationId": "FeedCommentController_deleteCommentLike",
+        "summary": "댓글 좋아요 취소",
+        "description": "댓글 좋아요 취소",
+        "parameters": [
+          {
+            "name": "feedCommentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/feed/comment/getFeedCommentsWithRelations": {
+      "get": {
+        "operationId": "FeedCommentController_findFeedCommentWithRelations",
+        "summary": "댓글 조회",
+        "description": "댓글 조회",
+        "parameters": [
+          {
+            "name": "feedId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "피드 댓글"
+        ]
+      }
+    },
+    "/auth/signIn": {
+      "post": {
+        "operationId": "AuthController_signIn",
+        "summary": "이메일 로그인",
+        "description": "이메일 로그인",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserEmailSignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "이메일로 로그인한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "인증"
+        ]
+      }
+    },
+    "/auth/kakao": {
+      "post": {
+        "operationId": "AuthController_signInKakao",
+        "summary": "카카오 로그인",
+        "description": "카카오 로그인",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "카카오 소셜 로그인"
+          }
+        },
+        "tags": [
+          "인증"
+        ]
+      }
+    },
+    "/auth/signOutKakao": {
+      "post": {
+        "operationId": "AuthController_signOutKakao",
+        "summary": "카카오 로그인 (카카오 연동해제)",
+        "description": "카카오 회원 탈퇴 (카카오 연동해제)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KakaoAccessDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "카카오톡 소셜 로그인 연동 해제"
+          }
+        },
+        "tags": [
+          "인증"
+        ]
+      }
+    },
+    "/auth/signInNaver": {
+      "post": {
+        "operationId": "AuthController_signInNaver",
+        "summary": "네이버 로그인",
+        "description": "네이버 로그인",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NaverAccessDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "네이버 로그인"
+          }
+        },
+        "tags": [
+          "인증"
+        ]
+      }
+    },
+    "/auth/modifyServiceTerm": {
+      "patch": {
+        "operationId": "AuthController_modifyServiceTerm",
+        "summary": "이용약관 업데이트",
+        "description": "이용약관 업데이트",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserModifyServiceTermDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "이용약관 업데이트"
+          }
+        },
+        "tags": [
+          "인증"
+        ]
+      }
+    },
+    "/auth/firebaseSignIn": {
+      "post": {
+        "operationId": "AuthController_signInGoogleLogin",
+        "summary": "구글 로그인",
+        "description": "구글 로그인",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleAccessDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "구글 로그인"
+          }
+        },
+        "tags": [
+          "인증"
+        ]
+      }
+    },
+    "/file": {
+      "post": {
+        "operationId": "FileController_uploadObject",
+        "summary": "파일 S3 업로드",
+        "description": "파일 S3 업로드",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "파일"
+        ]
+      },
+      "delete": {
+        "operationId": "FileController_deleteObject",
+        "summary": "파일 삭제",
+        "description": "파일 삭제",
+        "parameters": [
+          {
+            "name": "tag",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagInId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "파일"
+        ]
+      }
+    },
+    "/file/deleteUserBackground": {
+      "delete": {
+        "operationId": "FileController_deleteFileForPost",
+        "summary": "파일 삭제",
+        "description": "파일 삭제",
+        "parameters": [
+          {
+            "name": "fileUrl",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "파일"
+        ]
+      }
+    },
+    "/file/imageUpload": {
+      "post": {
+        "operationId": "FileController_ckeditorImageUploader",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "파일"
+        ]
+      }
+    },
+    "/file/importEditorImageFile": {
+      "post": {
+        "operationId": "FileController_importEditorImageFile",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "파일"
+        ]
+      }
+    },
+    "/file/admin/filesUpload": {
+      "post": {
+        "operationId": "FileController_adminFileUpload",
+        "summary": "관리자용 파일 업로드",
+        "description": "관리자용 파일 업로드",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileAdminUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "파일"
+        ]
+      }
+    },
+    "/codeCategory/getAll": {
+      "get": {
+        "operationId": "CodeCategoryController_getAll",
+        "summary": "공통 코드 카테고리 전체 조회",
+        "description": "공통 코드 카테고리 전체 조회",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "공통 코드 카테고리를 전체조회 한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "공통 코드 카테고리"
+        ]
+      }
+    },
+    "/codeCategory/findById": {
+      "get": {
+        "operationId": "CodeCategoryController_findById",
+        "summary": "공통 코드 카테고리 1건 조회",
+        "description": "공통 코드 카테고리 1건 조회",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "공통 코드 카테고리를 id로 1건 조회한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "공통 코드 카테고리"
+        ]
+      }
+    },
+    "/code-item/getAll": {
+      "get": {
+        "operationId": "CodeItemController_getAll",
+        "summary": "공통 코드 아이템 전체 조회",
+        "description": "공통 코드 아이템 전체 조회",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "공통 코드 카테고리를 전체조회 한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "공통 코드 아이템"
+        ]
+      }
+    },
+    "/code-item/findById": {
+      "get": {
+        "operationId": "CodeItemController_findById",
+        "summary": "공통 코드 아이템 1건 조회",
+        "description": "공통 코드 아이템 1건 조회",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "공통 코드 아이템을 id로 1건 조회한다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "공통 코드 아이템"
+        ]
+      }
+    },
+    "/magazine/findTopMagazineList": {
+      "get": {
+        "operationId": "MagazineController_findTopMagazineList",
+        "summary": "매거진 상단 뷰어 조회",
+        "description": "매거진 상단 뷰어 조회",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "로그인 상태의 매거진 상단 뷰어를 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/findPages": {
+      "get": {
+        "operationId": "MagazineController_findByPage",
+        "summary": "매거진 페이지 조회",
+        "description": "매거진 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "로그인 상태의 매거진 페이지를 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/findPagesOverBookmark": {
+      "get": {
+        "operationId": "MagazineController_findMagazinePageOverBookmark",
+        "summary": "매거진 북마크 페이지 조회",
+        "description": "매거진 북마크 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "북마크한 매거진을 페이지 형식으로 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/create": {
+      "post": {
+        "operationId": "MagazineController_createMagazine",
+        "summary": "매거진 생성",
+        "description": "매거진 생성",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Magazine"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/modify": {
+      "post": {
+        "operationId": "MagazineController_modifyMagazine",
+        "summary": "매거진 수정",
+        "description": "매거진 1건 수정",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MagazineModifyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "매거진 1건 수정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/delete": {
+      "delete": {
+        "operationId": "MagazineController_deleteMagazine",
+        "summary": "매거진 삭제",
+        "description": "매거진 삭제",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "매거진 1건 삭제",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCategory"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/addTag": {
+      "post": {
+        "operationId": "MagazineController_addMagazineTag",
+        "summary": "매거진 태그 추가",
+        "description": "매거진 태그 추가",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nameKo",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nameEn",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/deleteTag": {
+      "delete": {
+        "operationId": "MagazineController_deleteMagazineTag",
+        "summary": "매거진 태그 삭제",
+        "description": "매거진 태그 삭제",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/addLike": {
+      "post": {
+        "operationId": "MagazineController_createMagazineLike",
+        "summary": "매거진 좋아요 추가",
+        "description": "매거진 좋아요 추가",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/findLikePage": {
+      "get": {
+        "operationId": "MagazineController_getMagazineLike",
+        "summary": "매거진 좋아요 조회",
+        "description": "매거진 좋아요 목록 조회",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/deleteLike": {
+      "delete": {
+        "operationId": "MagazineController_deleteMagazineLike",
+        "summary": "매거진 좋아요 삭제",
+        "description": "매거진 좋아요 취소",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/addView": {
+      "post": {
+        "operationId": "MagazineController_createMagazineView",
+        "summary": "매거진 조회수 추가",
+        "description": "매거진 조회수 추가",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/addBookmark": {
+      "post": {
+        "operationId": "MagazineController_createMagazineBookmark",
+        "summary": "매거진 북마크 추가",
+        "description": "매거진 북마크 추가",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/deleteBookmark": {
+      "delete": {
+        "operationId": "MagazineController_deleteMagazineBookmark",
+        "summary": "매거진 북마크 삭제",
+        "description": "매거진 북마크 삭제",
+        "parameters": [
+          {
+            "name": "magazineId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/magazine/deleteAllBookmarkByUserId": {
+      "delete": {
+        "operationId": "MagazineController_deleteMagazineBookmarkAll",
+        "summary": "매거진 북마크 전체삭제",
+        "description": "매거진 북마크 전체삭제",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "매거진"
+        ]
+      }
+    },
+    "/public/magazine/findTopMagazineList": {
+      "get": {
+        "operationId": "PublicMagazineController_findTopMagazineList",
+        "summary": "매거진 상단 뷰어 조회",
+        "description": "매거진 상단 뷰어 조회",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "비로그인 상태의 매거진 상단 뷰어를 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진(공개)"
+        ]
+      }
+    },
+    "/public/magazine/findPages": {
+      "get": {
+        "operationId": "PublicMagazineController_findByPage",
+        "summary": "매거진 페이지 조회",
+        "description": "매거진 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "비로그인 상태의 매거진 페이지를 조회한다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진(공개)"
+        ]
+      }
+    },
+    "/public/magazine/findTagList": {
+      "get": {
+        "operationId": "PublicMagazineController_findFeedTagList",
+        "summary": "매거진 태그 조회",
+        "description": "매거진에 사용된 태그를 조회한다.",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "매거진에 사용된 태그를 조회한다."
+          }
+        },
+        "tags": [
+          "매거진(공개)"
+        ]
+      }
+    },
+    "/public/magazine/findPagesOverTag": {
+      "get": {
+        "operationId": "PublicMagazineController_findFeedPagesOverTag",
+        "summary": "선택된 태그로 매거진 페이지 조회",
+        "description": "선택된 태그로 매거진 페이지 조회",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "선택된 태그로 피드 페이지 조회",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeItem"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "매거진(공개)"
+        ]
+      }
+    },
+    "/admin/getAdminUser": {
+      "get": {
+        "operationId": "AdminController_getAdminUser",
+        "summary": "관리자 조회",
+        "description": "관리자 조회",
+        "parameters": [
+          {
+            "name": "adminId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "관리자의 정보를 1건 조회한다."
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/admin/signIn": {
+      "post": {
+        "operationId": "AdminController_signIn",
+        "summary": "관리자 로그인",
+        "description": "관리자 로그인",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "관리자 사이트 로그인"
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/admin/findPages": {
+      "post": {
+        "operationId": "AdminController_findAdminUserPages",
+        "summary": "관리자 페이징 조회",
+        "description": "관리자 페이징 조회",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserFilteringDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "관리자 목록을 페이지로 조회한다."
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/admin/findAllCodeAuthority": {
+      "get": {
+        "operationId": "AdminController_findAllCodeAuthority",
+        "summary": "권한 코드 조회",
+        "description": "권한 코드 조회",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "권한 코드를 조회한다."
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/admin/saveAdminUser": {
+      "post": {
+        "operationId": "AdminController_saveAdminUser",
+        "summary": "키핑 운영자 추가/수정",
+        "description": "키핑 운영자 추가/수정",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "키핑 운영자 추가/수정"
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/admin/deleteAdminUser": {
+      "delete": {
+        "operationId": "AdminController_deleteAdminUser",
+        "summary": "키핑 운영자 추가/수정",
+        "description": "키핑 운영자 추가/수정",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "키핑 운영자 추가/수정"
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/admin/findAllAdminMenus": {
+      "get": {
+        "operationId": "AdminController_findAllAdminMenus",
+        "summary": "관리자 메뉴 전체 조회",
+        "description": "관리자 메뉴 전체 조회",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "관리자 메뉴 전체 조회"
+          }
+        },
+        "tags": [
+          "관리자"
+        ]
+      }
+    },
+    "/topic/findTagList": {
+      "get": {
+        "operationId": "TopicController_findTagList",
+        "summary": "검색하여 주제 리스트 찾기",
+        "description": "검색하여 주제 리스트 찾기",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "주제"
+        ]
+      }
+    },
+    "/topic/getTopicList": {
+      "get": {
+        "operationId": "TopicController_getTopicList",
+        "summary": "주제 리스트 가져오기",
+        "description": "주제 리스트 가져오기",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "주제"
+        ]
+      }
+    },
+    "/topic/addTopic": {
+      "post": {
+        "operationId": "TopicController_createTag",
+        "summary": "주제 추가",
+        "description": "관리자 환경에서 주제 추가",
+        "parameters": [
+          {
+            "name": "nameKo",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nameEn",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "주제"
+        ]
+      }
+    },
+    "/topic/modifyTopic": {
+      "post": {
+        "operationId": "TopicController_modifyTag",
+        "summary": "주제 수정",
+        "description": "관리자 환경에서 주제 수정",
+        "parameters": [
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nameKo",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nameEn",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "주제"
+        ]
+      }
+    },
+    "/topic/deleteTopic": {
+      "delete": {
+        "operationId": "TopicController_deleteTag",
+        "summary": "주제 삭제",
+        "description": "관리자 환경에서 주제 삭제",
+        "parameters": [
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "주제"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Keeping User API",
+    "description": "키핑 사용자 API",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "accessToken": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserRegistrationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserPasswordChangeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserResetPasswordMailDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserPasswordChangeTokenDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserPasswordChangeEmailDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserFilteringDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "isIncludeDate": {
+            "type": "boolean"
+          },
+          "from": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sortedColumn": {
+            "type": "string"
+          },
+          "sortedDirection": {
+            "type": "string"
+          },
+          "isIncludeAgreement": {
+            "type": "boolean"
+          },
+          "agreementAge": {
+            "type": "boolean"
+          },
+          "agreementPrivacy": {
+            "type": "boolean"
+          },
+          "agreementServiceTerms": {
+            "type": "boolean"
+          },
+          "agreementMarketing": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "email",
+          "nickname",
+          "name",
+          "isIncludeDate",
+          "from",
+          "to",
+          "sortedColumn",
+          "sortedDirection",
+          "isIncludeAgreement",
+          "agreementAge",
+          "agreementPrivacy",
+          "agreementServiceTerms",
+          "agreementMarketing"
+        ]
+      },
+      "UserWithdrawalTemporary": {
+        "type": "object",
+        "properties": {}
+      },
+      "CodeItem": {
+        "type": "object",
+        "properties": {}
+      },
+      "CodeCategory": {
+        "type": "object",
+        "properties": {}
+      },
+      "FeedModifyDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string"
+          },
+          "posting": {
+            "type": "boolean"
+          },
+          "feedId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "content",
+          "picture",
+          "posting",
+          "feedId"
+        ]
+      },
+      "Feed": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "default": "40490ba6-7ad0-485b-914b-d8c3b882c799"
+          }
+        },
+        "required": [
+          "userId"
+        ]
+      },
+      "FeedLikeDto": {
+        "type": "object",
+        "properties": {
+          "feedId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feedId",
+          "userId"
+        ]
+      },
+      "FeedBookmarkDto": {
+        "type": "object",
+        "properties": {
+          "feedId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feedId",
+          "userId"
+        ]
+      },
+      "FeedFilteringDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "content": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "isIncludeDate": {
+            "type": "boolean"
+          },
+          "from": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sortedColumn": {
+            "type": "string"
+          },
+          "sortedDirection": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "content",
+          "nickname",
+          "email",
+          "isIncludeDate",
+          "from",
+          "to",
+          "sortedColumn",
+          "sortedDirection"
+        ]
+      },
+      "FeedComment": {
+        "type": "object",
+        "properties": {
+          "feedId": {
+            "type": "string",
+            "default": "ab27c954-5f79-458c-8a0a-c64497c81a5d"
+          },
+          "userId": {
+            "type": "string",
+            "default": "a41d829e-add3-4867-9429-0eca34fc1e48"
+          },
+          "parentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feedId",
+          "userId",
+          "parentId",
+          "text"
+        ]
+      },
+      "FeedCommentMention": {
+        "type": "object",
+        "properties": {
+          "feedCommentId": {
+            "type": "string"
+          },
+          "mentionUserId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feedCommentId",
+          "mentionUserId"
+        ]
+      },
+      "AddCommentLikeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserEmailSignInDto": {
+        "type": "object",
+        "properties": {
+          "providedId": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "providedId",
+          "password"
+        ]
+      },
+      "KakaoAccessDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "NaverAccessDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "UserModifyServiceTermDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "bb4fdcad-bf56-4dec-9b93-112e3a844332"
+          },
+          "agreementAge": {
+            "type": "boolean"
+          },
+          "agreementPrivacy": {
+            "type": "boolean"
+          },
+          "agreementServiceTerms": {
+            "type": "boolean"
+          },
+          "agreementMarketing": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "userId",
+          "agreementAge",
+          "agreementPrivacy",
+          "agreementServiceTerms",
+          "agreementMarketing"
+        ]
+      },
+      "GoogleAccessDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "FileUploadDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "default": "cba1a1c5-eefa-4926-ba04-1331d3659c14"
+          },
+          "domainName": {
+            "type": "string",
+            "enum": [
+              "public.keeping.link",
+              "storage.keeping.link"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "default": "/temp/magazine"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "feed",
+              "user-picture",
+              "user-background",
+              "magazine"
+            ]
+          },
+          "tagInId": {
+            "type": "string",
+            "description": "tag table id"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        },
+        "required": [
+          "userId",
+          "domainName",
+          "path",
+          "tag",
+          "tagInId",
+          "files"
+        ]
+      },
+      "FileAdminUploadDto": {
+        "type": "object",
+        "properties": {
+          "domainName": {
+            "type": "string",
+            "enum": [
+              "public.keeping.link",
+              "storage.keeping.link"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "enum": [
+              "/assets/images/topic"
+            ]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        },
+        "required": [
+          "domainName",
+          "path",
+          "files"
+        ]
+      },
+      "Magazine": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "default": "cba1a1c5-eefa-4926-ba04-1331d3659c14"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "magazine_category_news",
+              "magazine_category_release"
+            ]
+          },
+          "rewrite": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "userId",
+          "category",
+          "rewrite"
+        ]
+      },
+      "MagazineModifyDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "posting": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "content",
+          "posting"
+        ]
+      },
+      "AdminSignInDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AdminUser": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

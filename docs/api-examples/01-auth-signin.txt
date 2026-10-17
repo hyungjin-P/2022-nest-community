@@ -1,0 +1,108 @@
+# 01 이메일 로그인 — POST /auth/signIn (stage1 4절 인증 흐름)
+# 로그인 4종이 AuthService.createTokens 로 모여 accessToken·refreshToken(JWT)·Firebase custom token 을 사용자 엔티티에 섞어 돌려준다(auth.service.ts:289-341, :390-399).
+# customToken 은 목업 값(mock-firebase-custom-token.<userId>)이다. JWT 는 원본 하드코딩 secret 으로 서명돼 값을 가렸다.
+# 한계(stage1 9절 1·5): 토큰을 발급하지만 검증하는 가드가 0개다. 사용자 오류에도 HTTP 500 을 쓴다.
+# 실행: 2026-10-17T13:46:07.095Z · 목업 서버 http://localhost:3000 (npm run mock:db:seed 직후 01→04 순서)
+#
+# 요약
+#  01-a 201 · password 필드 없음(delete user.password) · 토큰 3종 있음
+#  01-b 500 · failure / 비밀번호가 일치하지 않습니다.
+#  01-c 500 · failure:deleted · message = 사용자 id(클라이언트가 /user/withdrawalCancel 에 쓴다)
+
+### 01-a 성공
+POST http://localhost:3000/auth/signIn HTTP/1.1
+Content-Type: application/json
+
+{
+  "providedId": "demo@example.com",
+  "password": "keeping1234"
+}
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "id": "10000000-0000-4000-8000-000000000001",
+  "provider": "keeping.link",
+  "providedId": "demo@example.com",
+  "name": "키핑데모",
+  "nickname": "키핑데모",
+  "age": null,
+  "sex": null,
+  "birthDate": null,
+  "email": "demo@example.com",
+  "emailVerified": true,
+  "emailVerificationCode": null,
+  "emailVerificationCodeExpiresin": null,
+  "emailToChange": null,
+  "phoneNumber": null,
+  "phoneNumberVerified": null,
+  "phoneNumberVerificationCode": null,
+  "phoneNumberVerificationCodeExpiresin": null,
+  "phoneNumberToChange": null,
+  "resetPasswordLinkUsed": false,
+  "color": "#FFE885",
+  "fcmToken": null,
+  "aboutMe": "필름 카메라로 동네 골목을 기록해요",
+  "agreementAge": true,
+  "agreementPrivacy": true,
+  "agreementServiceTerms": true,
+  "agreementMarketing": false,
+  "deletedAt": null,
+  "createdAt": "2026-07-19T13:45:13.816Z",
+  "updatedAt": "2026-07-19T13:45:13.816Z",
+  "accessToken": "eyJ…(생략)",
+  "refreshToken": "eyJ…(생략)",
+  "customToken": "mock-firebase-custom-token.10000000-0000-4000-8000-000000000001",
+  "picture": [
+    {
+      "id": "60000000-0000-4000-8000-000000000101",
+      "userId": "10000000-0000-4000-8000-000000000001",
+      "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-01.svg",
+      "createdAt": "2026-07-19T13:45:13.816Z"
+    }
+  ],
+  "background": [
+    {
+      "id": "60000000-0000-4000-8000-000000000201",
+      "userId": "10000000-0000-4000-8000-000000000001",
+      "url": "http://localhost:3000/_mock/assets/img/magazine/magazine-07.svg",
+      "createdAt": "2026-07-19T13:45:13.816Z"
+    }
+  ]
+}
+
+### 01-b 비밀번호 오류
+POST http://localhost:3000/auth/signIn HTTP/1.1
+Content-Type: application/json
+
+{
+  "providedId": "demo@example.com",
+  "password": "wrong-password"
+}
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": "failure",
+  "message": "비밀번호가 일치하지 않습니다."
+}
+
+### 01-c 탈퇴 유예 회원 (soft delete, stage1 4절 4)
+POST http://localhost:3000/auth/signIn HTTP/1.1
+Content-Type: application/json
+
+{
+  "providedId": "withdrawal@example.com",
+  "password": "keeping1234"
+}
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": "failure:deleted",
+  "message": "10000000-0000-4000-8000-000000000010"
+}
+

@@ -1,0 +1,327 @@
+# 04 S3 업로드·삭제 파이프라인과 초안 재작성 정리 — POST·DELETE /file, POST /feed/createFeed (stage1 8절 근거 5·4)
+# 업로드: 버킷 도메인 화이트리스트(file.service.ts:40-45) → 경로 정규식(:48-54) → uuid 키(:61-65) → S3 업로드 후 file·file_tag 저장(:73-111) → tag 별 분기 저장(:113-138, feed → feed_picture).
+# 삭제: S3 객체 삭제 → 도메인 행·file_tag·file 정리(:145-184). rewrite=true 면 이전 초안의 S3 파일·태그·행을 함께 정리한다(feed.service.ts:447-463).
+# 목업: S3 는 FakeS3(src/_mock/fakes/aws.ts)가 .mock/uploads/<버킷>/<키> 에 저장한다. 응답의 location·etag 는 FakeS3 값이고, url 은 원본 코드가 만드는 문자열(https://<버킷 도메인>/<키>)이다 — 그 도메인으로 요청하지 않는다.
+# 업로드 파일은 fixture SVG 일러스트(src/_mock/assets/img/feed/feed-07.svg·feed-08.svg)다.
+# 한계(stage1 9절 4): feed 분기만 await 가 없다(:115) → 업로드 응답 뒤 300ms 기다려 확인했다. 업로드 후 DB 저장 실패 시 보상 처리가 없다. 검증 실패는 500 이다.
+# 실행: 2026-10-17T13:46:10.181Z · 목업 서버 http://localhost:3000 (npm run mock:db:seed 직후 01→04 순서)
+#
+# 요약
+#  04-a 초안 20000000-0000-4000-8000-000000000099 · state feed_state_pending · pictures 0
+#  04-b 201 · file 행 2 · key feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45 · url https://public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45
+#  04-c pictures 2
+#  04-d 200
+#  04-e pictures 1 (https://public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45)
+#  04-f·g FakeS3 객체: 남긴 것 200 · 지운 것 404
+#  04-h 새 초안 f3c43fa7… (이전 20000000… 와 다름) · pictures 0
+#  04-i 이전 초안 객체 404
+#  04-j domainName=example.com → 500 (throw new Error('invalid domain_name'))
+#  04-k path=/feed/../user → 500 (throw new Error('invalid path'))
+
+### 04-a 글쓰기 시작 — 등록 전 초안이 있으면 그 초안을 돌려준다 (rewrite=false)
+POST http://localhost:3000/feed/createFeed?rewrite=false&userId=10000000-0000-4000-8000-000000000001 HTTP/1.1
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "likeCount": 0,
+  "commentCount": 0,
+  "isLike": false,
+  "isBookmark": false,
+  "otherCount": 0,
+  "id": "20000000-0000-4000-8000-000000000099",
+  "userId": "10000000-0000-4000-8000-000000000001",
+  "state": "feed_state_pending",
+  "content": "",
+  "picture": null,
+  "uploadedAt": null,
+  "createdAt": "2026-10-17T13:27:13.816Z",
+  "deletedAt": null,
+  "updatedAt": "2026-10-17T13:27:13.816Z",
+  "sortedAt": null,
+  "pictures": [],
+  "tags": []
+}
+
+### 04-b 사진 2장 업로드 (tag=feed, tagInId=초안)
+POST http://localhost:3000/file HTTP/1.1
+Content-Type: multipart/form-data; boundary=----mock
+
+------mock
+Content-Disposition: form-data; name="files"; filename="feed-07.svg"
+Content-Type: image/svg+xml
+
+<fixture SVG 3001 bytes — 생략>
+------mock
+Content-Disposition: form-data; name="files"; filename="feed-08.svg"
+Content-Type: image/svg+xml
+
+<fixture SVG 1565 bytes — 생략>
+------mock
+Content-Disposition: form-data; name="userId"
+
+10000000-0000-4000-8000-000000000001
+------mock
+Content-Disposition: form-data; name="domainName"
+
+public.keeping.link
+------mock
+Content-Disposition: form-data; name="path"
+
+/feed
+------mock
+Content-Disposition: form-data; name="tag"
+
+feed
+------mock
+Content-Disposition: form-data; name="tagInId"
+
+20000000-0000-4000-8000-000000000099
+------mock--
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "userId": "10000000-0000-4000-8000-000000000001",
+    "url": "https://public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45",
+    "originalname": "feed-07.svg",
+    "encoding": "7bit",
+    "mimetype": "image/svg+xml",
+    "size": 3001,
+    "bucket": "public.keeping.link",
+    "key": "feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45",
+    "location": "http://localhost:3000/_mock/uploads/public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45",
+    "etag": "\"0ed356ffe16575aaf7d4fbf104b95556\"",
+    "createdAt": "2026-10-17T13:46:10.000Z"
+  },
+  {
+    "userId": "10000000-0000-4000-8000-000000000001",
+    "url": "https://public.keeping.link/feed/5bde5fe0-20d3-487a-9f25-bc45bc728745",
+    "originalname": "feed-08.svg",
+    "encoding": "7bit",
+    "mimetype": "image/svg+xml",
+    "size": 1565,
+    "bucket": "public.keeping.link",
+    "key": "feed/5bde5fe0-20d3-487a-9f25-bc45bc728745",
+    "location": "http://localhost:3000/_mock/uploads/public.keeping.link/feed/5bde5fe0-20d3-487a-9f25-bc45bc728745",
+    "etag": "\"3882862c28b9b8760b37ff0b6c64a72a\"",
+    "createdAt": "2026-10-17T13:46:10.000Z"
+  }
+]
+
+### 04-c 초안 다시 조회 — feed 분기가 feed_picture 에 저장
+POST http://localhost:3000/feed/createFeed?rewrite=false&userId=10000000-0000-4000-8000-000000000001 HTTP/1.1
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "likeCount": 0,
+  "commentCount": 0,
+  "isLike": false,
+  "isBookmark": false,
+  "otherCount": 0,
+  "id": "20000000-0000-4000-8000-000000000099",
+  "userId": "10000000-0000-4000-8000-000000000001",
+  "state": "feed_state_pending",
+  "content": "",
+  "picture": null,
+  "uploadedAt": null,
+  "createdAt": "2026-10-17T13:27:13.816Z",
+  "deletedAt": null,
+  "updatedAt": "2026-10-17T13:27:13.816Z",
+  "sortedAt": null,
+  "pictures": [
+    {
+      "id": "63052212-01e0-4344-a084-c9aa3fcc07ba",
+      "feedId": "20000000-0000-4000-8000-000000000099",
+      "url": "https://public.keeping.link/feed/5bde5fe0-20d3-487a-9f25-bc45bc728745",
+      "createdAt": "2026-10-17T13:46:10.000Z"
+    },
+    {
+      "id": "ef0ed933-6f27-44a6-9103-6a972ab4ddef",
+      "feedId": "20000000-0000-4000-8000-000000000099",
+      "url": "https://public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45",
+      "createdAt": "2026-10-17T13:46:10.000Z"
+    }
+  ],
+  "tags": []
+}
+
+### 04-d 사진 1장 삭제
+DELETE http://localhost:3000/file?tag=feed&tagInId=20000000-0000-4000-8000-000000000099&url=https%3A%2F%2Fpublic.keeping.link%2Ffeed%2F5bde5fe0-20d3-487a-9f25-bc45bc728745 HTTP/1.1
+
+HTTP/1.1 200 OK
+
+### 04-e 초안 다시 조회 — feed_picture 1장
+POST http://localhost:3000/feed/createFeed?rewrite=false&userId=10000000-0000-4000-8000-000000000001 HTTP/1.1
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "likeCount": 0,
+  "commentCount": 0,
+  "isLike": false,
+  "isBookmark": false,
+  "otherCount": 0,
+  "id": "20000000-0000-4000-8000-000000000099",
+  "userId": "10000000-0000-4000-8000-000000000001",
+  "state": "feed_state_pending",
+  "content": "",
+  "picture": null,
+  "uploadedAt": null,
+  "createdAt": "2026-10-17T13:27:13.816Z",
+  "deletedAt": null,
+  "updatedAt": "2026-10-17T13:27:13.816Z",
+  "sortedAt": null,
+  "pictures": [
+    {
+      "id": "ef0ed933-6f27-44a6-9103-6a972ab4ddef",
+      "feedId": "20000000-0000-4000-8000-000000000099",
+      "url": "https://public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45",
+      "createdAt": "2026-10-17T13:46:10.000Z"
+    }
+  ],
+  "tags": []
+}
+
+### 04-f 목업 S3 저장소 확인 — 남긴 객체
+GET http://localhost:3000/_mock/uploads/public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45 HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+
+<application/octet-stream 3001 bytes — 생략>
+
+### 04-g 목업 S3 저장소 확인 — 지운 객체
+GET http://localhost:3000/_mock/uploads/public.keeping.link/feed/5bde5fe0-20d3-487a-9f25-bc45bc728745 HTTP/1.1
+
+HTTP/1.1 404 Not Found
+Content-Type: application/json; charset=utf-8
+
+{
+  "statusCode": 404,
+  "message": "Cannot GET /_mock/uploads/public.keeping.link/feed/5bde5fe0-20d3-487a-9f25-bc45bc728745",
+  "error": "Not Found"
+}
+
+### 04-h 새로 쓰기 (rewrite=true) — 이전 초안의 S3 파일·태그·행 정리 후 새 초안
+POST http://localhost:3000/feed/createFeed?rewrite=true&userId=10000000-0000-4000-8000-000000000001 HTTP/1.1
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "likeCount": 0,
+  "commentCount": 0,
+  "isLike": false,
+  "isBookmark": false,
+  "otherCount": 0,
+  "id": "f3c43fa7-85b9-49d0-9885-75ed835d9d09",
+  "userId": "10000000-0000-4000-8000-000000000001",
+  "state": "feed_state_pending",
+  "content": null,
+  "picture": null,
+  "uploadedAt": null,
+  "createdAt": "2026-10-17T13:46:10.825Z",
+  "deletedAt": null,
+  "updatedAt": "2026-10-17T13:46:10.825Z",
+  "sortedAt": null,
+  "pictures": [],
+  "tags": []
+}
+
+### 04-i 목업 S3 저장소 확인 — 이전 초안에 남아 있던 객체
+GET http://localhost:3000/_mock/uploads/public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45 HTTP/1.1
+
+HTTP/1.1 404 Not Found
+Content-Type: application/json; charset=utf-8
+
+{
+  "statusCode": 404,
+  "message": "Cannot GET /_mock/uploads/public.keeping.link/feed/c883d0b1-fa97-43b1-b2a0-bd4e7344ba45",
+  "error": "Not Found"
+}
+
+### 04-j 검증: 허용 목록 밖 버킷 도메인
+POST http://localhost:3000/file HTTP/1.1
+Content-Type: multipart/form-data; boundary=----mock
+
+------mock
+Content-Disposition: form-data; name="files"; filename="feed-07.svg"
+Content-Type: image/svg+xml
+
+<fixture SVG 3001 bytes — 생략>
+------mock
+Content-Disposition: form-data; name="userId"
+
+10000000-0000-4000-8000-000000000001
+------mock
+Content-Disposition: form-data; name="domainName"
+
+example.com
+------mock
+Content-Disposition: form-data; name="path"
+
+/feed
+------mock
+Content-Disposition: form-data; name="tag"
+
+feed
+------mock
+Content-Disposition: form-data; name="tagInId"
+
+20000000-0000-4000-8000-000000000099
+------mock--
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+
+{
+  "statusCode": 500,
+  "message": "Internal server error"
+}
+
+### 04-k 검증: 경로 정규식 위반
+POST http://localhost:3000/file HTTP/1.1
+Content-Type: multipart/form-data; boundary=----mock
+
+------mock
+Content-Disposition: form-data; name="files"; filename="feed-07.svg"
+Content-Type: image/svg+xml
+
+<fixture SVG 3001 bytes — 생략>
+------mock
+Content-Disposition: form-data; name="userId"
+
+10000000-0000-4000-8000-000000000001
+------mock
+Content-Disposition: form-data; name="domainName"
+
+public.keeping.link
+------mock
+Content-Disposition: form-data; name="path"
+
+/feed/../user
+------mock
+Content-Disposition: form-data; name="tag"
+
+feed
+------mock
+Content-Disposition: form-data; name="tagInId"
+
+20000000-0000-4000-8000-000000000099
+------mock--
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+
+{
+  "statusCode": 500,
+  "message": "Internal server error"
+}
+

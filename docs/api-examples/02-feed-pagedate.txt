@@ -1,0 +1,834 @@
+# 02 기준 시각(pageDate) 고정 피드 목록 — GET /feed/findPages (stage1 8절 근거 1·2)
+# 클라이언트가 첫 요청 시각 pageDate 를 들고 다니고 서버는 sortedAt ≤ pageDate 로 자른다(feed.service.ts:53-67).
+# 시나리오: 1페이지를 받은 뒤 다른 회원이 새 글을 게시 → 같은 pageDate 로 2페이지 / 새 pageDate 로 2페이지를 비교한다.
+# isLike·isBookmark 는 페이지의 feed id 배열로 IN 조회 1회 후 매칭한 결과다(근거 2, feed-like.repository.ts:16-27). 쿼리 수 자체는 응답으로 보이지 않는다.
+# 한계(stage1 9절 1): 로그인 사용자를 userId 쿼리로 받는다. 9절 2: likeCount·commentCount·pictureCount 는 피드마다 count() 한다.
+# 실행: 2026-10-17T13:46:07.371Z · 목업 서버 http://localhost:3000 (npm run mock:db:seed 직후 01→04 순서)
+#
+# 요약
+#  02-a pageDate=T0 page 1: [01 퇴근길 골목에 비친… | 02 이번 주 모임은 협… | 03 사워도우 3일 차.… | 04 구름이 걷히고 은하… | 05 코바늘로 뜬 컵받침…] totalItems 16 · isLike 4/5 · isBookmark 3/5
+#  02-b 초안 e5ffd0d4… state feed_state_pending
+#  02-c state feed_state_posting · sortedAt 2026-10-17T13:46:08.991Z (T0 = 2026-10-17T13:46:07.371Z)
+#  02-d pageDate=T0 page 2: [06 새로 생긴 암장 오… | 07 동네 철물점 간판.… | 08 보드게임 카페에서 … | 09 휴일 아침 스콘. … | 10 첫 동계 캠핑 장비…] totalItems 16 · 1페이지와 중복 0건 · 새 글 포함 false
+#  02-e pageDate=T1 page 2: [05 코바늘로 뜬 컵받침… | 06 새로 생긴 암장 오… | 07 동네 철물점 간판.… | 08 보드게임 카페에서 … | 09 휴일 아침 스콘. …] totalItems 17 · 1페이지와 중복 1건(offset 이 한 칸 밀림)
+
+### 02-a 1페이지 (pageDate=T0)
+GET http://localhost:3000/feed/findPages?page=1&limit=5&userId=10000000-0000-4000-8000-000000000001&pageDate=2026-10-17T13%3A46%3A07.371Z HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "items": [
+    {
+      "likeCount": 4,
+      "commentCount": 3,
+      "isLike": true,
+      "isBookmark": true,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000001",
+      "userId": "10000000-0000-4000-8000-000000000002",
+      "state": "feed_state_posting",
+      "content": "퇴근길 골목에 비친 노을. 필름 한 롤 다 쓰고 왔어요.",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-01.svg",
+      "uploadedAt": "2026-10-17T12:45:14.000Z",
+      "createdAt": "2026-10-17T12:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-17T12:45:13.816Z",
+      "sortedAt": "2026-10-17T12:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000002",
+        "name": "오후의필름",
+        "nickname": "오후의필름",
+        "email": "film@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000102",
+            "userId": "10000000-0000-4000-8000-000000000002",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-02.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002010",
+          "feedId": "20000000-0000-4000-8000-000000000001",
+          "name": "필름카메라",
+          "createdAt": "2026-10-17T12:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002011",
+          "feedId": "20000000-0000-4000-8000-000000000001",
+          "name": "노을",
+          "createdAt": "2026-10-17T12:39:14.000Z"
+        }
+      ],
+      "pictureCount": 2
+    },
+    {
+      "likeCount": 2,
+      "commentCount": 2,
+      "isLike": true,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000002",
+      "userId": "10000000-0000-4000-8000-000000000003",
+      "state": "feed_state_posting",
+      "content": "이번 주 모임은 협력 게임 위주로! 다들 처음인데도 금방 익혔어요.",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-05.svg",
+      "uploadedAt": "2026-10-17T10:45:14.000Z",
+      "createdAt": "2026-10-17T10:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-17T10:45:13.816Z",
+      "sortedAt": "2026-10-17T10:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000003",
+        "name": "주말보드게이머",
+        "nickname": "주말보드게이머",
+        "email": "boardgame@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000103",
+            "userId": "10000000-0000-4000-8000-000000000003",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-03.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002020",
+          "feedId": "20000000-0000-4000-8000-000000000002",
+          "name": "보드 게임",
+          "createdAt": "2026-10-17T10:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002021",
+          "feedId": "20000000-0000-4000-8000-000000000002",
+          "name": "협력게임",
+          "createdAt": "2026-10-17T10:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 5,
+      "commentCount": 3,
+      "isLike": true,
+      "isBookmark": true,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000003",
+      "userId": "10000000-0000-4000-8000-000000000004",
+      "state": "feed_state_posting",
+      "content": "사워도우 3일 차. 쿠프가 드디어 터졌습니다.",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-07.svg",
+      "uploadedAt": "2026-10-17T08:45:14.000Z",
+      "createdAt": "2026-10-17T08:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-17T08:45:13.816Z",
+      "sortedAt": "2026-10-17T08:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000004",
+        "name": "반죽하는곰",
+        "nickname": "반죽하는곰",
+        "email": "baking@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000104",
+            "userId": "10000000-0000-4000-8000-000000000004",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-04.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002030",
+          "feedId": "20000000-0000-4000-8000-000000000003",
+          "name": "홈베이킹",
+          "createdAt": "2026-10-17T08:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002031",
+          "feedId": "20000000-0000-4000-8000-000000000003",
+          "name": "사워도우",
+          "createdAt": "2026-10-17T08:39:14.000Z"
+        }
+      ],
+      "pictureCount": 2
+    },
+    {
+      "likeCount": 2,
+      "commentCount": 1,
+      "isLike": true,
+      "isBookmark": true,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000004",
+      "userId": "10000000-0000-4000-8000-000000000005",
+      "state": "feed_state_posting",
+      "content": "구름이 걷히고 은하수가 보였던 밤",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-09.svg",
+      "uploadedAt": "2026-10-17T05:45:14.000Z",
+      "createdAt": "2026-10-17T05:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-17T05:45:13.816Z",
+      "sortedAt": "2026-10-17T05:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000005",
+        "name": "별보는캠퍼",
+        "nickname": "별보는캠퍼",
+        "email": "camping@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000105",
+            "userId": "10000000-0000-4000-8000-000000000005",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-05.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002040",
+          "feedId": "20000000-0000-4000-8000-000000000004",
+          "name": "캠핑",
+          "createdAt": "2026-10-17T05:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002041",
+          "feedId": "20000000-0000-4000-8000-000000000004",
+          "name": "별사진",
+          "createdAt": "2026-10-17T05:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 1,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000005",
+      "userId": "10000000-0000-4000-8000-000000000006",
+      "state": "feed_state_posting",
+      "content": "코바늘로 뜬 컵받침 세트. 색 조합 고민 많이 했어요.",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-11.svg",
+      "uploadedAt": "2026-10-17T02:45:14.000Z",
+      "createdAt": "2026-10-17T02:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-17T02:45:13.816Z",
+      "sortedAt": "2026-10-17T02:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000006",
+        "name": "코바늘연구소",
+        "nickname": "코바늘연구소",
+        "email": "knit@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000106",
+            "userId": "10000000-0000-4000-8000-000000000006",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-06.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002050",
+          "feedId": "20000000-0000-4000-8000-000000000005",
+          "name": "코바늘",
+          "createdAt": "2026-10-17T02:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002051",
+          "feedId": "20000000-0000-4000-8000-000000000005",
+          "name": "뜨개질",
+          "createdAt": "2026-10-17T02:39:14.000Z"
+        }
+      ],
+      "pictureCount": 2
+    }
+  ],
+  "meta": {
+    "totalItems": 16,
+    "itemCount": 5,
+    "itemsPerPage": 5,
+    "totalPages": 4,
+    "currentPage": 1
+  },
+  "links": {
+    "first": "/feed/findPages?limit=5",
+    "previous": "",
+    "next": "/feed/findPages?page=2&limit=5",
+    "last": "/feed/findPages?page=4&limit=5"
+  }
+}
+
+### 02-b 다른 회원(오후의필름)이 글쓰기 시작 — pending 초안 생성
+POST http://localhost:3000/feed/createFeed?rewrite=false&userId=10000000-0000-4000-8000-000000000002 HTTP/1.1
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "likeCount": 0,
+  "commentCount": 0,
+  "isLike": false,
+  "isBookmark": false,
+  "otherCount": 0,
+  "id": "e5ffd0d4-3dd2-465e-b505-ab52dcd9be3f",
+  "userId": "10000000-0000-4000-8000-000000000002",
+  "state": "feed_state_pending",
+  "content": null,
+  "picture": null,
+  "uploadedAt": null,
+  "createdAt": "2026-10-17T13:46:08.926Z",
+  "deletedAt": null,
+  "updatedAt": "2026-10-17T13:46:08.926Z",
+  "sortedAt": null,
+  "pictures": [],
+  "tags": []
+}
+
+### 02-c 게시 — posting 으로 전환, uploadedAt·sortedAt 기록
+POST http://localhost:3000/feed/updateFeed HTTP/1.1
+Content-Type: application/json
+
+{
+  "feedId": "e5ffd0d4-3dd2-465e-b505-ab52dcd9be3f",
+  "content": "오늘 새로 들인 레인지파인더 첫 롤 테스트 중",
+  "picture": "",
+  "posting": true
+}
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "likeCount": 0,
+  "commentCount": 0,
+  "isLike": false,
+  "isBookmark": false,
+  "otherCount": 0,
+  "id": "e5ffd0d4-3dd2-465e-b505-ab52dcd9be3f",
+  "userId": "10000000-0000-4000-8000-000000000002",
+  "state": "feed_state_posting",
+  "content": "오늘 새로 들인 레인지파인더 첫 롤 테스트 중",
+  "picture": null,
+  "uploadedAt": "2026-10-17T13:46:08.991Z",
+  "createdAt": "2026-10-17T13:46:08.926Z",
+  "deletedAt": null,
+  "updatedAt": "2026-10-17T13:46:08.000Z",
+  "sortedAt": "2026-10-17T13:46:08.991Z"
+}
+
+### 02-d 2페이지 (같은 pageDate=T0)
+GET http://localhost:3000/feed/findPages?page=2&limit=5&userId=10000000-0000-4000-8000-000000000001&pageDate=2026-10-17T13%3A46%3A07.371Z HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "items": [
+    {
+      "likeCount": 2,
+      "commentCount": 0,
+      "isLike": true,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000006",
+      "userId": "10000000-0000-4000-8000-000000000007",
+      "state": "feed_state_posting",
+      "content": "새로 생긴 암장 오픈 세팅 다녀왔어요. 노란 문제 완등!",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-13.svg",
+      "uploadedAt": "2026-10-16T23:45:14.000Z",
+      "createdAt": "2026-10-16T23:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T23:45:13.816Z",
+      "sortedAt": "2026-10-16T23:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000007",
+        "name": "홀드위에서",
+        "nickname": "홀드위에서",
+        "email": "climb@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000107",
+            "userId": "10000000-0000-4000-8000-000000000007",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-07.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002060",
+          "feedId": "20000000-0000-4000-8000-000000000006",
+          "name": "클라이밍",
+          "createdAt": "2026-10-16T23:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002061",
+          "feedId": "20000000-0000-4000-8000-000000000006",
+          "name": "볼더링",
+          "createdAt": "2026-10-16T23:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 0,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000007",
+      "userId": "10000000-0000-4000-8000-000000000001",
+      "state": "feed_state_posting",
+      "content": "동네 철물점 간판. 오래된 글씨체가 좋아서 찍어 둠",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-03.svg",
+      "uploadedAt": "2026-10-16T19:45:14.000Z",
+      "createdAt": "2026-10-16T19:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T19:45:13.816Z",
+      "sortedAt": "2026-10-16T19:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000001",
+        "name": "키핑데모",
+        "nickname": "키핑데모",
+        "email": "demo@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000101",
+            "userId": "10000000-0000-4000-8000-000000000001",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-01.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002070",
+          "feedId": "20000000-0000-4000-8000-000000000007",
+          "name": "필름카메라",
+          "createdAt": "2026-10-16T19:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002071",
+          "feedId": "20000000-0000-4000-8000-000000000007",
+          "name": "골목",
+          "createdAt": "2026-10-16T19:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 1,
+      "commentCount": 0,
+      "isLike": true,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000008",
+      "userId": "10000000-0000-4000-8000-000000000003",
+      "state": "feed_state_posting",
+      "content": "보드게임 카페에서 처음 해 본 다크 나이트 테마 추리 게임",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-06.svg",
+      "uploadedAt": "2026-10-16T15:45:14.000Z",
+      "createdAt": "2026-10-16T15:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T15:45:13.816Z",
+      "sortedAt": "2026-10-16T15:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000003",
+        "name": "주말보드게이머",
+        "nickname": "주말보드게이머",
+        "email": "boardgame@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000103",
+            "userId": "10000000-0000-4000-8000-000000000003",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-03.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002080",
+          "feedId": "20000000-0000-4000-8000-000000000008",
+          "name": "보드게임",
+          "createdAt": "2026-10-16T15:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002081",
+          "feedId": "20000000-0000-4000-8000-000000000008",
+          "name": "다크 나이트",
+          "createdAt": "2026-10-16T15:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 1,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000009",
+      "userId": "10000000-0000-4000-8000-000000000004",
+      "state": "feed_state_posting",
+      "content": "휴일 아침 스콘. 버터를 차갑게 유지하는 게 핵심",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-08.svg",
+      "uploadedAt": "2026-10-16T10:45:14.000Z",
+      "createdAt": "2026-10-16T10:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T10:45:13.816Z",
+      "sortedAt": "2026-10-16T10:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000004",
+        "name": "반죽하는곰",
+        "nickname": "반죽하는곰",
+        "email": "baking@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000104",
+            "userId": "10000000-0000-4000-8000-000000000004",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-04.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002090",
+          "feedId": "20000000-0000-4000-8000-000000000009",
+          "name": "홈 베이킹",
+          "createdAt": "2026-10-16T10:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002091",
+          "feedId": "20000000-0000-4000-8000-000000000009",
+          "name": "스콘",
+          "createdAt": "2026-10-16T10:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 0,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000010",
+      "userId": "10000000-0000-4000-8000-000000000005",
+      "state": "feed_state_posting",
+      "content": "첫 동계 캠핑 장비 점검 리스트 공유합니다",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-10.svg",
+      "uploadedAt": "2026-10-16T06:45:14.000Z",
+      "createdAt": "2026-10-16T06:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T06:45:13.816Z",
+      "sortedAt": "2026-10-16T06:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000005",
+        "name": "별보는캠퍼",
+        "nickname": "별보는캠퍼",
+        "email": "camping@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000105",
+            "userId": "10000000-0000-4000-8000-000000000005",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-05.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002100",
+          "feedId": "20000000-0000-4000-8000-000000000010",
+          "name": "캠핑",
+          "createdAt": "2026-10-16T06:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002101",
+          "feedId": "20000000-0000-4000-8000-000000000010",
+          "name": "동계캠핑",
+          "createdAt": "2026-10-16T06:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    }
+  ],
+  "meta": {
+    "totalItems": 16,
+    "itemCount": 5,
+    "itemsPerPage": 5,
+    "totalPages": 4,
+    "currentPage": 2
+  },
+  "links": {
+    "first": "/feed/findPages?limit=5",
+    "previous": "/feed/findPages?page=1&limit=5",
+    "next": "/feed/findPages?page=3&limit=5",
+    "last": "/feed/findPages?page=4&limit=5"
+  }
+}
+
+### 02-e 비교: 2페이지 (새 pageDate=T1 — 기준 시각을 고정하지 않았을 때)
+GET http://localhost:3000/feed/findPages?page=2&limit=5&userId=10000000-0000-4000-8000-000000000001&pageDate=2026-10-17T13%3A46%3A10.091Z HTTP/1.1
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "items": [
+    {
+      "likeCount": 1,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000005",
+      "userId": "10000000-0000-4000-8000-000000000006",
+      "state": "feed_state_posting",
+      "content": "코바늘로 뜬 컵받침 세트. 색 조합 고민 많이 했어요.",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-11.svg",
+      "uploadedAt": "2026-10-17T02:45:14.000Z",
+      "createdAt": "2026-10-17T02:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-17T02:45:13.816Z",
+      "sortedAt": "2026-10-17T02:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000006",
+        "name": "코바늘연구소",
+        "nickname": "코바늘연구소",
+        "email": "knit@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000106",
+            "userId": "10000000-0000-4000-8000-000000000006",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-06.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002050",
+          "feedId": "20000000-0000-4000-8000-000000000005",
+          "name": "코바늘",
+          "createdAt": "2026-10-17T02:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002051",
+          "feedId": "20000000-0000-4000-8000-000000000005",
+          "name": "뜨개질",
+          "createdAt": "2026-10-17T02:39:14.000Z"
+        }
+      ],
+      "pictureCount": 2
+    },
+    {
+      "likeCount": 2,
+      "commentCount": 0,
+      "isLike": true,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000006",
+      "userId": "10000000-0000-4000-8000-000000000007",
+      "state": "feed_state_posting",
+      "content": "새로 생긴 암장 오픈 세팅 다녀왔어요. 노란 문제 완등!",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-13.svg",
+      "uploadedAt": "2026-10-16T23:45:14.000Z",
+      "createdAt": "2026-10-16T23:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T23:45:13.816Z",
+      "sortedAt": "2026-10-16T23:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000007",
+        "name": "홀드위에서",
+        "nickname": "홀드위에서",
+        "email": "climb@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000107",
+            "userId": "10000000-0000-4000-8000-000000000007",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-07.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002060",
+          "feedId": "20000000-0000-4000-8000-000000000006",
+          "name": "클라이밍",
+          "createdAt": "2026-10-16T23:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002061",
+          "feedId": "20000000-0000-4000-8000-000000000006",
+          "name": "볼더링",
+          "createdAt": "2026-10-16T23:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 0,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000007",
+      "userId": "10000000-0000-4000-8000-000000000001",
+      "state": "feed_state_posting",
+      "content": "동네 철물점 간판. 오래된 글씨체가 좋아서 찍어 둠",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-03.svg",
+      "uploadedAt": "2026-10-16T19:45:14.000Z",
+      "createdAt": "2026-10-16T19:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T19:45:13.816Z",
+      "sortedAt": "2026-10-16T19:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000001",
+        "name": "키핑데모",
+        "nickname": "키핑데모",
+        "email": "demo@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000101",
+            "userId": "10000000-0000-4000-8000-000000000001",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-01.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002070",
+          "feedId": "20000000-0000-4000-8000-000000000007",
+          "name": "필름카메라",
+          "createdAt": "2026-10-16T19:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002071",
+          "feedId": "20000000-0000-4000-8000-000000000007",
+          "name": "골목",
+          "createdAt": "2026-10-16T19:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 1,
+      "commentCount": 0,
+      "isLike": true,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000008",
+      "userId": "10000000-0000-4000-8000-000000000003",
+      "state": "feed_state_posting",
+      "content": "보드게임 카페에서 처음 해 본 다크 나이트 테마 추리 게임",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-06.svg",
+      "uploadedAt": "2026-10-16T15:45:14.000Z",
+      "createdAt": "2026-10-16T15:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T15:45:13.816Z",
+      "sortedAt": "2026-10-16T15:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000003",
+        "name": "주말보드게이머",
+        "nickname": "주말보드게이머",
+        "email": "boardgame@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000103",
+            "userId": "10000000-0000-4000-8000-000000000003",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-03.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002080",
+          "feedId": "20000000-0000-4000-8000-000000000008",
+          "name": "보드게임",
+          "createdAt": "2026-10-16T15:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002081",
+          "feedId": "20000000-0000-4000-8000-000000000008",
+          "name": "다크 나이트",
+          "createdAt": "2026-10-16T15:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    },
+    {
+      "likeCount": 1,
+      "commentCount": 0,
+      "isLike": false,
+      "isBookmark": false,
+      "otherCount": 0,
+      "id": "20000000-0000-4000-8000-000000000009",
+      "userId": "10000000-0000-4000-8000-000000000004",
+      "state": "feed_state_posting",
+      "content": "휴일 아침 스콘. 버터를 차갑게 유지하는 게 핵심",
+      "picture": "http://localhost:3000/_mock/assets/img/feed/feed-08.svg",
+      "uploadedAt": "2026-10-16T10:45:14.000Z",
+      "createdAt": "2026-10-16T10:33:13.816Z",
+      "deletedAt": null,
+      "updatedAt": "2026-10-16T10:45:13.816Z",
+      "sortedAt": "2026-10-16T10:45:14.000Z",
+      "writer": {
+        "id": "10000000-0000-4000-8000-000000000004",
+        "name": "반죽하는곰",
+        "nickname": "반죽하는곰",
+        "email": "baking@example.com",
+        "picture": [
+          {
+            "id": "60000000-0000-4000-8000-000000000104",
+            "userId": "10000000-0000-4000-8000-000000000004",
+            "url": "http://localhost:3000/_mock/assets/img/avatar/avatar-04.svg",
+            "createdAt": "2026-07-19T13:45:13.816Z"
+          }
+        ]
+      },
+      "tags": [
+        {
+          "id": "60000000-0000-4000-8000-000000002090",
+          "feedId": "20000000-0000-4000-8000-000000000009",
+          "name": "홈 베이킹",
+          "createdAt": "2026-10-16T10:39:14.000Z"
+        },
+        {
+          "id": "60000000-0000-4000-8000-000000002091",
+          "feedId": "20000000-0000-4000-8000-000000000009",
+          "name": "스콘",
+          "createdAt": "2026-10-16T10:39:14.000Z"
+        }
+      ],
+      "pictureCount": 1
+    }
+  ],
+  "meta": {
+    "totalItems": 17,
+    "itemCount": 5,
+    "itemsPerPage": 5,
+    "totalPages": 4,
+    "currentPage": 2
+  },
+  "links": {
+    "first": "/feed/findPages?limit=5",
+    "previous": "/feed/findPages?page=1&limit=5",
+    "next": "/feed/findPages?page=3&limit=5",
+    "last": "/feed/findPages?page=4&limit=5"
+  }
+}
+
