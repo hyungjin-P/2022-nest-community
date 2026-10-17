@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "../../dist-mock",
+    "declaration": false
+  },
+  "include": ["../**/*.ts"],
+  "exclude": ["../main.ts", "../lambda.ts", "../**/*spec.ts", "../../node_modules", "../../dist", "../../dist-mock", "../../test"]
+}

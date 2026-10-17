@@ -21,7 +21,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "deploy": "npm run build && serverless deploy -v --aws-profile FLEXIBLE",
     "deploy:force": "npm run build && serverless deploy -v --force --aws-profile FLEXIBLE",
-    "serverless-offline": "npx serverless offline"
+    "serverless-offline": "npx serverless offline",
+    "start:mock": "cross-env MOCK=1 nest start -p src/_mock/tsconfig.mock.json --entryFile _mock/main.mock",
+    "mock:db": "node src/_mock/db/start.js",
+    "mock:db:seed": "node src/_mock/db/seed.js"
   },
   "dependencies": {
     "@nestjs/axios": "^0.0.7",
